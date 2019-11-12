@@ -1,26 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Ord, PartialOrd, Eq, PartialEq, Hash)]
-pub enum KindTag {
-    HighlightingInfo,
-    Status,
-    JumpToError,
-    InteractionPoints,
-    GiveAction,
-    /// Response is list of printed clauses.
-    MakeCase,
-    /// Solution for one or more meta-variables.
-    SolveAll,
-    DisplayInfo,
-    /// The integer is the message's debug level.
-    RunningInfo,
-    ClearRunningInfo,
-    /// Clear highlighting of the given kind.
-    ClearHighlighting,
-    /// A command sent when an abort command has completed successfully.
-    DoneAborting,
-}
-
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Hash)]
 pub struct Status {
@@ -28,7 +7,7 @@ pub struct Status {
     checked: bool,
 }
 
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "kind")]
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub enum DisplayInfo {
     // TODO
@@ -37,57 +16,53 @@ pub enum DisplayInfo {
 pub type InteractionPoint = u32;
 
 /// TODO: This enum is incomplete, contribution is welcomed.
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "kind")]
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub enum Resp {
     HighlightingInfo {
-        kind: KindTag,
         filepath: String,
         direct: bool,
     },
     Status {
-        kind: KindTag,
         status: Status,
     },
     JumpToError {
-        kind: KindTag,
         // TODO
     },
     InteractionPoints {
-        kind: KindTag,
+        #[serde(rename = "interactionPoints")]
         interaction_points: Vec<InteractionPoint>,
     },
     GiveAction {
-        kind: KindTag,
+        #[serde(rename = "giveResult")]
         give_result: bool,
+        #[serde(rename = "interactionPoint")]
         interaction_point: InteractionPoint,
     },
+    /// Response is list of printed clauses.
     MakeCase {
-        kind: KindTag,
         // TODO
     },
+    /// Solution for one or more meta-variables.
     SolveAll {
-        kind: KindTag,
         // TODO
     },
     DisplayInfo {
-        kind: KindTag,
         info: DisplayInfo,
     },
+    /// The integer is the message's debug level.
     RunningInfo {
-        kind: KindTag,
         // TODO
     },
     ClearRunningInfo {
-        kind: KindTag,
         // TODO
     },
+    /// Clear highlighting of the given kind.
     ClearHighlighting {
-        kind: KindTag,
         // TODO
     },
+    /// A command sent when an abort command has completed successfully.
     DoneAborting {
-        kind: KindTag,
         // TODO
     },
 }
