@@ -1,4 +1,4 @@
-use crate::base::{InteractionPoint, Rewrite};
+use crate::base::{ComputeMode, InteractionPoint, Rewrite};
 
 /// How much highlighting should be sent to the user interface?
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -38,6 +38,13 @@ impl IOTCM {
 }
 
 #[derive(Debug, Clone)]
+pub struct GoalInput {
+    id: InteractionPoint,
+    // TODO: range
+    code: String,
+}
+
+#[derive(Debug, Clone)]
 pub enum Cmd {
     Load {
         path: String,
@@ -59,7 +66,18 @@ pub enum Cmd {
     },
     SolveOne {
         rewrite: Rewrite,
-        id: InteractionPoint,
-        // TODO
+        input: GoalInput,
+    },
+    AutoOne {
+        input: GoalInput,
+    },
+    AutoAll,
+    InferToplevel {
+        rewrite: Rewrite,
+        code: String,
+    },
+    ComputeToplevel {
+        rewrite: ComputeMode,
+        code: String,
     },
 }
