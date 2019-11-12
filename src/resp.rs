@@ -16,7 +16,59 @@ pub enum MakeCase {
 #[serde(tag = "kind")]
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub enum DisplayInfo {
-    // TODO
+    CompilationOk {
+        warnings: String,
+        errors: String,
+    },
+    Constraints {
+        // TODO
+    },
+    AllGoalsWarnings {
+        goals: (),
+        warnings: String,
+        errors: String,
+    },
+    Time {
+        time: String,
+    },
+    IntroNotFound {
+        // TODO
+    },
+    IntroConstructorUnknown {
+        // TODO
+    },
+    Auto {
+        info: String,
+    },
+    ModuleContents {
+        // TODO
+    },
+    SearchAbout {
+        search: String,
+        // TODO
+    },
+    WhyInScope {
+        // TODO
+    },
+    NormalForm {
+        // TODO
+    },
+    InferredType {
+        // TODO
+    },
+    Context {
+        #[serde(rename = "interactionPoint")]
+        interaction_point: InteractionPoint,
+        // TODO
+    },
+    Version {
+        version: String,
+    },
+    GoalSpecific {
+        #[serde(rename = "interactionPoint")]
+        interaction_point: InteractionPoint,
+        // TODO
+    },
 }
 
 pub type InteractionPoint = u32;
