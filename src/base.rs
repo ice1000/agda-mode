@@ -1,6 +1,8 @@
+use serde::{Deserialize, Serialize};
+
 /// Modifier for interactive commands,
 /// specifying the amount of normalization in the output.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Rewrite {
     AsIs,
     Instantiated,
@@ -11,7 +13,7 @@ pub enum Rewrite {
 
 /// Modifier for the interactive computation command,
 /// specifying the mode of computation and result display.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum ComputeMode {
     DefaultCompute,
     IgnoreAbstract,
@@ -20,7 +22,7 @@ pub enum ComputeMode {
 
 /// Modifier for interactive commands,
 /// specifying whether safety checks should be ignored.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum UseForce {
     /// Ignore additional checks, like termination/positivity...
     WithForce,
@@ -28,7 +30,7 @@ pub enum UseForce {
     WithoutForce,
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Remove {
     Remove,
     Keep,
