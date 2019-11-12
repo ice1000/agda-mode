@@ -1,20 +1,20 @@
 use serde::{Deserialize, Serialize};
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct Status {
     show_implicit_arguments: bool,
     checked: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MakeCase {
     Function,
     ExtendedLambda,
 }
 
 #[serde(tag = "kind")]
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum DisplayInfo {
     CompilationOk {
         warnings: String,
@@ -75,7 +75,7 @@ pub type InteractionPoint = u32;
 
 /// TODO: This enum is incomplete, contribution is welcomed.
 #[serde(tag = "kind")]
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum Resp {
     HighlightingInfo {
         filepath: String,
