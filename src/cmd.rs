@@ -1,4 +1,4 @@
-use crate::resp::InteractionPoint;
+use crate::base::{InteractionPoint, Rewrite};
 
 /// How much highlighting should be sent to the user interface?
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -18,17 +18,6 @@ pub enum HighlightingMethod {
     Direct,
     /// Both via files and via stdout.
     Indirect,
-}
-
-/// Modifier for interactive commands,
-/// specifying the amount of normalization in the output.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub enum Rewrite {
-    AsIs,
-    Instantiated,
-    HeadNormal,
-    Simplified,
-    Normalised,
 }
 
 #[derive(Debug, Clone)]

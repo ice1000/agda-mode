@@ -1,3 +1,4 @@
+use crate::base::InteractionPoint;
 use serde::{Deserialize, Serialize};
 
 #[serde(rename_all = "camelCase")]
@@ -70,8 +71,6 @@ pub enum DisplayInfo {
         // TODO
     },
 }
-
-pub type InteractionPoint = u32;
 
 /// TODO: This enum is incomplete, contribution is welcomed.
 #[serde(tag = "kind")]
