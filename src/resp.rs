@@ -7,6 +7,12 @@ pub struct Status {
     checked: bool,
 }
 
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash)]
+pub enum MakeCase {
+    Function,
+    ExtendedLambda,
+}
+
 #[serde(tag = "kind")]
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub enum DisplayInfo {
@@ -27,7 +33,8 @@ pub enum Resp {
         status: Status,
     },
     JumpToError {
-        // TODO
+        filepath: String,
+        position: i32,
     },
     InteractionPoints {
         #[serde(rename = "interactionPoints")]
@@ -41,7 +48,10 @@ pub enum Resp {
     },
     /// Response is list of printed clauses.
     MakeCase {
-        // TODO
+        variant: MakeCase,
+        #[serde(rename = "interactionPoint")]
+        interaction_point: InteractionPoint,
+        clauses: Vec<String>,
     },
     /// Solution for one or more meta-variables.
     SolveAll {
@@ -52,17 +62,15 @@ pub enum Resp {
     },
     /// The integer is the message's debug level.
     RunningInfo {
-        // TODO
+        #[serde(rename = "debugLevel")]
+        debug_level: i32,
+        message: String,
     },
-    ClearRunningInfo {
-        // TODO
-    },
+    ClearRunningInfo,
     /// Clear highlighting of the given kind.
     ClearHighlighting {
         // TODO
     },
     /// A command sent when an abort command has completed successfully.
-    DoneAborting {
-        // TODO
-    },
+    DoneAborting,
 }
