@@ -1,8 +1,19 @@
 # agda-mode
 
+[![Crates.io](https://img.shields.io/crates/d/agda-mode.svg)][crates]
+[![Crates.io](https://img.shields.io/crates/v/agda-mode.svg)][lib-rs]
+[![Crates.io](https://img.shields.io/crates/l/agda-mode.svg)][crates]
+[![docs.rs](https://docs.rs/agda-mode/badge.svg)][doc-rs]
+
+ [crates]: https://crates.io/crates/agda-mode
+ [lib-rs]: https://lib.rs/agda-mode
+ [doc-rs]: https://docs.rs/agda-mode
+
 Accessing Agda's interaction mode via command line.
 
 This crate currently works only with nightly rust because
-tokio-process `0.3` haven't reached a stable-compatible release.
+tokio-process 0.3 haven't reached a stable-compatible release.
 Once they release a newer (even alpha) version,
-this crate should work for stable as well.
+this crate should work for stable rust as well.
+
+Also, this crate will work with master-branch Agda until Agda 2.6.1 is released.

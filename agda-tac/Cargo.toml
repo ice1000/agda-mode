@@ -4,6 +4,8 @@ version = "0.0.1"
 authors = ["ice1000 <ice1000kotlin@foxmail.com>"]
 description = "Tactic-like webpage generator for Agda"
 edition = "2018"
+license = "MIT"
+readme = "README.md"
 
 [badges]
 maintenance = { status = "actively-developed" }
@@ -16,5 +18,5 @@ minitt-util = { version = "0.1", features = ["cli"] }
 tokio = { version = "0.2.0-alpha", default-features = false, features = ["io", "rt-full", "codec"] }
 tokio-process = "0.3.0-alpha"
 futures-util = "0.3"
-agda-mode = { version = "0.0.2" }
+agda-mode = { path = ".." }
 
