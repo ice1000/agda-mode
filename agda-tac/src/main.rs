@@ -16,18 +16,23 @@ const START_FAIL: &str = "Failed to start Agda";
 async fn main() {
     let args = args::pre();
     let file = args.file;
+    println!("Before started");
     let agda = start_agda(args.agda.as_ref().map_or("agda", |s| &*s)).expect(START_FAIL);
     let load_file = load_file(file);
     let mut stdin = agda.stdin;
     let mut stdout = BufReader::new(agda.stdout);
     let agda_process = agda.process;
+    println!("Started");
     tokio::spawn(async {
         agda_process.await.expect(START_FAIL);
+	println!("Agda is dead");
     });
     let mut buf = String::with_capacity(2045);
+    println!("Load file started");
     stdin.write(load_file.to_string().as_bytes()).await.expect(EVAL_FAIL);
     stdin.flush().await.expect(EVAL_FAIL);
+    println!("Receiving info started");
     stdout.read_line(&mut buf).await.expect(READ_FAIL);
-    let resp: Resp = serde_json::from_str(&buf).expect(DES_FAIL);
+    let resp: Resp = serde_json::from_str(buf.trim_start_matches("JSON>")).expect(DES_FAIL);
     println!("{:?}", resp);
 }
