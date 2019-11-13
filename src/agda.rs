@@ -10,11 +10,7 @@ use crate::resp::Resp;
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 
-pub struct ProcessStdio {
-    pub process: Child,
-    pub stdin: ChildStdin,
-    pub stdout: ChildStdout,
-}
+pub struct ProcessStdio(pub Child, pub ChildStdin, pub ChildStdout);
 
 pub fn start_agda(agda_program: &str) -> io::Result<ProcessStdio> {
     let mut process = Command::new(agda_program)
@@ -22,17 +18,13 @@ pub fn start_agda(agda_program: &str) -> io::Result<ProcessStdio> {
         .stdout(Stdio::piped())
         .stdin(Stdio::piped())
         .spawn()?; // cannot spawn
-    let stdin = process.stdin().take().expect("failed to pipe stdin");
-    let stdout = process.stdout().take().expect("failed to pipe stdout");
-    Ok(ProcessStdio {
-        process,
-        stdin,
-        stdout,
-    })
+    let stdin = process.stdin().take().expect("Failed to pipe stdin");
+    let stdout = process.stdout().take().expect("Failed to pipe stdout");
+    Ok(ProcessStdio(process, stdin, stdout))
 }
 
 pub fn deserialize_agda<'a, T: Deserialize<'a>>(buf: &'a str) -> serde_json::Result<T> {
-    serde_json::from_str(buf.trim_start_matches("JSON>").trim_start())
+    serde_json::from_str(buf.trim_start_matches("JSON>").trim())
 }
 
 pub async fn send_command(stdin: &mut ChildStdin, command: &IOTCM) -> io::Result<()> {
