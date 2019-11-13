@@ -4,6 +4,8 @@ use agda_mode::agda::{load_file, start_agda};
 use agda_mode::resp::Resp;
 
 mod args;
+#[cfg(test)]
+mod tests;
 
 const DES_FAIL: &str = "Failed to deserialize Agda response";
 const EVAL_FAIL: &str = "Failed to evaluate Agda command";

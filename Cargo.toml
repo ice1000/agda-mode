@@ -1,6 +1,6 @@
 [package]
 name = "agda-mode"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["ice1000 <ice1000kotlin@foxmail.com>"]
 description = "Accessing Agda's interaction mode via command line, in Rust"
 edition = "2018"
@@ -11,12 +11,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
 tokio-process = "0.3.0-alpha"
-
-[lib]
-name = "agda_mode"
-path = "src/lib.rs"
 
 [workspace]
 members = ["agda-tac"]
