@@ -13,6 +13,12 @@ pub enum HighlightingLevel {
     Interactive,
 }
 
+impl Default for HighlightingLevel {
+    fn default() -> Self {
+        HighlightingLevel::NonInteractive
+    }
+}
+
 /// How should highlighting be sent to the user interface?
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum HighlightingMethod {
@@ -20,6 +26,12 @@ pub enum HighlightingMethod {
     Direct,
     /// Both via files and via stdout.
     Indirect,
+}
+
+impl Default for HighlightingMethod {
+    fn default() -> Self {
+        HighlightingMethod::Direct
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -43,6 +55,11 @@ impl IOTCM {
             method,
             command,
         }
+    }
+
+    /// Convert `self` into a command string.
+    pub fn to_string(&self) -> String {
+        format!("{}", self)
     }
 }
 

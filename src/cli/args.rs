@@ -9,6 +9,14 @@ use structopt::StructOpt;
     global_settings(&[AppSettings::ColoredHelp])
 )]
 pub struct CliOptions {
+    /// The input file to type-check (Notice: file should be UTF-8 encoded)
+    #[structopt(name = "FILE")]
+    pub file: String,
+
+    /// Path to your agda executable
+    #[structopt(long, name = "path")]
+    pub agda: Option<String>,
+
     #[structopt(subcommand)]
     completion: Option<GenShellSubCommand>,
 }
