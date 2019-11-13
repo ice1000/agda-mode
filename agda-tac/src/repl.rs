@@ -15,9 +15,16 @@ pub async fn repl(
     let mut iotcm = load_file(file);
     send_command(&mut stdin, &iotcm).await?;
     let mut agda = AgdaRead::from(stdout);
-    println!("{:?}", agda.response().await?);
-    println!("{:?}", agda.response().await?);
-    println!("{:?}", agda.response().await?);
-    println!("{:?}", agda.response().await?);
+    let interaction_points = loop {
+        if let Resp::InteractionPoints { interaction_points } = agda.response().await? {
+            break interaction_points;
+        }
+    };
+    if interaction_points.is_empty() {
+        println!("No interaction points found.");
+    }
+    for interaction_point in interaction_points {
+        unimplemented!()
+    }
     Ok(())
 }

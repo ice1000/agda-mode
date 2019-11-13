@@ -37,13 +37,9 @@ pub async fn start_agda(agda_program: &str) -> (ChildStdin, ChildStdout) {
 }
 
 /// Deserialize from Agda's command line output.
-pub fn deserialize_agda<'a, T: Deserialize<'a>>(buf: &'a str) -> serde_json::Result<Option<T>> {
+pub fn deserialize_agda<'a, T: Deserialize<'a>>(buf: &'a str) -> serde_json::Result<T> {
     let buf = buf.trim_start_matches("JSON>").trim();
-    if buf.is_empty() {
-        Ok(None)
-    } else {
-        Some(serde_json::from_str(buf)).transpose()
-    }
+    serde_json::from_str(buf)
 }
 
 /// Send an [`IOTCM`](crate::cmd::IOTCM) command to Agda.
@@ -74,7 +70,7 @@ impl From<ChildStdout> for AgdaRead {
 
 impl AgdaRead {
     /// Take Agda's response from the next line.
-    pub async fn response(&mut self) -> io::Result<Option<Resp>> {
+    pub async fn response(&mut self) -> io::Result<Resp> {
         self.agda.read_line(&mut self.buf).await?;
         let resp = deserialize_agda(&self.buf)?;
         self.buf.clear();
