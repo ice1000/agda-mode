@@ -5,6 +5,7 @@ authors = ["ice1000 <ice1000kotlin@foxmail.com>"]
 description = "Tactic-like webpage generator for Agda"
 edition = "2018"
 license = "MIT"
+repository = "https://github.com/ice1000/agda-mode"
 readme = "README.md"
 
 [badges]

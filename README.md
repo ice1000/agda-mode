@@ -4,10 +4,13 @@
 [![Crates.io](https://img.shields.io/crates/v/agda-mode.svg)][lib-rs]
 [![Crates.io](https://img.shields.io/crates/l/agda-mode.svg)][crates]
 [![docs.rs](https://docs.rs/agda-mode/badge.svg)][doc-rs]
+[![dep-svg]][dep-rs]
 
  [crates]: https://crates.io/crates/agda-mode
  [lib-rs]: https://lib.rs/agda-mode
  [doc-rs]: https://docs.rs/agda-mode
+ [dep-rs]: https://deps.rs/repo/github/ice1000/agda-mode
+ [dep-svg]: https://deps.rs/repo/github/ice1000/agda-mode/status.svg
 
 Accessing Agda's interaction mode via command line.
 
