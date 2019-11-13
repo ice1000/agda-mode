@@ -39,7 +39,7 @@ pub struct IOTCM {
     level: HighlightingLevel,
     file: String,
     method: HighlightingMethod,
-    command: Cmd,
+    pub command: Cmd,
 }
 
 impl IOTCM {
