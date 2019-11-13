@@ -4,8 +4,6 @@ use agda_mode::agda::start_agda;
 
 mod args;
 mod repl;
-#[cfg(test)]
-mod tests;
 
 const EVAL_FAIL: &str = "Failed to evaluate Agda command";
 const START_FAIL: &str = "Failed to start Agda";

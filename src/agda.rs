@@ -1,10 +1,12 @@
 use std::io;
-use tokio_process::{Child, ChildStdin, ChildStdout, Command};
-
 use std::process::Stdio;
 
-use crate::cmd::{Cmd, IOTCM};
 use serde::Deserialize;
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use tokio_process::{Child, ChildStdin, ChildStdout, Command};
+
+use crate::cmd::{Cmd, IOTCM};
+use crate::resp::Resp;
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 
@@ -31,6 +33,32 @@ pub fn start_agda(agda_program: &str) -> io::Result<ProcessStdio> {
 
 pub fn deserialize_agda<'a, T: Deserialize<'a>>(buf: &'a str) -> serde_json::Result<T> {
     serde_json::from_str(buf.trim_start_matches("JSON>").trim_start())
+}
+
+pub async fn send_command(stdin: &mut ChildStdin, command: &IOTCM) -> io::Result<()> {
+    stdin.write(command.to_string().as_bytes()).await?;
+    stdin.flush().await
+}
+
+pub struct AgdaRead {
+    buf: String,
+    agda: BufReader<ChildStdout>,
+}
+
+impl AgdaRead {
+    pub  fn new(agda: BufReader<ChildStdout>) -> Self {
+        Self {
+            agda,
+            buf: String::with_capacity(2048)
+        }
+    }
+
+    pub async fn response(&mut self) -> io::Result<Resp> {
+        self.agda.read_line(&mut self.buf).await?;
+        let resp = deserialize_agda(&self.buf)?;
+        self.buf.clear();
+        Ok(resp)
+    }
 }
 
 /// Common command: load file in Agda.
