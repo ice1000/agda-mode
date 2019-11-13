@@ -1,3 +1,5 @@
+use std::fmt::{Display, Error as FmtError, Formatter};
+
 use crate::base::{ComputeMode, InteractionPoint, Remove, Rewrite, UseForce};
 
 /// How much highlighting should be sent to the user interface?
@@ -23,14 +25,21 @@ pub enum HighlightingMethod {
 #[derive(Debug, Clone)]
 pub struct IOTCM {
     level: HighlightingLevel,
+    file: String,
     method: HighlightingMethod,
     command: Cmd,
 }
 
 impl IOTCM {
-    pub fn new(level: HighlightingLevel, method: HighlightingMethod, command: Cmd) -> Self {
+    pub fn new(
+        level: HighlightingLevel,
+        file: String,
+        method: HighlightingMethod,
+        command: Cmd,
+    ) -> Self {
         Self {
             level,
+            file,
             method,
             command,
         }
@@ -221,4 +230,82 @@ pub enum Cmd {
     /// Abort the current computation.
     /// Does nothing if no computation is in progress.
     Abort,
+}
+
+type FmtMonad = Result<(), FmtError>;
+
+impl Display for IOTCM {
+    fn fmt(&self, f: &mut Formatter) -> FmtMonad {
+        write!(
+            f,
+            "IOTCM {:?} {:?} {:?} {}",
+            self.file, self.level, self.method, self.command
+        )
+    }
+}
+
+impl Display for Cmd {
+    fn fmt(&self, f: &mut Formatter) -> FmtMonad {
+        use Cmd::*;
+        match self {
+            Load { path, flags } => write!(f, "( Cmd_load {:?} {:?} )", path, flags),
+            Compile {
+                backend,
+                path,
+                flags,
+            } => write!(f, "( Cmd_compile {:?} {:?} {:?} )", backend, path, flags),
+            Constraints => f.write_str("Cmd_constraints"),
+            Metas => f.write_str("Cmd_metas"),
+            ShowModuleContentsToplevel { rewrite, search } => write!(
+                f,
+                "( Cmd_show_module_contents_toplevel {:?} {:?} )",
+                rewrite, search
+            ),
+            SearchAboutToplevel { rewrite, search } => write!(
+                f,
+                "( Cmd_search_about_toplevel {:?} {:?} )",
+                rewrite, search
+            ),
+            SolveAll(rewrite) => write!(f, "( Cmd_solveAll {:?} )", rewrite),
+            SolveOne { .. } => unimplemented!(),
+            AutoOne(_) => unimplemented!(),
+            AutoAll => f.write_str("Cmd_autoAll"),
+            InferToplevel { rewrite, code } => {
+                write!(f, "( Cmd_infer_toplevel {:?} {:?} )", rewrite, code)
+            }
+            ComputeToplevel { compute_mode, code } => {
+                write!(f, "( Cmd_compute_toplevel {:?} {:?} )", compute_mode, code)
+            }
+            LoadHighlightingInfo { path } => write!(f, "( Cmd_load_highlighting_info {:?} )", path),
+            TokenHighlighting { path, remove } => {
+                write!(f, "( Cmd_tokenHighlighting {:?} {:?} ", path, remove)
+            }
+            Highlight(_) => unimplemented!(),
+            ShowImplicitArgs(show) => {
+                f.write_str("( ShowImplicitArgs ")?;
+                f.write_str(if *show { "True" } else { "False" })?;
+                f.write_str(" )")
+            }
+            ToggleImplicitArgs => f.write_str("ToggleImplicitArgs"),
+            Give { .. } => unimplemented!(),
+            Refine(_) => unimplemented!(),
+            Intro { .. } => unimplemented!(),
+            RefineOrIntro { .. } => unimplemented!(),
+            Context { .. } => unimplemented!(),
+            HelperFunction { .. } => unimplemented!(),
+            Infer { .. } => unimplemented!(),
+            GoalType { .. } => unimplemented!(),
+            ElaborateGive { .. } => unimplemented!(),
+            GoalTypeContext { .. } => unimplemented!(),
+            GoalTypeContextInfer { .. } => unimplemented!(),
+            GoalTypeContextCheck { .. } => unimplemented!(),
+            ShowModuleContents { .. } => unimplemented!(),
+            MakeCase(_) => unimplemented!(),
+            Compute { .. } => unimplemented!(),
+            WhyInScope(_) => unimplemented!(),
+            WhyInScopeToplevel(name) => write!(f, "( Cmd_why_in_scope_toplevel {:?} )", name),
+            ShowVersion => f.write_str("Cmd_show_version"),
+            Abort => f.write_str("Cmd_abort"),
+        }
+    }
 }

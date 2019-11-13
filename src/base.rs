@@ -20,6 +20,12 @@ pub enum ComputeMode {
     UseShowInstance,
 }
 
+impl Default for ComputeMode {
+    fn default() -> Self {
+        ComputeMode::DefaultCompute
+    }
+}
+
 /// Modifier for interactive commands,
 /// specifying whether safety checks should be ignored.
 #[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
