@@ -26,6 +26,7 @@ async fn main() {
     });
     let mut buf = String::with_capacity(2045);
     stdin.write(load_file.to_string().as_bytes()).await.expect(EVAL_FAIL);
+    stdin.flush().await.expect(EVAL_FAIL);
     stdout.read_line(&mut buf).await.expect(READ_FAIL);
     let resp: Resp = serde_json::from_str(&buf).expect(DES_FAIL);
     println!("{:?}", resp);

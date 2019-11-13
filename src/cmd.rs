@@ -59,7 +59,7 @@ impl IOTCM {
 
     /// Convert `self` into a command string.
     pub fn to_string(&self) -> String {
-        format!("{}", self)
+        format!("{}\n", self)
     }
 }
 
