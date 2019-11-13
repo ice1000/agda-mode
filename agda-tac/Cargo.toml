@@ -1,6 +1,6 @@
 [package]
 name = "agda-tac"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["ice1000 <ice1000kotlin@foxmail.com>"]
 description = "Tactic-like webpage generator for Agda"
 edition = "2018"
