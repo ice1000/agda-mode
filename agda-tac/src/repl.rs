@@ -13,7 +13,7 @@ pub async fn repl(
     file: String,
 ) -> io::Result<()> {
     send_command(&mut stdin, &load_file(file)).await?;
-    let mut agda = AgdaRead::new(stdout);
+    let mut agda = AgdaRead::from(stdout);
     println!("{:?}", agda.response().await?);
     println!("{:?}", agda.response().await?);
     println!("{:?}", agda.response().await?);
