@@ -1,20 +1,15 @@
 use std::io;
 
-use serde::Deserialize;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio_process::{ChildStdin, ChildStdout};
 
-use agda_mode::agda::load_file;
+use agda_mode::agda::{load_file, deserialize_agda};
 use agda_mode::cmd::IOTCM;
 use agda_mode::resp::Resp;
 
 pub type In = ChildStdin;
 pub type Out = BufReader<ChildStdout>;
 pub type ReplMonad<T = ()> = io::Result<T>;
-
-pub fn de<'a, T: Deserialize<'a>>(buf: &'a str) -> serde_json::Result<T> {
-    serde_json::from_str(buf.trim_start_matches("JSON>"))
-}
 
 pub async fn send_command(stdin: &mut In, command: &IOTCM) -> ReplMonad {
     stdin.write(command.to_string().as_bytes()).await?;
@@ -23,7 +18,7 @@ pub async fn send_command(stdin: &mut In, command: &IOTCM) -> ReplMonad {
 
 pub async fn response(stdout: &mut Out, buf: &mut String) -> ReplMonad<Resp> {
     stdout.read_line(buf).await?;
-    Ok(de(&buf)?)
+    Ok(deserialize_agda(&buf)?)
 }
 
 pub async fn repl(mut stdin: In, mut stdout: Out, file: String) -> ReplMonad {
