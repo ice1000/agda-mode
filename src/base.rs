@@ -11,6 +11,12 @@ pub enum Rewrite {
     Normalised,
 }
 
+impl Default for Rewrite {
+    fn default() -> Self {
+        Rewrite::Simplified
+    }
+}
+
 /// Modifier for the interactive computation command,
 /// specifying the mode of computation and result display.
 #[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
