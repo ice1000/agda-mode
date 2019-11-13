@@ -1,5 +1,6 @@
-use crate::base::{ComputeMode, InteractionPoint, Rewrite};
 use serde::{Deserialize, Serialize};
+
+use crate::base::{ComputeMode, InteractionPoint, Rewrite, TokenBased};
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
@@ -132,12 +133,37 @@ pub enum DisplayInfo {
     },
 }
 
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+pub struct AspectHighlight {
+    range: (i32, i32),
+    atoms: Vec<String>,
+    token_based: TokenBased,
+    note: Option<String>,
+    definition_site: Option<DefinitionSite>,
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+pub struct DefinitionSite {
+    filepath: String,
+    position: i32,
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+pub struct HighlightingInfo {
+    remove: bool,
+    payload: Vec<AspectHighlight>,
+}
+
 /// TODO: This enum is incomplete, contribution is welcomed.
 #[serde(tag = "kind")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum Resp {
     HighlightingInfo {
-        filepath: String,
+        info: Option<HighlightingInfo>,
+        filepath: Option<String>,
         direct: bool,
     },
     Status {

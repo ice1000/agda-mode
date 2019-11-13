@@ -48,4 +48,18 @@ pub enum Remove {
     Keep,
 }
 
+/// Is the highlighting "token-based", i.e. based only on
+/// information from the lexer?
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum TokenBased {
+    TokenBased,
+    NotOnlyTokenBased,
+}
+
+impl Default for TokenBased {
+    fn default() -> Self {
+        TokenBased::NotOnlyTokenBased
+    }
+}
+
 pub type InteractionPoint = u32;
