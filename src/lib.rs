@@ -9,6 +9,3 @@ pub mod cmd;
 
 /// Invoke Agda in command line and interact with it via stdio.
 pub mod agda;
-
-#[cfg(test)]
-mod tests;
