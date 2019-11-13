@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::base::{ComputeMode, InteractionPoint, Rewrite, TokenBased};
+use crate::base::{ComputeMode, InteractionPoint, Position, Rewrite, TokenBased};
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
@@ -136,7 +136,7 @@ pub enum DisplayInfo {
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct AspectHighlight {
-    range: (i32, i32),
+    range: (Position, Position),
     atoms: Vec<String>,
     token_based: TokenBased,
     note: Option<String>,
@@ -147,7 +147,7 @@ pub struct AspectHighlight {
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct DefinitionSite {
     filepath: String,
-    position: i32,
+    position: Position,
 }
 
 #[serde(rename_all = "camelCase")]
@@ -195,7 +195,7 @@ pub enum Resp {
         // TODO
     },
     DisplayInfo {
-        info: DisplayInfo,
+        info: Option<DisplayInfo>,
     },
     /// The integer is the message's debug level.
     RunningInfo {

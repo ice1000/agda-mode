@@ -62,4 +62,5 @@ impl Default for TokenBased {
     }
 }
 
+pub type Position = i32;
 pub type InteractionPoint = u32;
