@@ -18,7 +18,9 @@ pub async fn send_command(stdin: &mut In, command: &IOTCM) -> ReplMonad {
 
 pub async fn response(stdout: &mut Out, buf: &mut String) -> ReplMonad<Resp> {
     stdout.read_line(buf).await?;
-    Ok(deserialize_agda(&buf)?)
+    let resp = deserialize_agda(&buf)?;
+    buf.clear();
+    Ok(resp)
 }
 
 pub async fn repl(mut stdin: In, mut stdout: Out, file: String) -> ReplMonad {
