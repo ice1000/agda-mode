@@ -261,6 +261,15 @@ impl Display for IOTCM {
     }
 }
 
+impl Cmd {
+    pub fn load_simple(path: String) -> Self {
+        Cmd::Load {
+            path,
+            flags: vec![],
+        }
+    }
+}
+
 impl Display for Cmd {
     fn fmt(&self, f: &mut Formatter) -> FmtMonad {
         use Cmd::*;

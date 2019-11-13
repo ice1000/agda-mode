@@ -84,9 +84,6 @@ impl AgdaRead {
 
 /// Common command: load file in Agda.
 pub fn load_file(path: String) -> IOTCM {
-    let command = Cmd::Load {
-        flags: vec![],
-        path: path.clone(),
-    };
+    let command = Cmd::load_simple(path.clone());
     IOTCM::new(Default::default(), path, Default::default(), command)
 }
