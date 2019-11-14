@@ -1,20 +1,51 @@
 use std::io;
 
-use tokio::io::BufReader;
+use tokio::io::{AsyncWriteExt, BufReader};
 use tokio_process::{ChildStdin, ChildStdout};
 
 use agda_mode::agda::{load_file, send_command, AgdaRead};
-use agda_mode::cmd::{Cmd, GoalInput};
+use agda_mode::cmd::{Cmd, GoalInput, IOTCM};
 use agda_mode::resp::{DisplayInfo, GoalInfo, Resp};
 
-pub async fn repl(
-    mut stdin: ChildStdin,
-    stdout: BufReader<ChildStdout>,
-    file: String,
-) -> io::Result<()> {
-    let mut iotcm = load_file(file);
-    send_command(&mut stdin, &iotcm).await?;
-    let mut agda = AgdaRead::from(stdout);
+pub struct ReplState {
+    pub stdin: ChildStdin,
+    pub agda: AgdaRead,
+    pub file: String,
+    iotcm: IOTCM,
+}
+
+impl ReplState {
+    pub async fn init(
+        mut stdin: ChildStdin,
+        stdout: BufReader<ChildStdout>,
+        file: String,
+    ) -> io::Result<Self> {
+        let iotcm = load_file(file.clone());
+        send_command(&mut stdin, &iotcm).await?;
+        let agda = AgdaRead::from(stdout);
+        Ok(Self {
+            file,
+            iotcm,
+            stdin,
+            agda,
+        })
+    }
+
+    pub async fn command(&mut self, cmd: Cmd) -> io::Result<()> {
+        self.iotcm.command = cmd;
+        send_command(&mut self.stdin, &self.iotcm).await
+    }
+
+    pub async fn shutdown(&mut self) -> io::Result<()> {
+        self.stdin.shutdown().await
+    }
+
+    pub async fn response(&mut self) -> io::Result<Resp> {
+        self.agda.response().await
+    }
+}
+
+pub async fn repl(mut agda: ReplState) -> io::Result<()> {
     let iis = loop {
         if let Resp::InteractionPoints { interaction_points } = agda.response().await? {
             break interaction_points;
@@ -24,8 +55,7 @@ pub async fn repl(
         println!("Note: no interaction points found.");
     }
     for ii in iis {
-        iotcm.command = Cmd::goal_type(GoalInput::simple(ii));
-        send_command(&mut stdin, &iotcm).await?;
+        agda.command(Cmd::goal_type(GoalInput::simple(ii))).await?;
         let ty = loop {
             if let Resp::DisplayInfo {
                 info:
@@ -40,6 +70,6 @@ pub async fn repl(
         };
         println!("?{:?}: {}", ii, ty);
     }
-    iotcm.command = Cmd::Abort;
-    send_command(&mut stdin, &iotcm).await
+    agda.command(Cmd::Abort).await?;
+    agda.shutdown().await
 }
