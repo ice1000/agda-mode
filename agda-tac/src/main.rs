@@ -1,4 +1,5 @@
-use crate::repl::{repl, ReplState};
+use crate::repl::repl;
+use agda_mode::agda::ReplState;
 use agda_mode::base::{debug_command, debug_response};
 
 mod args;

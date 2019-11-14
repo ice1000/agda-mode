@@ -5,9 +5,9 @@ use serde::Deserialize;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio_process::{Child, ChildStdin, ChildStdout, Command};
 
+use crate::base::{is_debugging_command, is_debugging_response};
 use crate::cmd::{Cmd, IOTCM};
 use crate::resp::Resp;
-use crate::base::{is_debugging_response, is_debugging_command};
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";
@@ -89,5 +89,49 @@ impl AgdaRead {
 /// Common command: load file in Agda.
 pub fn load_file(path: String) -> IOTCM {
     let command = Cmd::load_simple(path.clone());
-    IOTCM::simple( path,  command)
+    IOTCM::simple(path, command)
+}
+
+/// Simple REPL state wrapper.
+pub struct ReplState {
+    pub stdin: ChildStdin,
+    pub agda: AgdaRead,
+    pub file: String,
+    iotcm: IOTCM,
+}
+
+impl ReplState {
+    pub async fn start(agda_program: &str, file: String) -> io::Result<Self> {
+        let (stdin, out) = start_agda(agda_program);
+        Self::from_io(stdin, BufReader::new(out), file).await
+    }
+
+    pub async fn from_io(
+        mut stdin: ChildStdin,
+        stdout: BufReader<ChildStdout>,
+        file: String,
+    ) -> io::Result<Self> {
+        let iotcm = load_file(file.clone());
+        send_command(&mut stdin, &iotcm).await?;
+        let agda = AgdaRead::from(stdout);
+        Ok(Self {
+            file,
+            iotcm,
+            stdin,
+            agda,
+        })
+    }
+
+    pub async fn command(&mut self, cmd: Cmd) -> io::Result<()> {
+        self.iotcm.command = cmd;
+        send_command(&mut self.stdin, &self.iotcm).await
+    }
+
+    pub async fn shutdown(&mut self) -> io::Result<()> {
+        self.stdin.shutdown().await
+    }
+
+    pub async fn response(&mut self) -> io::Result<Resp> {
+        self.agda.response().await
+    }
 }
