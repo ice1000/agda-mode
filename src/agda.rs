@@ -100,6 +100,11 @@ pub struct ReplState {
     iotcm: IOTCM,
 }
 
+/// An Agda response that is either something good or some error.
+pub type AgdaResult<T> = Result<T, String>;
+/// Return type of `next_*` functions.
+pub type NextResult<T> = io::Result<AgdaResult<T>>;
+
 impl ReplState {
     pub async fn start(agda_program: &str, file: String) -> io::Result<Self> {
         let (stdin, out) = start_agda(agda_program);
@@ -143,17 +148,24 @@ impl ReplState {
     /// Skip information until the next display info.
     pub async fn next_display_info(&mut self) -> io::Result<DisplayInfo> {
         loop {
-            if let Resp::DisplayInfo { info: Some(info) } = self.response().await? {
-                break Ok(info);
+            match self.response().await? {
+                Resp::DisplayInfo { info: Some(info) } => break Ok(info),
+                _ => {}
             }
         }
     }
 
     /// Skip information until the next interaction point (goal) list.
-    pub async fn next_goals(&mut self) -> io::Result<Vec<InteractionPoint>> {
+    pub async fn next_goals(&mut self) -> NextResult<Vec<InteractionPoint>> {
+        use crate::resp::DisplayInfo::Error as DisError;
+        use Resp::*;
         loop {
-            if let Resp::InteractionPoints { interaction_points } = self.response().await? {
-                break Ok(interaction_points);
+            match self.response().await? {
+                InteractionPoints { interaction_points } => break Ok(Ok(interaction_points)),
+                DisplayInfo {
+                    info: Some(DisError { message }),
+                } => break Ok(Err(message)),
+                _ => {}
             }
         }
     }

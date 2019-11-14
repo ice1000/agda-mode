@@ -8,12 +8,18 @@ use agda_mode::resp::{DisplayInfo, GoalInfo};
 type Monad<T = ()> = io::Result<T>;
 
 pub async fn repl(mut agda: ReplState) -> Monad {
-    let iis = agda.next_goals().await?;
-    println!("Goals:");
-    if iis.is_empty() {
-        println!("No goals.");
-    }
-    list_goals(&mut agda, &iis).await?;
+    match agda.next_goals().await? {
+        Ok(iis) => {
+            println!("Goals:");
+            if iis.is_empty() {
+                println!("No goals.");
+            }
+            list_goals(&mut agda, &iis).await?;
+        }
+        Err(err_msg) => {
+            eprintln!("Failed to load: {}", err_msg)
+        }
+    };
     finish(&mut agda).await
 }
 
