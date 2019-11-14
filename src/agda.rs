@@ -7,6 +7,7 @@ use tokio_process::{Child, ChildStdin, ChildStdout, Command};
 
 use crate::cmd::{Cmd, IOTCM};
 use crate::resp::Resp;
+use crate::base::{is_debugging_response, is_debugging_command};
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";
@@ -44,7 +45,11 @@ pub fn deserialize_agda<'a, T: Deserialize<'a>>(buf: &'a str) -> serde_json::Res
 
 /// Send an [`IOTCM`](crate::cmd::IOTCM) command to Agda.
 pub async fn send_command(stdin: &mut ChildStdin, command: &IOTCM) -> io::Result<()> {
-    stdin.write(command.to_string().as_bytes()).await?;
+    let string = command.to_string();
+    if unsafe { is_debugging_command() } {
+        eprintln!("[CMD]: {}", string);
+    }
+    stdin.write(string.as_bytes()).await?;
     stdin.flush().await
 }
 
@@ -72,6 +77,9 @@ impl AgdaRead {
     /// Take Agda's response from the next line.
     pub async fn response(&mut self) -> io::Result<Resp> {
         self.agda.read_line(&mut self.buf).await?;
+        if unsafe { is_debugging_response() } {
+            eprintln!("[RES]: {}", self.buf);
+        }
         let resp = deserialize_agda(&self.buf)?;
         self.buf.clear();
         Ok(resp)

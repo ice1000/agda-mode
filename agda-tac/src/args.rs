@@ -17,6 +17,12 @@ pub struct CliOptions {
     #[structopt(long, name = "path")]
     pub agda: Option<String>,
 
+    #[structopt(long)]
+    pub debug_command: bool,
+
+    #[structopt(long)]
+    pub debug_response: bool,
+
     #[structopt(subcommand)]
     completion: Option<GenShellSubCommand>,
 }
