@@ -55,5 +55,6 @@ pub async fn repl(
         };
         println!("Point {:?}: {}", interaction_point, ty);
     }
-    Ok(())
+    iotcm.command = Cmd::Abort;
+    send_command(&mut stdin, &iotcm).await
 }

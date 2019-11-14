@@ -331,6 +331,7 @@ impl Cmd {
         }
     }
 
+    /// Produces [CurrentGoal](crate::resp::GoalInfo::CurrentGoal).
     pub fn goal_type(input: GoalInput) -> Self {
         Cmd::GoalType {
             rewrite: Default::default(),
