@@ -41,25 +41,19 @@ pub async fn repl(
     for interaction_point in interaction_points {
         iotcm.command = Cmd::goal_type(GoalInput::simple(interaction_point));
         send_command(&mut stdin, &iotcm).await?;
-        let (goal_type, entries) = loop {
+        let ty = loop {
             if let Resp::DisplayInfo {
                 info:
                     Some(DisplayInfo::GoalSpecific {
-                        goal_info:
-                            GoalInfo::CurrentGoal {
-                                the_type,
-                                ..
-                            },
+                        goal_info: GoalInfo::CurrentGoal { the_type, .. },
                         ..
                     }),
             } = agda.response().await?
             {
-                break (goal_type, entries);
+                break the_type;
             }
         };
-        println!("Point {:?}:", interaction_point);
-        println!("{:?}", goal_type);
-        println!("{:?}", entries);
+        println!("Point {:?}: {}", interaction_point, ty);
     }
     Ok(())
 }
