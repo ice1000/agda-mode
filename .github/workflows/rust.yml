@@ -4,16 +4,25 @@ on: [push]
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        # TODO: stable
+        rust: [nightly]
 
     steps:
     - uses: actions/checkout@v1
     - name: Build agda-mode
-      run: cargo build --verbose
+      run: cargo build --release --verbose
     - name: Run agda-mode tests
-      run: cargo test --verbose
+      run: cargo test --release --verbose
     - name: Build agda-tac
-      run: cd agda-tac && cargo build --verbose && cd ..
+      run: cd agda-tac && cargo build --release --verbose && cd ..
     - name: Run agda-tac tests
-      run: cd agda-tac && cargo test --verbose && cd ..
+      run: cd agda-tac && cargo test --release --verbose && cd ..
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: agda-tac
+        path: target/release/agda-tac
