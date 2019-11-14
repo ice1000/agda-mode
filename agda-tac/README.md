@@ -91,13 +91,28 @@ what's going on in the proof.
 
 How about putting this into Agda?
 
-I decide to make a little REPL with few commands that are what one
+## Implementation
+
+This time, I decide to make a little REPL with few commands that are what one
 can do in Emacs `agda2-mode`.
 The REPL modifies a file while interacting with the user,
 like what we used to do in Emacs.
 These commands are "tactic" and can be saved in a file, so when one wanna read
 a proof, they open up the tactic file and load it in the REPL line by line,
 watching the REPL's output and they understand how people prove something.
+
+One thing about Agda's existing `tactic`, or reflection system is that
+there is no tactic state displayed when working with tactics.
+The type-checker will show the goal type, but it's still terms --
+even in `tactic`s they are monadic do-notations -- you cannot load the do-notation
+line by line, because Agda cannot load a program line by line.
+
+Also, to undo one step in the proof, Agda people need to use the undo
+functionality provided by Emacs.
+If they closed their Emacs and reopen it later, they can no longer undo
+unless manually recovering the terms.
+With tactics, undo is deleting a line in the saved tactic file,
+which can be done anytime, anywhere.
 
 I'm not sure how it's gonna be, but I'd like to give it a try.
 This crate is my attempt, contribution is welcomed :).
