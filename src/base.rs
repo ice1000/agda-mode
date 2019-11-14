@@ -1,5 +1,24 @@
 use serde::{Deserialize, Serialize};
 
+static mut DEBUG_COMMAND: bool = false;
+static mut DEBUG_RESPONSE: bool = false;
+
+pub unsafe fn debug_command(new_value: bool) {
+    DEBUG_COMMAND = new_value;
+}
+
+pub unsafe fn debug_response(new_value: bool) {
+    DEBUG_RESPONSE = new_value;
+}
+
+pub unsafe fn is_debugging_command() -> bool {
+    DEBUG_COMMAND
+}
+
+pub unsafe fn is_debugging_response() -> bool {
+    DEBUG_RESPONSE
+}
+
 /// Modifier for interactive commands,
 /// specifying the amount of normalization in the output.
 #[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]

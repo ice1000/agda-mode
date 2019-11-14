@@ -14,6 +14,7 @@
  [agda-issue]: https://github.com/agda/agda/issues/4183
 
 Accessing Agda's interaction mode via command line.
+This library is created for [agda-tac](https://lib.rs/agda-tac).
 
 This crate currently works only with nightly rust because
 tokio-process 0.3 haven't reached a stable-compatible release.
