@@ -378,8 +378,8 @@ impl Display for Cmd {
                 rewrite, search
             ),
             SolveAll(rewrite) => write!(f, "( Cmd_solveAll {:?} )", rewrite),
-            SolveOne { .. } => unimplemented!(),
-            AutoOne(_) => unimplemented!(),
+            SolveOne { rewrite, input } => write!(f, "( Cmd_solveOne {:?} {} )", rewrite, input),
+            AutoOne(input) => write!(f, "( Cmd_autoOne {} )", input),
             AutoAll => f.write_str("Cmd_autoAll"),
             InferToplevel { rewrite, code } => {
                 write!(f, "( Cmd_infer_toplevel {:?} {:?} )", rewrite, code)
@@ -391,7 +391,7 @@ impl Display for Cmd {
             TokenHighlighting { path, remove } => {
                 write!(f, "( Cmd_tokenHighlighting {:?} {:?} ", path, remove)
             }
-            Highlight(_) => unimplemented!(),
+            Highlight(input) => write!(f, "( Cmd_highlight {} )", input),
             ShowImplicitArgs(show) => {
                 write!(f, "( ShowImplicitArgs {:?} )", HaskellBool::from(*show))
             }
@@ -433,7 +433,7 @@ impl Display for Cmd {
                 compute_mode,
                 input,
             } => write!(f, "( Cmd_compute {:?} {} )", compute_mode, input),
-            WhyInScope(_) => unimplemented!(),
+            WhyInScope(input) => write!(f, "( Cmd_why_in_scope {} )", input),
             WhyInScopeToplevel(name) => write!(f, "( Cmd_why_in_scope_toplevel {:?} )", name),
             ShowVersion => f.write_str("Cmd_show_version"),
             Abort => f.write_str("Cmd_abort"),
