@@ -5,24 +5,24 @@ use crate::base::{ComputeMode, InteractionPoint, Position, Rewrite, TokenBased};
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct Status {
-    show_implicit_arguments: bool,
-    checked: bool,
+    pub show_implicit_arguments: bool,
+    pub checked: bool,
 }
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct ResponseContextEntry {
-    original_name: String,
-    reified_name: String,
-    binding: String,
-    in_scope: String,
+    pub original_name: String,
+    pub reified_name: String,
+    pub binding: String,
+    pub in_scope: String,
 }
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct CommandState {
-    interaction_points: Vec<InteractionPoint>,
-    current_file: String,
+    pub interaction_points: Vec<InteractionPoint>,
+    pub current_file: String,
 }
 
 #[derive(Serialize, Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -136,25 +136,25 @@ pub enum DisplayInfo {
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct AspectHighlight {
-    range: (Position, Position),
-    atoms: Vec<String>,
-    token_based: TokenBased,
-    note: Option<String>,
-    definition_site: Option<DefinitionSite>,
+    pub range: (Position, Position),
+    pub atoms: Vec<String>,
+    pub token_based: TokenBased,
+    pub note: Option<String>,
+    pub definition_site: Option<DefinitionSite>,
 }
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct DefinitionSite {
-    filepath: String,
-    position: Position,
+    pub filepath: String,
+    pub position: Position,
 }
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct HighlightingInfo {
-    remove: bool,
-    payload: Vec<AspectHighlight>,
+    pub remove: bool,
+    pub payload: Vec<AspectHighlight>,
 }
 
 /// TODO: This enum is incomplete, contribution is welcomed.

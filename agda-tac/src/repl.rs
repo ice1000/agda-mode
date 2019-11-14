@@ -15,13 +15,28 @@ pub async fn repl(
     let mut iotcm = load_file(file);
     send_command(&mut stdin, &iotcm).await?;
     let mut agda = AgdaRead::from(stdout);
+    let mut highlighting_info = Vec::with_capacity(5);
     let interaction_points = loop {
-        if let Resp::InteractionPoints { interaction_points } = agda.response().await? {
-            break interaction_points;
+        match agda.response().await? {
+            Resp::InteractionPoints { interaction_points } => {
+                break interaction_points;
+            }
+            Resp::HighlightingInfo {
+                info: Some(mut info),
+                filepath: None,
+                direct: true,
+            } => highlighting_info.append(&mut info.payload),
+            Resp::HighlightingInfo {
+                info: None,
+                filepath: Some(_),
+                direct: false,
+            } => unimplemented!(),
+            Resp::HighlightingInfo { .. } => unreachable!(),
+            _ => {}
         }
     };
     if interaction_points.is_empty() {
-        println!("No interaction points found.");
+        println!("Note: no interaction points found.");
     }
     for interaction_point in interaction_points {
         unimplemented!()
