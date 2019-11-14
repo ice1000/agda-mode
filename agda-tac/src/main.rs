@@ -1,7 +1,7 @@
 use crate::repl::repl;
 use agda_mode::agda::start_agda;
-use tokio::io::BufReader;
 use agda_mode::base::{debug_command, debug_response};
+use tokio::io::BufReader;
 
 mod args;
 mod repl;
