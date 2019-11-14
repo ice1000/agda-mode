@@ -5,7 +5,7 @@ use serde::Deserialize;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio_process::{Child, ChildStdin, ChildStdout, Command};
 
-use crate::base::{is_debugging_command, is_debugging_response};
+use crate::base::{is_debugging_command, is_debugging_response, InteractionPoint};
 use crate::cmd::{Cmd, IOTCM};
 use crate::resp::{DisplayInfo, Resp};
 
@@ -136,11 +136,20 @@ impl ReplState {
         self.agda.response().await
     }
 
-    /// Skip many information until the display info.
+    /// Skip information until the next display info.
     pub async fn next_display_info(&mut self) -> io::Result<DisplayInfo> {
         loop {
             if let Resp::DisplayInfo { info: Some(info) } = self.response().await? {
                 break Ok(info);
+            }
+        }
+    }
+
+    /// Skip information until the next interaction point (goal) list.
+    pub async fn next_goals(&mut self) -> io::Result<Vec<InteractionPoint>> {
+        loop {
+            if let Resp::InteractionPoints { interaction_points } = self.response().await? {
+                break Ok(interaction_points);
             }
         }
     }
