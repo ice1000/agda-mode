@@ -21,9 +21,9 @@ jobs:
     - name: Run agda-mode tests
       run: cargo test --release --verbose
     - name: Build agda-tac
-      run: cd agda-tac && cargo build --release --verbose && cd ..
+      run: cargo build -p agda-tac --release --verbose
     - name: Run agda-tac tests
-      run: cd agda-tac && cargo test --release --verbose && cd ..
+      run: cargo test -p agda-tac --release --verbose
 
     - uses: actions/upload-artifact@master
       with:
