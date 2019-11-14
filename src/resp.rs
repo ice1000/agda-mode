@@ -35,7 +35,7 @@ pub enum MakeCase {
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum GoalTypeAux {
     GoalOnly,
-    GoalAndHave { term: String },
+    GoalAndHave { expr: String },
     GoalAndElaboration { term: String },
 }
 
@@ -87,6 +87,9 @@ pub enum DisplayInfo {
     },
     Time {
         time: String,
+    },
+    Error {
+        message: String,
     },
     IntroNotFound {
         // TODO

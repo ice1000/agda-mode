@@ -7,4 +7,4 @@
  [crates]: https://crates.io/crates/agda-tac
  [lib-rs]: https://lib.rs/agda-tac
 
-TODO: document this crate.
+This little toy is the reason why I created [agda-mode](https://lib.rs/agda-mode).
