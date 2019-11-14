@@ -16,6 +16,13 @@ async fn main() {
         debug_response(args.debug_response);
     };
     let agda_program = args.agda.as_ref().map_or("agda", |s| &*s);
-    let repl_state = ReplState::start(agda_program, args.file).await.expect(FAIL);
+    let file = match args.file {
+        Some(file) => file,
+        None => {
+            eprintln!("No input file specified.");
+            std::process::exit(1);
+        }
+    };
+    let repl_state = ReplState::start(agda_program, file).await.expect(FAIL);
     repl(repl_state).await.expect(FAIL_CMD);
 }

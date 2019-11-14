@@ -11,7 +11,7 @@ use structopt::StructOpt;
 pub struct CliOptions {
     /// The input file to type-check (Notice: file should be UTF-8 encoded)
     #[structopt(name = "FILE")]
-    pub file: String,
+    pub file: Option<String>,
 
     /// Path to your agda executable
     #[structopt(long, name = "path")]
