@@ -68,9 +68,22 @@ impl IOTCM {
 }
 
 #[derive(Debug, Clone)]
+pub struct Pn {
+    pub offset: u32,
+    pub line: u32,
+    pub column: u32,
+}
+
+#[derive(Debug, Clone)]
+pub enum Range {
+    NoRange,
+    Range { file: String, start: Pn, end: Pn },
+}
+
+#[derive(Debug, Clone)]
 pub struct GoalInput {
     id: InteractionPoint,
-    // TODO: range
+    range: Range,
     code: String,
 }
 
@@ -254,6 +267,29 @@ pub enum Cmd {
 }
 
 type FmtMonad = Result<(), FmtError>;
+
+impl Display for Pn {
+    fn fmt(&self, f: &mut Formatter) -> FmtMonad {
+        write!(
+            f,
+            "(Pn () {:?} {:?} {:?})",
+            self.offset, self.line, self.column
+        )
+    }
+}
+
+impl Display for Range {
+    fn fmt(&self, f: &mut Formatter) -> FmtMonad {
+        match self {
+            Range::NoRange => f.write_str("noRange"),
+            Range::Range { file, start, end } => write!(
+                f,
+                "(intervalsToRange (Just (mkAbsolute {:?})) [Interval {} {}])",
+                file, start, end
+            ),
+        }
+    }
+}
 
 impl Display for IOTCM {
     fn fmt(&self, f: &mut Formatter) -> FmtMonad {
