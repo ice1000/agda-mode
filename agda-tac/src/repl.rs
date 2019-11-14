@@ -3,7 +3,7 @@ use std::io;
 use tokio::io::{AsyncWriteExt, BufReader};
 use tokio_process::{ChildStdin, ChildStdout};
 
-use agda_mode::agda::{load_file, send_command, AgdaRead};
+use agda_mode::agda::{load_file, send_command, start_agda, AgdaRead};
 use agda_mode::cmd::{Cmd, GoalInput, IOTCM};
 use agda_mode::resp::{DisplayInfo, GoalInfo, Resp};
 
@@ -15,7 +15,12 @@ pub struct ReplState {
 }
 
 impl ReplState {
-    pub async fn init(
+    pub async fn start(agda_program: &str, file: String) -> io::Result<Self> {
+        let (stdin, out) = start_agda(agda_program);
+        Self::from_io(stdin, BufReader::new(out), file).await
+    }
+
+    pub async fn from_io(
         mut stdin: ChildStdin,
         stdout: BufReader<ChildStdout>,
         file: String,
