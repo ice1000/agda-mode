@@ -56,5 +56,10 @@ pub async fn repl(
         println!("Point {:?}: {}", interaction_point, ty);
     }
     iotcm.command = Cmd::Abort;
-    send_command(&mut stdin, &iotcm).await
+    send_command(&mut stdin, &iotcm).await?;
+    loop {
+        if let Resp::DoneAborting = agda.response().await? {
+            break Ok(())
+        }
+    }
 }

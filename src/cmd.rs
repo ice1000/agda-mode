@@ -338,6 +338,21 @@ impl Cmd {
             input,
         }
     }
+
+    /// Produces [InferredType](crate::resp::GoalInfo::InferredType).
+    pub fn infer(input: GoalInput) -> Self {
+        Cmd::Infer {
+            rewrite: Default::default(),
+            input,
+        }
+    }
+
+    pub fn give(input: GoalInput) -> Self {
+        Cmd::Give {
+            force: UseForce::WithoutForce,
+            input,
+        }
+    }
 }
 
 impl Display for Cmd {
