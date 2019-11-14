@@ -7,7 +7,7 @@
 
  [crates]: https://crates.io/crates/agda-tac
  [lib-rs]: https://lib.rs/agda-tac
- [ga-svg]: https://github.com/ice1000/agda-mode/workflows/Rust/badge.svg
+ [ga-svg]: https://github.com/ice1000/agda-mode/workflows/build/badge.svg
  [ga-url]: https://github.com/ice1000/agda-mode/actions
 
 This little toy is the reason why I created [agda-mode](https://lib.rs/agda-mode).

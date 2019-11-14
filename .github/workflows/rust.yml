@@ -1,4 +1,4 @@
-name: Rust
+name: build
 
 on: [push]
 
@@ -12,7 +12,10 @@ jobs:
         rust: [nightly]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@master
+    - uses: hecrj/setup-rust-action@v1
+      with:
+        rust-version: ${{ matrix.rust }}
     - name: Build agda-mode
       run: cargo build --release --verbose
     - name: Run agda-mode tests

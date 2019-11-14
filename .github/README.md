@@ -12,7 +12,7 @@
  [doc-rs]: https://docs.rs/agda-mode
  [dep-rs]: https://deps.rs/repo/github/ice1000/agda-mode
  [dep-svg]: https://deps.rs/repo/github/ice1000/agda-mode/status.svg
- [ga-svg]: https://github.com/ice1000/agda-mode/workflows/Rust/badge.svg
+ [ga-svg]: https://github.com/ice1000/agda-mode/workflows/build/badge.svg
  [ga-url]: https://github.com/ice1000/agda-mode/actions
  [agda-issue]: https://github.com/agda/agda/issues/4183
 
