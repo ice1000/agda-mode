@@ -26,13 +26,19 @@ jobs:
       run: cargo test -p agda-tac --release --verbose
 
     - uses: actions/upload-artifact@master
-      if: matrix.os != 'windows-latest'
+      if: matrix.os == 'ubuntu-latest'
       with:
-        name: agda-tac
+        name: agda-tac-ubuntu
+        path: target/release/agda-tac
+
+    - uses: actions/upload-artifact@master
+      if: matrix.os == 'macOS-latest'
+      with:
+        name: agda-tac-macos
         path: target/release/agda-tac
 
     - uses: actions/upload-artifact@master
       if: matrix.os == 'windows-latest'
       with:
-        name: agda-tac
+        name: agda-tac-windows
         path: target/release/agda-tac.exe

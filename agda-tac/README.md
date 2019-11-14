@@ -14,4 +14,6 @@ This little toy is the reason why I created [agda-mode](https://lib.rs/agda-mode
 It's an interactive and external tactic framework for
 the Agda programming language.
 
+Per-commit build can be found in the [GitHub Actions][ga-url] page.
+
 I have [a blog](https://ice1000.org/2019/11-13-AgdaTac.html) about this crate.
