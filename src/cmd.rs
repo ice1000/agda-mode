@@ -357,8 +357,8 @@ impl Display for Cmd {
                 write!(f, "( ShowImplicitArgs {:?} )", HaskellBool::from(*show))
             }
             ToggleImplicitArgs => f.write_str("ToggleImplicitArgs"),
-            Give { force, input } => write!(f, "( Cmd_give {:?} {} )", force, goal),
-            Refine(goal) => write!(f, "( Cmd_refine {} )", goal),
+            Give { force, input } => write!(f, "( Cmd_give {:?} {} )", force, input),
+            Refine(input) => write!(f, "( Cmd_refine {} )", input),
             Intro { dunno, input } => {
                 write!(f, "( Cmd_intro {:?} {} )", HaskellBool::from(*dunno), input)
             }
@@ -389,8 +389,11 @@ impl Display for Cmd {
             ShowModuleContents { rewrite, input } => {
                 write!(f, "( Cmd_show_module_contents {:?} {} )", rewrite, input)
             }
-            MakeCase(_) => unimplemented!(),
-            Compute { .. } => unimplemented!(),
+            MakeCase(input) => write!(f, "( Cmd_make_case {} )", input),
+            Compute {
+                compute_mode,
+                input,
+            } => write!(f, "( Cmd_compute {:?} {} )", compute_mode, input),
             WhyInScope(_) => unimplemented!(),
             WhyInScopeToplevel(name) => write!(f, "( Cmd_why_in_scope_toplevel {:?} )", name),
             ShowVersion => f.write_str("Cmd_show_version"),
