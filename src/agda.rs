@@ -7,7 +7,7 @@ use tokio_process::{Child, ChildStdin, ChildStdout, Command};
 
 use crate::base::{is_debugging_command, is_debugging_response};
 use crate::cmd::{Cmd, IOTCM};
-use crate::resp::Resp;
+use crate::resp::{DisplayInfo, Resp};
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";
@@ -131,7 +131,17 @@ impl ReplState {
         self.stdin.shutdown().await
     }
 
+    /// Await the next Agda response.
     pub async fn response(&mut self) -> io::Result<Resp> {
         self.agda.response().await
+    }
+
+    /// Skip many information until the display info.
+    pub async fn next_display_info(&mut self) -> io::Result<DisplayInfo> {
+        loop {
+            if let Resp::DisplayInfo { info: Some(info) } = self.response().await? {
+                break Ok(info);
+            }
+        }
     }
 }

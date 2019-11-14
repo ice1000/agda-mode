@@ -16,13 +16,10 @@ pub async fn repl(mut agda: ReplState) -> io::Result<()> {
     for ii in iis {
         agda.command(Cmd::goal_type(GoalInput::simple(ii))).await?;
         let ty = loop {
-            if let Resp::DisplayInfo {
-                info:
-                    Some(DisplayInfo::GoalSpecific {
-                        goal_info: GoalInfo::CurrentGoal { the_type, .. },
-                        ..
-                    }),
-            } = agda.response().await?
+            if let DisplayInfo::GoalSpecific {
+                goal_info: GoalInfo::CurrentGoal { the_type, .. },
+                ..
+            } = agda.next_display_info().await?
             {
                 break the_type;
             }
