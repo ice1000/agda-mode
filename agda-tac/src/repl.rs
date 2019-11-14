@@ -38,8 +38,7 @@ pub async fn repl(
                 break the_type;
             }
         };
-        println!("Point {:?}:", ii);
-        println!("  Expected: {}", ty);
+        println!("?{:?}: {}", ii, ty);
     }
     iotcm.command = Cmd::Abort;
     send_command(&mut stdin, &iotcm).await
