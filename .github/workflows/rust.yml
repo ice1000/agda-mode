@@ -1,0 +1,19 @@
+name: Rust
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build agda-mode
+      run: cargo build --verbose
+    - name: Run agda-mode tests
+      run: cargo test --verbose
+    - name: Build agda-tac
+      run: cd agda-tac && cargo build --verbose && cd ..
+    - name: Run agda-tac tests
+      run: cd agda-tac && cargo test --verbose && cd ..
