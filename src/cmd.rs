@@ -1,6 +1,6 @@
 use std::fmt::{Display, Error as FmtError, Formatter};
 
-use crate::base::{ComputeMode, InteractionPoint, Remove, Rewrite, UseForce};
+use crate::base::{ComputeMode, HaskellBool, InteractionPoint, Remove, Rewrite, UseForce};
 
 /// How much highlighting should be sent to the user interface?
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -291,6 +291,12 @@ impl Display for Range {
     }
 }
 
+impl Display for GoalInput {
+    fn fmt(&self, f: &mut Formatter) -> FmtMonad {
+        write!(f, "{:?} {} {:?}", self.id, self.range, self.code)
+    }
+}
+
 impl Display for IOTCM {
     fn fmt(&self, f: &mut Formatter) -> FmtMonad {
         write!(
@@ -348,24 +354,41 @@ impl Display for Cmd {
             }
             Highlight(_) => unimplemented!(),
             ShowImplicitArgs(show) => {
-                f.write_str("( ShowImplicitArgs ")?;
-                f.write_str(if *show { "True" } else { "False" })?;
-                f.write_str(" )")
+                write!(f, "( ShowImplicitArgs {:?} )", HaskellBool::from(*show))
             }
             ToggleImplicitArgs => f.write_str("ToggleImplicitArgs"),
-            Give { .. } => unimplemented!(),
-            Refine(_) => unimplemented!(),
-            Intro { .. } => unimplemented!(),
-            RefineOrIntro { .. } => unimplemented!(),
-            Context { .. } => unimplemented!(),
-            HelperFunction { .. } => unimplemented!(),
-            Infer { .. } => unimplemented!(),
-            GoalType { .. } => unimplemented!(),
-            ElaborateGive { .. } => unimplemented!(),
-            GoalTypeContext { .. } => unimplemented!(),
-            GoalTypeContextInfer { .. } => unimplemented!(),
-            GoalTypeContextCheck { .. } => unimplemented!(),
-            ShowModuleContents { .. } => unimplemented!(),
+            Give { force, input } => write!(f, "( Cmd_give {:?} {} )", force, goal),
+            Refine(goal) => write!(f, "( Cmd_refine {} )", goal),
+            Intro { dunno, input } => {
+                write!(f, "( Cmd_intro {:?} {} )", HaskellBool::from(*dunno), input)
+            }
+            RefineOrIntro { dunno, input } => write!(
+                f,
+                "( Cmd_refine_or_intro {:?} {} )",
+                HaskellBool::from(*dunno),
+                input
+            ),
+            Context { rewrite, input } => write!(f, "( Cmd_context {:?} {} )", rewrite, input),
+            HelperFunction { rewrite, input } => {
+                write!(f, "( Cmd_helper_function {:?} {} )", rewrite, input)
+            }
+            Infer { rewrite, input } => write!(f, "( Cmd_infer {:?} {} )", rewrite, input),
+            GoalType { rewrite, input } => write!(f, "( Cmd_goal_type {:?} {} )", rewrite, input),
+            ElaborateGive { rewrite, input } => {
+                write!(f, "( Cmd_elaborate_give {:?} {} )", rewrite, input)
+            }
+            GoalTypeContext { rewrite, input } => {
+                write!(f, "( Cmd_goal_type_context {:?} {} )", rewrite, input)
+            }
+            GoalTypeContextInfer { rewrite, input } => {
+                write!(f, "( Cmd_goal_type_context_infer {:?} {} )", rewrite, input)
+            }
+            GoalTypeContextCheck { rewrite, input } => {
+                write!(f, "( Cmd_goal_type_context_check {:?} {} )", rewrite, input)
+            }
+            ShowModuleContents { rewrite, input } => {
+                write!(f, "( Cmd_show_module_contents {:?} {} )", rewrite, input)
+            }
             MakeCase(_) => unimplemented!(),
             Compute { .. } => unimplemented!(),
             WhyInScope(_) => unimplemented!(),
