@@ -16,10 +16,6 @@ jobs:
     - uses: hecrj/setup-rust-action@v1
       with:
         rust-version: ${{ matrix.rust }}
-    - name: Build agda-mode
-      run: cargo build --release --verbose
-    - name: Run agda-mode tests
-      run: cargo test --release --verbose
     - name: Build agda-tac
       run: cargo build -p agda-tac --release --verbose
     - name: Run agda-tac tests

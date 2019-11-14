@@ -122,6 +122,10 @@ impl ReplState {
         })
     }
 
+    pub async fn reload_file(&mut self) -> io::Result<()> {
+        self.command(Cmd::load_simple(self.file.clone())).await
+    }
+
     pub async fn command(&mut self, cmd: Cmd) -> io::Result<()> {
         self.iotcm.command = cmd;
         send_command(&mut self.stdin, &self.iotcm).await
