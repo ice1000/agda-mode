@@ -46,9 +46,8 @@ pub async fn repl(
                 info:
                     Some(DisplayInfo::GoalSpecific {
                         goal_info:
-                            GoalInfo::GoalType {
-                                goal_type,
-                                entries,
+                            GoalInfo::CurrentGoal {
+                                the_type,
                                 ..
                             },
                         ..

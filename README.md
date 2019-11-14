@@ -11,6 +11,7 @@
  [doc-rs]: https://docs.rs/agda-mode
  [dep-rs]: https://deps.rs/repo/github/ice1000/agda-mode
  [dep-svg]: https://deps.rs/repo/github/ice1000/agda-mode/status.svg
+ [agda-issue]: https://github.com/agda/agda/issues/4183
 
 Accessing Agda's interaction mode via command line.
 
@@ -20,3 +21,4 @@ Once they release a newer (even alpha) version,
 this crate should work for stable rust as well.
 
 Also, this crate will work with master-branch Agda until Agda 2.6.1 is released.
+Tracking issue for the feature: [agda#4183][agda-issue].

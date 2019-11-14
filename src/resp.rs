@@ -33,7 +33,7 @@ pub enum MakeCase {
 
 #[serde(tag = "kind")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
-pub enum GoalType {
+pub enum GoalTypeAux {
     GoalOnly,
     GoalAndHave { term: String },
     GoalAndElaboration { term: String },
@@ -43,7 +43,7 @@ pub enum GoalType {
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum GoalInfo {
     HelperFunction {
-        // TODO
+        signature: String,
     },
     NormalForm {
         #[serde(rename = "computeMode")]
@@ -52,14 +52,18 @@ pub enum GoalInfo {
     },
     GoalType {
         rewrite: Rewrite,
+        #[serde(rename = "typeAux")]
+        type_aux: GoalTypeAux,
         #[serde(rename = "type")]
-        goal_type: GoalType,
+        the_type: String,
         entries: Vec<ResponseContextEntry>,
         #[serde(rename = "outputForms")]
-        output_forms: (), // TODO
+        constraints: Vec<String>,
     },
     CurrentGoal {
         rewrite: Rewrite,
+        #[serde(rename = "type")]
+        the_type: String,
     },
     InferredType {
         expr: String,
