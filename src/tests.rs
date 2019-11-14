@@ -1,4 +1,4 @@
-use crate::resp::{MakeCase, Resp, Status};
+use crate::resp::{MakeCase, Resp};
 
 #[test]
 fn simple_running_info_de() {

@@ -6,7 +6,7 @@ description = "Accessing Agda's interaction mode via command line, in Rust"
 edition = "2018"
 license = "Apache-2.0"
 repository = "https://github.com/ice1000/agda-mode"
-readme = "README.md"
+readme = ".github/README.md"
 
 [badges]
 maintenance = { status = "actively-developed" }

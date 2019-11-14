@@ -3,7 +3,7 @@ use std::io;
 use agda_mode::agda::ReplState;
 use agda_mode::base::InteractionPoint;
 use agda_mode::cmd::{Cmd, GoalInput};
-use agda_mode::resp::{DisplayInfo, GoalInfo, Resp};
+use agda_mode::resp::{DisplayInfo, GoalInfo};
 
 type Monad<T = ()> = io::Result<T>;
 
