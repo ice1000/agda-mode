@@ -4,8 +4,8 @@ use tokio::io::BufReader;
 use tokio_process::{ChildStdin, ChildStdout};
 
 use agda_mode::agda::{load_file, send_command, AgdaRead};
-use agda_mode::cmd::Cmd;
-use agda_mode::resp::Resp;
+use agda_mode::cmd::{Cmd, GoalInput};
+use agda_mode::resp::{DisplayInfo, GoalInfo, Resp};
 
 pub async fn repl(
     mut stdin: ChildStdin,
@@ -39,7 +39,28 @@ pub async fn repl(
         println!("Note: no interaction points found.");
     }
     for interaction_point in interaction_points {
-        unimplemented!()
+        iotcm.command = Cmd::goal_type(GoalInput::simple(interaction_point));
+        send_command(&mut stdin, &iotcm).await?;
+        let (goal_type, entries) = loop {
+            if let Resp::DisplayInfo {
+                info:
+                    Some(DisplayInfo::GoalSpecific {
+                        goal_info:
+                            GoalInfo::GoalType {
+                                goal_type,
+                                entries,
+                                ..
+                            },
+                        ..
+                    }),
+            } = agda.response().await?
+            {
+                break (goal_type, entries);
+            }
+        };
+        println!("Point {:?}:", interaction_point);
+        println!("{:?}", goal_type);
+        println!("{:?}", entries);
     }
     Ok(())
 }

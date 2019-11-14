@@ -80,11 +80,27 @@ pub enum Range {
     Range { file: String, start: Pn, end: Pn },
 }
 
+impl Default for Range {
+    fn default() -> Self {
+        Range::NoRange
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct GoalInput {
     id: InteractionPoint,
     range: Range,
     code: String,
+}
+
+impl GoalInput {
+    pub fn new(id: InteractionPoint, range: Range, code: String) -> Self {
+        GoalInput { id, range, code }
+    }
+
+    pub fn simple(id: InteractionPoint) -> Self {
+        Self::new(id, Default::default(), String::new())
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -312,6 +328,13 @@ impl Cmd {
         Cmd::Load {
             path,
             flags: vec![],
+        }
+    }
+
+    pub fn goal_type(input: GoalInput) -> Self {
+        Cmd::GoalType {
+            rewrite: Default::default(),
+            input,
         }
     }
 }
