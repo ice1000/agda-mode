@@ -27,7 +27,7 @@ pub fn init_agda_process(agda_program: &str) -> io::Result<ProcessStdio> {
 /// Start the Agda process and return the stdio handles.
 ///
 /// Note that this function may panic.
-pub async fn start_agda(agda_program: &str) -> (ChildStdin, ChildStdout) {
+pub fn start_agda(agda_program: &str) -> (ChildStdin, ChildStdout) {
     let ProcessStdio(process, stdin, stdout) = init_agda_process(agda_program).expect(START_FAIL);
     tokio::spawn(async {
         let status = process.await.expect(START_FAIL);

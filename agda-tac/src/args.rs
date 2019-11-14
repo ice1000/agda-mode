@@ -23,7 +23,7 @@ pub struct CliOptions {
 
 fn app<'a, 'b>() -> App<'a, 'b> {
     let extra_help = "For extra help please head to \
-                      https://github.com/ice1000/agda-mode-rs/issues/new";
+                      https://github.com/ice1000/agda-mode/issues/new";
     // Introduced a variable because stupid CLion :(
     let app: App = CliOptions::clap();
     app.after_help(extra_help)
