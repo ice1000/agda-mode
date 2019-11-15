@@ -6,6 +6,7 @@ use agda_mode::base::{debug_command, debug_response};
 mod args;
 mod editor;
 mod file_io;
+mod input;
 mod repl;
 
 const FAIL_WRITE: &str = "Failed to create Agda module file";

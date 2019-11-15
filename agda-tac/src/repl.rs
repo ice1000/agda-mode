@@ -9,6 +9,7 @@ use agda_mode::resp::{DisplayInfo, GoalInfo};
 
 use crate::editor::CliEditor;
 use crate::file_io::Repl;
+use crate::input::UserInput;
 
 type Monad<T = ()> = io::Result<T>;
 
@@ -32,7 +33,7 @@ pub async fn repl(mut agda: Repl) -> Monad {
             io::stdout().flush()?;
             let mut next = String::new();
             stdin.read_line(&mut next)?;
-            if line(&mut agda, next.trim().to_owned()).await? {
+            if line(&mut agda, next.trim()).await? {
                 break Ok(());
             }
         }
@@ -44,7 +45,7 @@ pub async fn repl(mut agda: Repl) -> Monad {
                 Ok(input) => {
                     let trim = input.trim();
                     r.add_history_entry(trim);
-                    if line(&mut agda, trim.to_owned()).await? {
+                    if line(&mut agda, trim).await? {
                         break Ok(());
                     }
                 }
@@ -62,21 +63,30 @@ pub async fn repl(mut agda: Repl) -> Monad {
     }
 }
 
-pub async fn line(agda: &mut Repl, line: String) -> Monad<bool> {
-    if line == "help" {
-        println!("{}", if agda.is_plain { PLAIN_HELP } else { RICH_HELP });
-        // TODO: info for commands.
-    } else if line.starts_with("define") {
-        let function_name = line.trim_start_matches("define").trim_start();
-        agda.file.write(function_name.as_bytes())?;
-        agda.file.write(" : ?".as_bytes())?;
-        agda.file.flush()?;
-        reload(agda).await?;
-    } else if line == "reload" {
-        reload(agda).await?;
-    } else if line == "exit" || line == "quit" {
-        finish(&mut agda.agda).await?;
-        return Ok(true);
+pub async fn line(agda: &mut Repl, line: &str) -> Monad<bool> {
+    line_impl(agda, UserInput::from(line)).await
+}
+
+pub async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
+    use UserInput::*;
+    match line {
+        Define(function_name) => {
+            let f = &mut agda.file;
+            f.write(function_name.as_bytes())?;
+            f.write(" : ?".as_bytes())?;
+            f.flush()?;
+            reload(agda).await?;
+        }
+        Reload => reload(agda).await?,
+        Help => {
+            println!("{}", if agda.is_plain { PLAIN_HELP } else { RICH_HELP });
+            // TODO: info for commands.
+        }
+        Unknown => println!("Sorry, I don't understand."),
+        Exit => {
+            finish(&mut agda.agda).await?;
+            return Ok(true);
+        }
     }
     Ok(false)
 }
