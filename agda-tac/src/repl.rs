@@ -1,73 +1,21 @@
 use std::io::{self, Write};
 
-use rustyline::error::ReadlineError;
-
 use agda_mode::agda::ReplState;
 use agda_mode::base::InteractionPoint;
 use agda_mode::cmd::{Cmd, GoalInput};
 use agda_mode::resp::{DisplayInfo, GoalInfo};
 
-use crate::editor::CliEditor;
 use crate::file_io::Repl;
 use crate::input::UserInput;
+use crate::interact::help;
 
 type Monad<T = ()> = io::Result<T>;
-
-pub const LAMBDA_LT: &str = "\u{03bb}> ";
-pub const RICH_HELP: &str =
-    "\
-     You're in the normal REPL, where there's \
-     completion, history command, hints and (in the future) colored output.\n\
-     The rich mode is not compatible with Windows PowerShell ISE and Mintty\
-     (Cygwin, MinGW and (possibly, depends on your installation) git-bash).\n\
-     If you're having problems with the rich mode, you may want to switch to \
-     the plain mode (restart agda-tac with `--plain` flag).\
-     ";
-pub const PLAIN_HELP: &str = "You're in the plain REPL (with `--plain` flag).";
-
-pub async fn repl(mut agda: Repl) -> Monad {
-    if agda.is_plain {
-        let stdin = io::stdin();
-        loop {
-            print!("> ");
-            io::stdout().flush()?;
-            let mut next = String::new();
-            stdin.read_line(&mut next)?;
-            if line(&mut agda, next.trim()).await? {
-                break Ok(());
-            }
-        }
-    } else {
-        let editor = CliEditor {};
-        let mut r = editor.into_editor();
-        loop {
-            match r.readline(LAMBDA_LT) {
-                Ok(input) => {
-                    let trim = input.trim();
-                    r.add_history_entry(trim);
-                    if line(&mut agda, trim).await? {
-                        break Ok(());
-                    }
-                }
-                Err(ReadlineError::Interrupted) => {}
-                Err(ReadlineError::Eof) => {
-                    println!("Interrupted by Ctrl-d");
-                    break Ok(());
-                }
-                Err(err) => {
-                    println!("Error: {:?}", err);
-                    break Ok(());
-                }
-            }
-        }
-    }
-}
 
 pub async fn line(agda: &mut Repl, line: &str) -> Monad<bool> {
     line_impl(agda, UserInput::from(line)).await
 }
 
-pub async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
+async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
     use UserInput::*;
     match line {
         Define(function_name) => {
@@ -81,7 +29,7 @@ pub async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> 
         }
         Reload => reload(agda).await?,
         Help => {
-            println!("{}", if agda.is_plain { PLAIN_HELP } else { RICH_HELP });
+            println!("{}", help(agda.is_plain));
             // TODO: info for commands.
         }
         Unknown => println!("Sorry, I don't understand."),
