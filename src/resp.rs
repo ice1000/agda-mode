@@ -39,6 +39,7 @@ pub enum GoalTypeAux {
     GoalAndElaboration { term: String },
 }
 
+/// Information about one goal.
 #[serde(tag = "kind")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum GoalInfo {
@@ -70,6 +71,8 @@ pub enum GoalInfo {
     },
 }
 
+/// Something that is displayed in the Emacs mode,
+/// serialized with more details.
 #[serde(tag = "kind")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum DisplayInfo {
@@ -140,6 +143,8 @@ pub enum DisplayInfo {
     },
 }
 
+/// A token highlighting information.
+/// The token is somehow called `Aspect` in Agda.
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct AspectHighlight {
@@ -150,6 +155,7 @@ pub struct AspectHighlight {
     pub definition_site: Option<DefinitionSite>,
 }
 
+/// Jump to library definition information.
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct DefinitionSite {
@@ -157,6 +163,7 @@ pub struct DefinitionSite {
     pub position: Position,
 }
 
+/// A list of token highlighting information.
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct HighlightingInfo {
@@ -164,6 +171,8 @@ pub struct HighlightingInfo {
     pub payload: Vec<AspectHighlight>,
 }
 
+/// Agda response.
+///
 /// TODO: This enum is incomplete, contribution is welcomed.
 #[serde(tag = "kind")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]

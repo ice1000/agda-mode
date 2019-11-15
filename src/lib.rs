@@ -17,7 +17,7 @@ Then you may:
 + Invoke [`ReplState::response`](crate::agda::ReplState::response)
   to await for the next response from Agda.
   + Note that Agda sends json to `agda-mode`.
-    The deserialized json type is [`Response`](crate::resp::Response).
+    The deserialized json type is [`Resp`](crate::resp::Resp).
 
 There are more utilities to access Agda, checkout the library documentation to see all of them.
 

@@ -67,6 +67,7 @@ impl IOTCM {
     }
 }
 
+/// A position in the file.
 #[derive(Debug, Clone)]
 pub struct Pn {
     pub offset: u32,
@@ -74,6 +75,8 @@ pub struct Pn {
     pub column: u32,
 }
 
+/// IDK why is this needed, but Emacs passes it to Agda.
+/// It's fine to omit this in the commands.
 #[derive(Debug, Clone)]
 pub enum Range {
     NoRange,
@@ -86,6 +89,7 @@ impl Default for Range {
     }
 }
 
+/// Text in the goal.
 #[derive(Debug, Clone)]
 pub struct GoalInput {
     id: InteractionPoint,
