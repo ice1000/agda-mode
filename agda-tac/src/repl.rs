@@ -1,5 +1,3 @@
-use std::io::Write;
-
 use agda_mode::agda::ReplState;
 use agda_mode::base::InteractionPoint;
 use agda_mode::cmd::{Cmd, GoalInput};

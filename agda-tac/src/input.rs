@@ -1,5 +1,4 @@
 use agda_mode::base::InteractionPoint;
-use std::num::ParseIntError;
 
 /// Parsed user input.
 #[derive(Debug, Clone, Copy)]

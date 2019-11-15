@@ -5,14 +5,12 @@ use std::path::{Path, PathBuf};
 
 pub type Monad<T = ()> = io::Result<T>;
 
-pub fn init_module(file: &str) -> Monad<(File, PathBuf, String)> {
+pub fn init_module(mut file: String) -> Monad<(File, PathBuf, String)> {
     // Extracted as variable to make the borrow checker happy
-    let file_dot_agda = format!("{}.agda", file);
-    let path = Path::new(if file.ends_with(".agda") {
-        file
-    } else {
-        &file_dot_agda
-    });
+    if !file.ends_with(".agda") {
+        file.push_str(".agda")
+    }
+    let path = Path::new(&file);
     if path.exists() {
         eprintln!("I don't want to work with existing files, sorry.");
         std::process::exit(1);
@@ -31,7 +29,7 @@ pub fn init_module(file: &str) -> Monad<(File, PathBuf, String)> {
     f.write(first_line.as_bytes())?;
     f.write("\n".as_bytes())?;
     f.flush()?;
-    Ok((f, path.to_path_buf(), first_line))
+    Ok((f, path.to_path_buf().canonicalize()?, first_line))
 }
 
 pub struct Repl {
