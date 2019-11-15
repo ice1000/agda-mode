@@ -5,11 +5,9 @@ use agda_mode::base::InteractionPoint;
 use agda_mode::cmd::{Cmd, GoalInput};
 use agda_mode::resp::{DisplayInfo, GoalInfo};
 
-use crate::file_io::Repl;
+use crate::file_io::{Repl, Monad};
 use crate::input::UserInput;
 use crate::interact::help;
-
-type Monad<T = ()> = io::Result<T>;
 
 pub async fn line(agda: &mut Repl, line: &str) -> Monad<bool> {
     line_impl(agda, UserInput::from(line)).await

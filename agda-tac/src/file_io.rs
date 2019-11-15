@@ -1,9 +1,11 @@
 use agda_mode::agda::ReplState;
 use std::fs::File;
-use std::io::{self, Write};
+use std::io::{self, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 
-pub fn init_module(file: &str) -> io::Result<(File, PathBuf, String)> {
+pub type Monad<T = ()> = io::Result<T>;
+
+pub fn init_module(file: &str) -> Monad<(File, PathBuf, String)> {
     // Extracted as variable to make the borrow checker happy
     let file_dot_agda = format!("{}.agda", file);
     let path = Path::new(if file.ends_with(".agda") {
@@ -37,6 +39,7 @@ pub struct Repl {
     pub file: File,
     pub path: PathBuf,
     file_buf: Vec<String>,
+    last_line: usize,
     pub is_plain: bool,
 }
 
@@ -48,30 +51,53 @@ impl Repl {
             file,
             path,
             file_buf,
+            last_line: 0,
             is_plain: false,
         }
     }
 
+    pub fn any_goals_in_buffer(&self) -> bool {
+        self.last_line == self.file_buf.len()
+    }
+
     pub fn append_line_buffer(&mut self, line: String) {
+        // TODO: support {!!}?
+        if self.any_goals_in_buffer() && !line.contains("?") {
+            self.last_line += 1;
+        }
         self.file_buf.push(line)
     }
 
     pub fn pop_line_buffer(&mut self) -> Option<String> {
+        if self.any_goals_in_buffer() && self.last_line > 0 {
+            self.last_line -= 1;
+        }
         self.file_buf.pop()
     }
 
     pub fn set_line_buffer(&mut self, line_num: usize, line: String) {
+        if line.contains("?") {
+            self.last_line = line_num.min(self.last_line);
+        }
         self.file_buf[line_num] = line
+    }
+
+    pub fn insert_line_buffer(&mut self, line_num: usize, line: String) {
+        if line.contains("?") {
+            self.last_line = line_num.min(self.last_line);
+        }
+        self.file_buf.insert(line_num, line)
     }
 
     pub fn get_line_buffer(&mut self, line_num: usize) -> &String {
         &self.file_buf[line_num]
     }
 
-    pub fn append_line(&mut self, line: String) -> io::Result<()> {
-        self.file.write(line.as_bytes())?;
-        self.file.write("\n".as_bytes())?;
-        self.file.flush()?;
+    pub fn append_line(&mut self, line: String) -> Monad<()> {
+        let file = &mut self.file;
+        file.write(line.as_bytes())?;
+        file.write("\n".as_bytes())?;
+        file.flush()?;
         self.append_line_buffer(line);
         Ok(())
     }
