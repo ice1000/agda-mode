@@ -23,7 +23,7 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
             let command = Cmd::give(GoalInput::no_range(i, new.to_owned()));
             agda.agda.command(command).await?;
             // TODO: write to buffer
-            reload(agda).await?;
+            // TODO: check for error message & successful give result
         }
         Reload => reload(agda).await?,
         Help => {
@@ -41,16 +41,18 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
 }
 
 pub async fn reload(agda: &mut Repl) -> Monad {
-    reload_impl(&mut agda.agda).await
+    let da = &mut agda.agda;
+    da.reload_file().await?;
+    poll_goals(da).await
 }
 
-pub async fn reload_impl(agda: &mut ReplState) -> Monad {
-    agda.reload_file().await?;
+pub async fn poll_goals(agda: &mut ReplState) -> Monad {
     match agda.next_goals().await? {
         Ok(iis) => {
-            println!("Goals:");
             if iis.is_empty() {
                 println!("No goals.");
+            } else {
+                println!("Goals:");
             }
             list_goals(agda, &iis).await?;
         }
