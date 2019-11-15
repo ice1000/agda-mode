@@ -1,11 +1,14 @@
+use crate::file_io::Repl;
 use crate::repl::repl;
 use agda_mode::agda::ReplState;
 use agda_mode::base::{debug_command, debug_response};
 
 mod args;
 mod editor;
+mod file_io;
 mod repl;
 
+const FAIL_WRITE: &str = "Failed to create Agda module file";
 const FAIL: &str = "Failed to start Agda";
 const FAIL_CMD: &str = "Failed to evaluate Agda command";
 
@@ -24,6 +27,8 @@ async fn main() {
             std::process::exit(1);
         }
     };
+    let (f, path) = file_io::init_module(&file).expect(FAIL_WRITE);
     let repl_state = ReplState::start(agda_program, file).await.expect(FAIL);
+    let repl_state = Repl::new(repl_state, f, path);
     repl(repl_state, args.plain).await.expect(FAIL_CMD);
 }

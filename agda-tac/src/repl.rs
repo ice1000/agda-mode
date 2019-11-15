@@ -1,11 +1,14 @@
 use std::io::{self, Write};
 
-use crate::editor::CliEditor;
+use rustyline::error::ReadlineError;
+
 use agda_mode::agda::ReplState;
 use agda_mode::base::InteractionPoint;
 use agda_mode::cmd::{Cmd, GoalInput};
 use agda_mode::resp::{DisplayInfo, GoalInfo};
-use rustyline::error::ReadlineError;
+
+use crate::editor::CliEditor;
+use crate::file_io::Repl;
 
 type Monad<T = ()> = io::Result<T>;
 
@@ -22,7 +25,7 @@ pub const RICH_HELP: &str =
 pub const PLAIN_HELP: &str = "You're in the plain REPL (with `--plain` flag).";
 pub const HELP: &str = "help";
 
-pub async fn repl(mut agda: ReplState, plain: bool) -> Monad {
+pub async fn repl(mut agda: Repl, plain: bool) -> Monad {
     if plain {
         let stdin = io::stdin();
         loop {
@@ -65,8 +68,8 @@ pub async fn repl(mut agda: ReplState, plain: bool) -> Monad {
     }
 }
 
-pub async fn line(agda: &mut ReplState, line: String) -> Monad<bool> {
-    reload(agda).await?;
+pub async fn line(agda: &mut Repl, line: String) -> Monad<bool> {
+    reload(&mut agda.agda).await?;
     // TODO
     Ok(false)
 }
