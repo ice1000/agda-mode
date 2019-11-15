@@ -1,4 +1,4 @@
-use std::io;
+use std::io::{self, Write};
 
 use agda_mode::agda::ReplState;
 use agda_mode::base::InteractionPoint;
@@ -7,20 +7,62 @@ use agda_mode::resp::{DisplayInfo, GoalInfo};
 
 type Monad<T = ()> = io::Result<T>;
 
-pub async fn repl(mut agda: ReplState) -> Monad {
+pub const LAMBDA_LT: &str = "\u{03bb}> ";
+pub const RICH_HELP: &str =
+    "\
+     You're in the normal REPL, where there's \
+     completion, history command, hints and (in the future) colored output.\n\
+     The rich mode is not compatible with Windows PowerShell ISE and Mintty\
+     (Cygwin, MinGW and (possibly, depends on your installation) git-bash).\n\
+     If you're having problems with the rich mode, you may want to switch to\
+     the plain mode (restart agda-tac with `--plain` flag).\
+     ";
+pub const PLAIN_HELP: &str = "You're in the plain REPL (with `--plain` flag).";
+pub const HELP: &str = "help";
+
+pub async fn repl(mut agda: ReplState, plain: bool) -> Monad {
+    if plain {
+        let stdin = io::stdin();
+        loop {
+            print!("> ");
+            io::stdout().flush()?;
+            let mut next = String::new();
+            stdin.read_line(&mut next)?;
+            let trim = next.trim();
+            if trim == HELP {
+                println!("{}", PLAIN_HELP);
+            } else if line(&mut agda, trim.to_owned()).await? {
+                break Ok(());
+            }
+        }
+    } else {
+        loop {
+            print!("{}", LAMBDA_LT);
+            unimplemented!()
+        }
+    }
+}
+
+pub async fn line(agda: &mut ReplState, line: String) -> Monad<bool> {
+    reload(agda).await?;
+    Ok(false)
+}
+
+pub async fn reload(agda: &mut ReplState) -> Monad {
     match agda.next_goals().await? {
         Ok(iis) => {
             println!("Goals:");
             if iis.is_empty() {
                 println!("No goals.");
             }
-            list_goals(&mut agda, &iis).await?;
+            list_goals(agda, &iis).await?;
         }
         Err(err_msg) => {
-            eprintln!("Failed to load: {}", err_msg)
+            eprintln!("Errors:");
+            eprintln!("{}", err_msg);
         }
     };
-    finish(&mut agda).await
+    finish(agda).await
 }
 
 async fn finish(agda: &mut ReplState) -> Monad {

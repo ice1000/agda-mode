@@ -24,5 +24,5 @@ async fn main() {
         }
     };
     let repl_state = ReplState::start(agda_program, file).await.expect(FAIL);
-    repl(repl_state).await.expect(FAIL_CMD);
+    repl(repl_state, args.plain).await.expect(FAIL_CMD);
 }

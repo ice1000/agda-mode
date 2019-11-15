@@ -17,11 +17,15 @@ pub struct CliOptions {
     #[structopt(long, name = "path")]
     pub agda: Option<String>,
 
-    /// Print all commands that `agda-tac` sends to `agda`.
+    /// Print all commands that `agda-tac` sends to `agda`
     #[structopt(long)]
     pub debug_command: bool,
 
-    /// Print all responses that `agda` sends to `agda-tac`.
+    /// Disable completion/hints/colored output in interaction
+    #[structopt(short = "p", long)]
+    pub plain: bool,
+
+    /// Print all responses that `agda` sends to `agda-tac`
     #[structopt(long)]
     pub debug_response: bool,
 
