@@ -18,12 +18,23 @@ impl Completer for CliEditor {
         pos: usize,
         _: &Context<'_>,
     ) -> rustyline::Result<(usize, Vec<Self::Candidate>)> {
-        if line.is_empty() || line.chars().all(|c| c.is_whitespace()) {
-            let cmds = UserInput::values().iter().map(|&s| s.to_owned()).collect();
-            Ok((pos, cmds))
+        let start = line
+            .chars()
+            .enumerate()
+            .find(|(_, i)| !i.is_whitespace())
+            .map(|(i, _)| i)
+            .unwrap_or(0);
+        let subs = if pos > start {
+            &line[start..pos]
         } else {
-            Ok((pos, Vec::default()))
-        }
+            &line[start..]
+        };
+        let base = UserInput::values()
+            .iter()
+            .filter(|s| s.starts_with(subs))
+            .map(|&s| s.to_owned())
+            .collect();
+        Ok((start, base))
     }
 }
 
@@ -32,6 +43,7 @@ impl Hinter for CliEditor {
 }
 
 impl Highlighter for CliEditor {}
+
 impl Helper for CliEditor {}
 
 impl CliEditor {
