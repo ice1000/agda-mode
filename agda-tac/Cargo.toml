@@ -12,14 +12,10 @@ readme = "README.md"
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-serde = "1.0"
 serde_json = "1.0"
 clap = "2.33"
 structopt = "0.3"
 minitt-util = { version = "0.1", features = ["cli"] }
 rustyline = "5.0"
-tokio = { version = "0.2.0-alpha", default-features = false, features = ["io", "rt-full", "codec"] }
-tokio-process = "0.3.0-alpha"
-futures-util = "0.3"
+tokio = { version = "0.2.0-alpha", default-features = false }
 agda-mode = { path = ".." }
-

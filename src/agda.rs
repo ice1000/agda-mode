@@ -47,7 +47,7 @@ pub fn deserialize_agda<'a, T: Deserialize<'a>>(buf: &'a str) -> serde_json::Res
 pub async fn send_command(stdin: &mut ChildStdin, command: &IOTCM) -> io::Result<()> {
     let string = command.to_string();
     if unsafe { is_debugging_command() } {
-        eprintln!("[CMD]: {}", string);
+        eprint!("[CMD]: {}", string);
     }
     stdin.write(string.as_bytes()).await?;
     stdin.flush().await
