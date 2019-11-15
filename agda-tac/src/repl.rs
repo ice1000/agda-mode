@@ -1,9 +1,11 @@
 use std::io::{self, Write};
 
+use crate::editor::CliEditor;
 use agda_mode::agda::ReplState;
 use agda_mode::base::InteractionPoint;
 use agda_mode::cmd::{Cmd, GoalInput};
 use agda_mode::resp::{DisplayInfo, GoalInfo};
+use rustyline::error::ReadlineError;
 
 type Monad<T = ()> = io::Result<T>;
 
@@ -14,7 +16,7 @@ pub const RICH_HELP: &str =
      completion, history command, hints and (in the future) colored output.\n\
      The rich mode is not compatible with Windows PowerShell ISE and Mintty\
      (Cygwin, MinGW and (possibly, depends on your installation) git-bash).\n\
-     If you're having problems with the rich mode, you may want to switch to\
+     If you're having problems with the rich mode, you may want to switch to \
      the plain mode (restart agda-tac with `--plain` flag).\
      ";
 pub const PLAIN_HELP: &str = "You're in the plain REPL (with `--plain` flag).";
@@ -36,15 +38,36 @@ pub async fn repl(mut agda: ReplState, plain: bool) -> Monad {
             }
         }
     } else {
+        let editor = CliEditor {};
+        let mut r = editor.into_editor();
         loop {
-            print!("{}", LAMBDA_LT);
-            unimplemented!()
+            match r.readline(LAMBDA_LT) {
+                Ok(input) => {
+                    let trim = input.trim();
+                    r.add_history_entry(trim);
+                    if trim == HELP {
+                        println!("{}", RICH_HELP);
+                    } else if line(&mut agda, trim.to_owned()).await? {
+                        break Ok(());
+                    }
+                }
+                Err(ReadlineError::Interrupted) => {}
+                Err(ReadlineError::Eof) => {
+                    println!("Interrupted by Ctrl-d");
+                    break Ok(());
+                }
+                Err(err) => {
+                    println!("Error: {:?}", err);
+                    break Ok(());
+                }
+            }
         }
     }
 }
 
 pub async fn line(agda: &mut ReplState, line: String) -> Monad<bool> {
     reload(agda).await?;
+    // TODO
     Ok(false)
 }
 

@@ -3,6 +3,7 @@ use agda_mode::agda::ReplState;
 use agda_mode::base::{debug_command, debug_response};
 
 mod args;
+mod editor;
 mod repl;
 
 const FAIL: &str = "Failed to start Agda";
