@@ -93,15 +93,18 @@ impl Repl {
         &self.file_buf[line_num]
     }
 
+    fn flush_file(&mut self) -> Monad<()> {
+        self.file.flush()
+    }
+
     pub fn append_line(&mut self, line: String) -> Monad<()> {
-        self.append_line_to_file(&line)?;
-        self.file.flush()?;
+        Self::append_line_to_file(&mut self.file, &line)?;
+        self.flush_file()?;
         self.append_line_buffer(line);
         Ok(())
     }
 
-    fn append_line_to_file(&mut self, line: &str) -> Monad<()> {
-        let file = &mut self.file;
+    fn append_line_to_file(file: &mut File, line: &str) -> Monad<()> {
         file.write(line.as_bytes())?;
         file.write("\n".as_bytes())?;
         Ok(())
@@ -120,9 +123,7 @@ impl Repl {
         let mut recalculated_last_line = 0usize;
         let mut found_goal = false;
         for line in self.file_buf.iter() {
-            // Cannot use `append_line_to_file` -- the borrow checker :(
-            self.file.write(line.as_bytes())?;
-            self.file.write("\n".as_bytes())?;
+            Self::append_line_to_file(&mut self.file, &line)?;
             if !found_goal {
                 if line.contains("?") {
                     found_goal = true;
@@ -131,7 +132,7 @@ impl Repl {
                 }
             }
         }
-        self.file.flush()?;
+        self.flush_file()?;
         self.last_line = recalculated_last_line;
         Ok(())
     }

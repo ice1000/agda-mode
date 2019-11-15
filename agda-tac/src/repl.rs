@@ -1,4 +1,4 @@
-use std::io::{self, Write};
+use std::io::Write;
 
 use agda_mode::agda::ReplState;
 use agda_mode::base::InteractionPoint;
@@ -17,12 +17,8 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
     use UserInput::*;
     match line {
         Define(function_name) => {
-            let f = &mut agda.file;
-            f.write(function_name.as_bytes())?;
-            f.write(" : ?\n".as_bytes())?;
-            f.write(function_name.as_bytes())?;
-            f.write(" = ?\n".as_bytes())?;
-            f.flush()?;
+            agda.append_line(format!("{} : ?", function_name))?;
+            agda.append_line(format!("{} = ?", function_name))?;
             reload(agda).await?;
         }
         Reload => reload(agda).await?,
