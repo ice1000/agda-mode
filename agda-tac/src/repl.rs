@@ -21,12 +21,19 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
             agda.append_line(format!("{} = ?", function_name))?;
             reload(agda).await?;
         }
+        Give(i, new) => {
+            let command = Cmd::give(GoalInput::no_range(i, new.to_owned()));
+            agda.agda.command(command).await?;
+            // TODO: write to buffer
+            reload(agda).await?;
+        }
         Reload => reload(agda).await?,
         Help => {
             println!("{}", help(agda.is_plain));
             // TODO: info for commands.
         }
-        Unknown => println!("Sorry, I don't understand."),
+        Unknown(Some(err)) => println!("Wait, {}", err),
+        Unknown(None) => println!("Sorry, I don't understand."),
         Exit => {
             finish(&mut agda.agda).await?;
             return Ok(true);

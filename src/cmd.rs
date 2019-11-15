@@ -103,7 +103,11 @@ impl GoalInput {
     }
 
     pub fn simple(id: InteractionPoint) -> Self {
-        Self::new(id, Default::default(), String::new())
+        Self::no_range(id, String::new())
+    }
+
+    pub fn no_range(id: InteractionPoint, code: String) -> Self {
+        Self::new(id, Default::default(), code)
     }
 }
 
