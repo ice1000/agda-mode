@@ -12,7 +12,8 @@ use crate::resp::{DisplayInfo, Resp};
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";
 
-pub struct ProcessStdio(pub Child, pub ChildStdin, pub ChildStdout);
+pub struct ProcessStdio(pub Child, pub JustStdio);
+pub struct JustStdio(pub ChildStdin, pub ChildStdout);
 
 pub fn init_agda_process(agda_program: &str) -> io::Result<ProcessStdio> {
     let mut process = Command::new(agda_program)
@@ -20,21 +21,22 @@ pub fn init_agda_process(agda_program: &str) -> io::Result<ProcessStdio> {
         .stdout(Stdio::piped())
         .stdin(Stdio::piped())
         .spawn()?; // cannot spawn
+    // These should not panic, because both stdio are piped
     let stdin = process.stdin().take().expect("Failed to pipe stdin");
     let stdout = process.stdout().take().expect("Failed to pipe stdout");
-    Ok(ProcessStdio(process, stdin, stdout))
+    Ok(ProcessStdio(process, JustStdio(stdin, stdout)))
 }
 
 /// Start the Agda process and return the stdio handles.
 ///
 /// Note that this function may panic.
-pub fn start_agda(agda_program: &str) -> (ChildStdin, ChildStdout) {
-    let ProcessStdio(process, stdin, stdout) = init_agda_process(agda_program).expect(START_FAIL);
+pub fn start_agda(agda_program: &str) -> JustStdio {
+    let ProcessStdio(process, stdio) = init_agda_process(agda_program).expect(START_FAIL);
     tokio::spawn(async {
         let status = process.await.expect(START_FAIL);
         println!("Agda exits with status {}.", status);
     });
-    (stdin, stdout)
+    stdio
 }
 
 /// Deserialize from Agda's command line output.
@@ -107,7 +109,7 @@ pub type NextResult<T> = io::Result<AgdaResult<T>>;
 
 impl ReplState {
     pub async fn start(agda_program: &str, file: String) -> io::Result<Self> {
-        let (stdin, out) = start_agda(agda_program);
+        let JustStdio(stdin, out) = start_agda(agda_program);
         Self::from_io(stdin, BufReader::new(out), file).await
     }
 
@@ -164,7 +166,7 @@ impl ReplState {
                 InteractionPoints { interaction_points } => break Ok(Ok(interaction_points)),
                 DisplayInfo {
                     info: Some(DisError { message }),
-                } => break Ok(Err(message)),
+                } => break Ok(Err(message.unwrap_or_else(|| "Unknown error".to_owned()))),
                 _ => {}
             }
         }

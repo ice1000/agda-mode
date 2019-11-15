@@ -89,7 +89,7 @@ pub enum DisplayInfo {
         time: String,
     },
     Error {
-        message: String,
+        message: Option<String>,
     },
     IntroNotFound {
         // TODO

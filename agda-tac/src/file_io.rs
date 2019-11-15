@@ -10,12 +10,17 @@ pub fn init_module(file: &str) -> io::Result<(File, PathBuf)> {
         std::process::exit(1);
     }
     let mut f = File::create(path)?;
-    let file_name = path
+    let extension = path.extension().and_then(|s| s.to_str()).unwrap_or("");
+    let mod_name = path
         .file_name()
         .and_then(|s| s.to_str())
+        .map(|s| s.trim_end_matches(extension))
+        .map(|s| s.trim_end_matches("."))
+        .map(|s| s.trim())
         .expect("File does not have a name");
+    // TODO: check if it's a valid module name
     f.write("module ".as_bytes())?;
-    f.write(file_name.as_bytes())?;
+    f.write(mod_name.as_bytes())?;
     f.write(" where\n".as_bytes())?;
     f.flush()?;
     Ok((f, path.to_path_buf()))

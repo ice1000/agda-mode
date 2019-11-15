@@ -73,7 +73,9 @@ pub async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> 
         Define(function_name) => {
             let f = &mut agda.file;
             f.write(function_name.as_bytes())?;
-            f.write(" : ?".as_bytes())?;
+            f.write(" : ?\n".as_bytes())?;
+            f.write(function_name.as_bytes())?;
+            f.write(" = ?\n".as_bytes())?;
             f.flush()?;
             reload(agda).await?;
         }
