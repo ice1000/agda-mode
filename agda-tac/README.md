@@ -14,6 +14,9 @@ This little toy is the reason why I created [agda-mode](https://lib.rs/agda-mode
 It's an interactive and external tactic framework for
 the Agda programming language.
 
-Per-commit build can be found in the [GitHub Actions][ga-url] page.
+Per-commit build can be found in the [GitHub Actions][ga-url] page
+(see [instruction](https://github.com/actions/upload-artifact).
+You may not be able to see the actions page if you are not chosen by GitHub
+to be able to use GitHub Actions).
 
 I have [a blog](https://ice1000.org/2019/11-13-AgdaTac.html) about this crate.

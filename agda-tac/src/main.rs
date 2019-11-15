@@ -34,9 +34,10 @@ async fn main() {
             std::process::exit(1);
         }
     };
-    let (f, path) = file_io::init_module(&file).expect(FAIL_WRITE);
+    let (f, path, first_line) = file_io::init_module(&file).expect(FAIL_WRITE);
     let repl_state = ReplState::start(agda_program, file).await.expect(FAIL);
     let mut repl_state = Repl::new(repl_state, f, path);
     repl_state.is_plain = args.plain;
+    repl_state.append_line_buffer(first_line);
     interact::ion(repl_state).await.expect(FAIL_CMD);
 }
