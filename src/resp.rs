@@ -171,6 +171,28 @@ pub struct HighlightingInfo {
     pub payload: Vec<AspectHighlight>,
 }
 
+/// Result of a "give" action.
+///
+/// The structure is very mysterious.
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+pub struct GiveResult {
+    pub str: Option<String>,
+    pub paren: Option<bool>,
+}
+
+impl GiveResult {
+    /// The return value is not actually a result.
+    /// I just want an `Either` type.
+    pub fn into_either(self) -> Result<String, bool> {
+        match (self.str, self.paren) {
+            (Some(s), None) => Ok(s),
+            (None, Some(b)) => Err(b),
+            _ => unreachable!(),
+        }
+    }
+}
+
 /// Agda response.
 ///
 /// TODO: This enum is incomplete, contribution is welcomed.
@@ -195,7 +217,7 @@ pub enum Resp {
     },
     GiveAction {
         #[serde(rename = "giveResult")]
-        give_result: bool,
+        give_result: GiveResult,
         #[serde(rename = "interactionPoint")]
         interaction_point: InteractionPoint,
     },
