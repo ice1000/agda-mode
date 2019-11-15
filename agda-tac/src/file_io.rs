@@ -25,10 +25,16 @@ pub struct Repl {
     pub agda: ReplState,
     pub file: File,
     pub path: PathBuf,
+    pub is_plain: bool,
 }
 
 impl Repl {
     pub fn new(agda: ReplState, file: File, path: PathBuf) -> Self {
-        Self { agda, file, path }
+        Self {
+            agda,
+            file,
+            path,
+            is_plain: false,
+        }
     }
 }

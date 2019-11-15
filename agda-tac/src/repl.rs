@@ -23,20 +23,16 @@ pub const RICH_HELP: &str =
      the plain mode (restart agda-tac with `--plain` flag).\
      ";
 pub const PLAIN_HELP: &str = "You're in the plain REPL (with `--plain` flag).";
-pub const HELP: &str = "help";
 
-pub async fn repl(mut agda: Repl, plain: bool) -> Monad {
-    if plain {
+pub async fn repl(mut agda: Repl) -> Monad {
+    if agda.is_plain {
         let stdin = io::stdin();
         loop {
             print!("> ");
             io::stdout().flush()?;
             let mut next = String::new();
             stdin.read_line(&mut next)?;
-            let trim = next.trim();
-            if trim == HELP {
-                println!("{}", PLAIN_HELP);
-            } else if line(&mut agda, trim.to_owned()).await? {
+            if line(&mut agda, next.trim().to_owned()).await? {
                 break Ok(());
             }
         }
@@ -48,9 +44,7 @@ pub async fn repl(mut agda: Repl, plain: bool) -> Monad {
                 Ok(input) => {
                     let trim = input.trim();
                     r.add_history_entry(trim);
-                    if trim == HELP {
-                        println!("{}", RICH_HELP);
-                    } else if line(&mut agda, trim.to_owned()).await? {
+                    if line(&mut agda, trim.to_owned()).await? {
                         break Ok(());
                     }
                 }
@@ -69,12 +63,29 @@ pub async fn repl(mut agda: Repl, plain: bool) -> Monad {
 }
 
 pub async fn line(agda: &mut Repl, line: String) -> Monad<bool> {
-    reload(&mut agda.agda).await?;
-    // TODO
+    if line == "help" {
+        println!("{}", if agda.is_plain { PLAIN_HELP } else { RICH_HELP });
+        // TODO: info for commands.
+    } else if line.starts_with("define") {
+        let function_name = line.trim_start_matches("define").trim_start();
+        agda.file.write(function_name.as_bytes())?;
+        agda.file.write(" : ?".as_bytes())?;
+        agda.file.flush()?;
+        reload(agda).await?;
+    } else if line == "reload" {
+        reload(agda).await?;
+    } else if line == "exit" || line == "quit" {
+        finish(&mut agda.agda).await?;
+        return Ok(true);
+    }
     Ok(false)
 }
 
-pub async fn reload(agda: &mut ReplState) -> Monad {
+pub async fn reload(agda: &mut Repl) -> Monad {
+    reload_impl(&mut agda.agda).await
+}
+
+pub async fn reload_impl(agda: &mut ReplState) -> Monad {
     match agda.next_goals().await? {
         Ok(iis) => {
             println!("Goals:");
@@ -87,8 +98,8 @@ pub async fn reload(agda: &mut ReplState) -> Monad {
             eprintln!("Errors:");
             eprintln!("{}", err_msg);
         }
-    };
-    finish(agda).await
+    }
+    Ok(())
 }
 
 async fn finish(agda: &mut ReplState) -> Monad {

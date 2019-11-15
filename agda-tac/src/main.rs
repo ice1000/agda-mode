@@ -29,6 +29,7 @@ async fn main() {
     };
     let (f, path) = file_io::init_module(&file).expect(FAIL_WRITE);
     let repl_state = ReplState::start(agda_program, file).await.expect(FAIL);
-    let repl_state = Repl::new(repl_state, f, path);
-    repl(repl_state, args.plain).await.expect(FAIL_CMD);
+    let mut repl_state = Repl::new(repl_state, f, path);
+    repl_state.is_plain = args.plain;
+    repl(repl_state).await.expect(FAIL_CMD);
 }
