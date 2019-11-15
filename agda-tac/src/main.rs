@@ -2,11 +2,17 @@ use crate::file_io::Repl;
 use agda_mode::agda::ReplState;
 use agda_mode::base::{debug_command, debug_response};
 
+/// Clap cli argument things.
 mod args;
+/// Rustyline completion & hints & things.
 mod editor;
+/// Buffer & file, for Agda interaction.
 mod file_io;
+/// Parse user input as a structural "command".
 mod input;
+/// Basic info about interaction, like `help`, read line & print things, etc.
 mod interact;
+/// Implementation of interaction.
 mod repl;
 
 const FAIL_WRITE: &str = "Failed to create Agda module file";
