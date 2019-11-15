@@ -14,8 +14,11 @@ maintenance = { status = "actively-developed" }
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tokio = { version = "0.2.0-alpha", default-features = false, features = ["io", "rt-full", "codec"] }
-tokio-process = "0.3.0-alpha"
+
+[dependencies.tokio]
+version = "0.2.0-alpha.6"
+default-features = false
+features = ["io", "rt-full", "codec", "process"]
 
 [workspace]
 members = ["agda-tac"]

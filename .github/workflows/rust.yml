@@ -8,8 +8,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        # TODO: stable
-        rust: [nightly]
+        rust: [stable, nightly]
 
     steps:
     - uses: actions/checkout@master

@@ -3,7 +3,7 @@ use std::process::Stdio;
 
 use serde::Deserialize;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
-use tokio_process::{Child, ChildStdin, ChildStdout, Command};
+use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
 
 use crate::base::{is_debugging_command, is_debugging_response, InteractionPoint};
 use crate::cmd::{Cmd, IOTCM};
