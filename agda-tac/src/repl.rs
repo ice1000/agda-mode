@@ -98,7 +98,7 @@ pub async fn reload(agda: &mut Repl) -> Monad {
 }
 
 pub async fn reload_impl(agda: &mut ReplState) -> Monad {
-    agda.reload_file();
+    agda.reload_file().await?;
     match agda.next_goals().await? {
         Ok(iis) => {
             println!("Goals:");

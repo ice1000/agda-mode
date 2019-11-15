@@ -8,6 +8,14 @@ pub enum UserInput<'a> {
     Unknown,
 }
 
+static VALUES: &[&str] = &["help", "define", "reload", "exit", "quit"];
+
+impl<'a> UserInput<'a> {
+    pub fn values() -> &'static [&'static str] {
+        VALUES
+    }
+}
+
 impl<'a> From<&'a str> for UserInput<'a> {
     fn from(line: &'a str) -> Self {
         if line == "help" {

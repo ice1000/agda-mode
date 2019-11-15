@@ -1,15 +1,30 @@
 use rustyline::completion::Completer;
 use rustyline::highlight::Highlighter;
 use rustyline::hint::Hinter;
-use rustyline::{CompletionType, Config, Editor, Helper};
+use rustyline::{CompletionType, Config, Context, Editor, Helper};
+
+use crate::input::UserInput;
 
 pub struct CliEditor {
     // TODO
 }
 
 impl Completer for CliEditor {
-    // TODO
     type Candidate = String;
+
+    fn complete(
+        &self,
+        line: &str,
+        pos: usize,
+        _: &Context<'_>,
+    ) -> rustyline::Result<(usize, Vec<Self::Candidate>)> {
+        if line.is_empty() || line.chars().all(|c| c.is_whitespace()) {
+            let cmds = UserInput::values().iter().map(|&s| s.to_owned()).collect();
+            Ok((pos, cmds))
+        } else {
+            Ok((pos, Vec::default()))
+        }
+    }
 }
 
 impl Hinter for CliEditor {
