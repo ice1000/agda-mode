@@ -5,7 +5,7 @@ use agda_mode::base::InteractionPoint;
 use agda_mode::cmd::{Cmd, GoalInput};
 use agda_mode::resp::{DisplayInfo, GoalInfo};
 
-use crate::file_io::{Repl, Monad};
+use crate::file_io::{Monad, Repl};
 use crate::input::UserInput;
 use crate::interact::help;
 
