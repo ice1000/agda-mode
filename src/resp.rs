@@ -10,7 +10,7 @@ pub struct Status {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct ResponseContextEntry {
     pub original_name: String,
     pub reified_name: String,
@@ -19,7 +19,7 @@ pub struct ResponseContextEntry {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct CommandState {
     pub interaction_points: Vec<InteractionPoint>,
     pub current_file: String,
@@ -37,6 +37,22 @@ pub enum GoalTypeAux {
     GoalOnly,
     GoalAndHave { expr: String },
     GoalAndElaboration { term: String },
+}
+
+/// One goal (visible meta).
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct Goal {
+    pub interaction_point: InteractionPoint,
+    pub goal_type: String,
+}
+
+/// One unsolved meta (invisible goal).
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct UnsolvedMeta {
+    pub pretty_meta: String,
+    pub meta_type: String,
 }
 
 /// Information about one goal.
@@ -84,7 +100,10 @@ pub enum DisplayInfo {
         // TODO
     },
     AllGoalsWarnings {
-        goals: (),
+        #[serde(rename = "visibleGoals")]
+        visible_goals: Vec<Goal>,
+        #[serde(rename = "invisibleGoals")]
+        invisible_goals: Vec<UnsolvedMeta>,
         warnings: String,
         errors: String,
     },
