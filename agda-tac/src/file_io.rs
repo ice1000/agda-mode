@@ -91,24 +91,24 @@ impl Repl {
         &self.file_buf[line_num]
     }
 
-    fn flush_file(&mut self) -> Monad<()> {
+    fn flush_file(&mut self) -> Monad {
         self.file.flush()
     }
 
-    pub fn append_line(&mut self, line: String) -> Monad<()> {
+    pub fn append_line(&mut self, line: String) -> Monad {
         Self::append_line_to_file(&mut self.file, &line)?;
         self.flush_file()?;
         self.append_line_buffer(line);
         Ok(())
     }
 
-    fn append_line_to_file(file: &mut File, line: &str) -> Monad<()> {
+    fn append_line_to_file(file: &mut File, line: &str) -> Monad {
         file.write(line.as_bytes())?;
         file.write("\n".as_bytes())?;
         Ok(())
     }
 
-    fn clear_file(&mut self) -> Monad<()> {
+    fn clear_file(&mut self) -> Monad {
         let file = &mut self.file;
         file.sync_all()?;
         file.set_len(0)?;
@@ -116,7 +116,7 @@ impl Repl {
         Ok(())
     }
 
-    pub fn sync_buffer(&mut self) -> Monad<()> {
+    pub fn sync_buffer(&mut self) -> Monad {
         self.clear_file()?;
         let mut recalculated_last_line = 0usize;
         let mut found_goal = false;
