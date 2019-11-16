@@ -22,6 +22,7 @@ const FAIL_WRITE: &str = "Failed to create Agda module file";
 const FAIL: &str = "Failed to start Agda";
 const FAIL_CMD: &str = "Failed to evaluate Agda command";
 const FAIL_RETRIEVE_HOME: &str = "Failed to retrieve home directory";
+const FAIL_CREATE_DEFAULT: &str = "Failed to create default working file";
 
 #[tokio::main]
 async fn main() {
@@ -41,8 +42,9 @@ async fn main() {
             let file_path = agda_tac_dir
                 .join("Nameless.agda")
                 .into_os_string()
+                .to_owned()
                 .into_string()
-                .unwrap();
+                .expect(FAIL_CREATE_DEFAULT);
             println!("Default to {}", file_path);
             if Path::new(&file_path).exists() {
                 remove_file(&file_path);
