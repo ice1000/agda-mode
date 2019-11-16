@@ -25,6 +25,11 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
             // TODO: write to buffer
             // TODO: check for error message & successful give result
         }
+        Infer(i, new) => {
+            let command = Cmd::infer(GoalInput::no_range(i, new.to_owned()));
+            agda.agda.command(command).await?;
+            // TODO: check for error message & successful give result
+        }
         Reload => reload(agda).await?,
         Help => {
             println!("{}", help(agda.is_plain));

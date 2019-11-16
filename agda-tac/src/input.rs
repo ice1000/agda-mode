@@ -8,14 +8,38 @@ pub enum UserInput<'a> {
     Reload,
     Help,
     Exit,
+    Infer(InteractionPoint, &'a str),
     Unknown(Option<&'a str>),
 }
 
-static VALUES: &[&str] = &["help", "define", "fill", "give", "reload", "exit", "quit"];
+static VALUES: &[&str] = &[
+    "help", "define", "fill", "give", "reload", "infer", "deduce", "exit", "quit",
+];
 
 impl<'a> UserInput<'a> {
     pub fn values() -> &'static [&'static str] {
         VALUES
+    }
+}
+
+impl<'a> UserInput<'a> {
+    fn trim_and_parse_to_ip_str(
+        line: &'a str,
+        cmd: &str,
+        alias: &str,
+        ok: impl FnOnce(InteractionPoint, &'a str) -> Self,
+    ) -> Self {
+        let s = line
+            .trim_start_matches(cmd)
+            .trim_start_matches(alias)
+            .trim_start();
+        match s.find(" ") {
+            None => UserInput::Unknown(Some("please specify a goal.")),
+            Some(idx) => match s[..idx].trim().parse::<InteractionPoint>() {
+                Ok(i) => ok(i, s[idx..].trim()),
+                Err(_) => UserInput::Unknown(Some("I cannot parse the goal number.")),
+            },
+        }
     }
 }
 
@@ -26,17 +50,9 @@ impl<'a> From<&'a str> for UserInput<'a> {
         } else if line.starts_with("define") {
             UserInput::Define(line.trim_start_matches("define").trim_start())
         } else if line.starts_with("fill") || line.starts_with("give") {
-            let s = line
-                .trim_start_matches("fill")
-                .trim_start_matches("give")
-                .trim_start();
-            match s.find(" ") {
-                None => UserInput::Unknown(Some("please specify a goal.")),
-                Some(idx) => match s[..idx].trim().parse::<InteractionPoint>() {
-                    Ok(i) => UserInput::Give(i, s[idx..].trim()),
-                    Err(_) => UserInput::Unknown(Some("I cannot parse the goal number.")),
-                },
-            }
+            Self::trim_and_parse_to_ip_str(line, "fill", "give", UserInput::Give)
+        } else if line.starts_with("infer") || line.starts_with("deduce") {
+            Self::trim_and_parse_to_ip_str(line, "infer", "deduce", UserInput::Infer)
         } else if line == "reload" {
             UserInput::Reload
         } else if line == "exit" || line == "quit" {

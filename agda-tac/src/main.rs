@@ -1,9 +1,7 @@
 use agda_mode::agda::ReplState;
 use agda_mode::base::{debug_command, debug_response};
-use std::fs::{File, create_dir, create_dir_all, remove_file};
-use std::path::Path;
 
-use crate::file_io::Repl;
+use crate::file_io::{find_default_unwrap, Repl};
 
 /// Clap cli argument things.
 mod args;
@@ -21,8 +19,6 @@ mod repl;
 const FAIL_WRITE: &str = "Failed to create Agda module file";
 const FAIL: &str = "Failed to start Agda";
 const FAIL_CMD: &str = "Failed to evaluate Agda command";
-const FAIL_RETRIEVE_HOME: &str = "Failed to retrieve home directory";
-const FAIL_CREATE_DEFAULT: &str = "Failed to create default working file";
 
 #[tokio::main]
 async fn main() {
@@ -34,24 +30,7 @@ async fn main() {
     let agda_program = args.agda.as_ref().map_or("agda", |s| &*s);
     let file = match args.file {
         Some(file) => file,
-        None => {
-            println!("No input file specified.");
-            let agda_tac_dir = dirs::home_dir()
-                .expect(FAIL_RETRIEVE_HOME)
-                .join(".agda-tac");
-            let file_path = agda_tac_dir
-                .join("Nameless.agda")
-                .into_os_string()
-                .to_owned()
-                .into_string()
-                .expect(FAIL_CREATE_DEFAULT);
-            println!("Default to {}", file_path);
-            if Path::new(&file_path).exists() {
-                remove_file(&file_path);
-            }
-            create_dir_all(agda_tac_dir);
-            file_path
-        }
+        None => find_default_unwrap(),
     };
     let (f, path, first_line) = file_io::init_module(file).expect(FAIL_WRITE);
     let abs_path = match path.to_str() {

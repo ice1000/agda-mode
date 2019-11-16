@@ -1,7 +1,10 @@
-use agda_mode::agda::ReplState;
-use std::fs::File;
+use std::fs::{create_dir_all, remove_file, File};
 use std::io::{self, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
+
+use agda_mode::agda::ReplState;
+
+const FAIL_CREATE_DEFAULT: &str = "Failed to create default working file";
 
 pub type Monad<T = ()> = io::Result<T>;
 
@@ -30,6 +33,28 @@ pub fn init_module(mut file: String) -> Monad<(File, PathBuf, String)> {
     f.write("\n".as_bytes())?;
     f.flush()?;
     Ok((f, path.to_path_buf().canonicalize()?, first_line))
+}
+
+pub fn find_default_unwrap() -> String {
+    find_default().expect(FAIL_CREATE_DEFAULT)
+}
+
+pub fn find_default() -> io::Result<String> {
+    println!("No input file specified, using default.");
+    let agda_tac_dir = dirs::home_dir()
+        .expect(FAIL_CREATE_DEFAULT)
+        .join(".agda-tac");
+    let file_path = agda_tac_dir
+        .join("Nameless.agda")
+        .into_os_string()
+        .into_string()
+        .expect(FAIL_CREATE_DEFAULT);
+    println!("Default to {}", file_path);
+    if Path::new(&file_path).exists() {
+        remove_file(&file_path)?;
+    }
+    create_dir_all(agda_tac_dir)?;
+    Ok(file_path)
 }
 
 pub struct Repl {
