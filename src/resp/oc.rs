@@ -226,11 +226,27 @@ impl<Obj: Display> Display for CmpSomething<Obj> {
     }
 }
 
+impl<Obj: Display> Display for OfType<Obj> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{} : {}", self.constraint_obj, self.of_type)
+    }
+}
+
+impl<Obj: Display> Display for TypedAssign<Obj> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(
+            f,
+            "{} := {} :? {}",
+            self.constraint_obj, self.value, self.of_type
+        )
+    }
+}
+
 impl<Obj: Display + std::fmt::Debug> Display for OutputConstraint<Obj> {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         use OutputConstraint::*;
         match self {
-            OfType(o) => write!(f, "{} : {}", o.constraint_obj, o.of_type),
+            OfType(o) => o.fmt(f),
             CmpInType {
                 constraint_objs: (a, b),
                 of_type,
@@ -256,7 +272,7 @@ impl<Obj: Display + std::fmt::Debug> Display for OutputConstraint<Obj> {
                 constraint_obj,
                 value,
             } => write!(f, "{} := {}", constraint_obj, value),
-            TypedAssign(o) => write!(f, "{} := {} :? {}", o.constraint_obj, o.value, o.of_type),
+            TypedAssign(o) => o.fmt(f),
             PostponedCheckArgs(_) => unimplemented!(),
             IsEmptyType { the_type } => write!(f, "Is empty: {}", the_type),
             SizeLtSat { the_type } => write!(f, "Not empty type of sizes: {}", the_type),
