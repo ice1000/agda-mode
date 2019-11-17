@@ -5,6 +5,7 @@ use crate::base::{ComputeMode, InteractionPoint};
 pub use self::goal::*;
 pub use self::hl::*;
 pub use self::oc::*;
+use either::Either;
 
 /// Goal information.
 mod goal;
@@ -121,12 +122,10 @@ pub struct GiveResult {
 }
 
 impl GiveResult {
-    /// The return value is not actually a result.
-    /// I just want an `Either` type.
-    pub fn into_either(self) -> Result<String, bool> {
+    pub fn into_either(self) -> Either<String, bool> {
         match (self.str, self.paren) {
-            (Some(s), None) => Ok(s),
-            (None, Some(b)) => Err(b),
+            (Some(s), None) => Either::Left(s),
+            (None, Some(b)) => Either::Right(b),
             _ => unreachable!(),
         }
     }

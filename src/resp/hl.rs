@@ -1,4 +1,5 @@
 use crate::base::{Position, TokenBased};
+use either::Either;
 use serde::{Deserialize, Serialize};
 
 /// A token highlighting information.
@@ -38,15 +39,13 @@ pub struct HighlightingInfo {
 }
 
 impl HighlightingInfo {
-    /// The return value is not actually a result.
-    /// I just want an `Either` type.
-    pub fn into_either(self) -> Result<Highlighting, String> {
+    pub fn into_either(self) -> Either<Highlighting, String> {
         if self.direct {
             debug_assert!(self.filepath.is_none());
-            Ok(self.info.unwrap())
+            Either::Left(self.info.unwrap())
         } else {
             debug_assert!(self.info.is_none());
-            Err(self.filepath.unwrap())
+            Either::Right(self.filepath.unwrap())
         }
     }
 }
