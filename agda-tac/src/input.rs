@@ -1,4 +1,5 @@
 use agda_mode::base::InteractionPoint;
+use std::num::ParseIntError;
 
 /// Parsed user input.
 #[derive(Debug, Clone, Copy)]
@@ -9,11 +10,12 @@ pub enum UserInput<'a> {
     Help,
     Exit,
     Infer(InteractionPoint, &'a str),
+    Type(InteractionPoint),
     Unknown(Option<&'a str>),
 }
 
 static VALUES: &[&str] = &[
-    "help", "define", "fill", "give", "reload", "infer", "deduce", "exit", "quit",
+    "help", "define", "fill", "give", "reload", "infer", "deduce", "type", "exit", "quit",
 ];
 
 impl<'a> UserInput<'a> {
@@ -49,6 +51,15 @@ impl<'a> From<&'a str> for UserInput<'a> {
             UserInput::Help
         } else if line.starts_with("define") {
             UserInput::Define(line.trim_start_matches("define").trim_start())
+        } else if line.starts_with("type") {
+            match line
+                .trim_start_matches("type")
+                .trim()
+                .parse::<InteractionPoint>()
+            {
+                Ok(i) => UserInput::Type(i),
+                Err(_) => UserInput::Unknown(Some("I cannot parse the goal number.")),
+            }
         } else if line.starts_with("fill") || line.starts_with("give") {
             Self::trim_and_parse_to_ip_str(line, "fill", "give", UserInput::Give)
         } else if line.starts_with("infer") || line.starts_with("deduce") {

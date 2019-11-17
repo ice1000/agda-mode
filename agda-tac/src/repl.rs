@@ -35,6 +35,16 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
                 }
             });
         }
+        Type(i) => {
+            let command = Cmd::goal_type(GoalInput::simple(i));
+            agda.agda.command(command).await?;
+            preprint_agda_result(agda.agda.next_goal_specific().await?, |gs| {
+                match gs.goal_info {
+                    GoalInfo::CurrentGoal { the_type, .. } => println!("{}", the_type),
+                    _ => unreachable!(),
+                }
+            });
+        }
         Reload => reload(agda).await?,
         Help => {
             println!("{}", help(agda.is_plain));
