@@ -47,6 +47,29 @@ pub struct FindInstanceCandidate {
     pub value: String,
 }
 
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct JustSomething<Obj> {
+    pub constraint_obj: Obj,
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct PostponedCheckArgs<Obj> {
+    pub constraint_obj: Obj,
+    pub of_type: String,
+    #[serde(rename = "type")]
+    pub the_type: String,
+    pub arguments: Vec<String>,
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct CmpSomething<Obj> {
+    pub constraint_objs: (Obj, Obj),
+    pub comparison: Comparison,
+}
+
 #[serde(tag = "kind")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum OutputConstraint<Obj> {
@@ -70,34 +93,12 @@ pub enum OutputConstraint<Obj> {
         of_type: String,
         polarities: Vec<Polarity>,
     },
-    JustType {
-        #[serde(rename = "constraintObj")]
-        constraint_obj: Obj,
-    },
-    JustSort {
-        #[serde(rename = "constraintObj")]
-        constraint_obj: Obj,
-    },
-    CmpTypes {
-        #[serde(rename = "constraintObjs")]
-        constraint_objs: (Obj, Obj),
-        comparison: Comparison,
-    },
-    CmpLevels {
-        #[serde(rename = "constraintObjs")]
-        constraint_objs: (Obj, Obj),
-        comparison: Comparison,
-    },
-    CmpTeles {
-        #[serde(rename = "constraintObjs")]
-        constraint_objs: (Obj, Obj),
-        comparison: Comparison,
-    },
-    CmpSorts {
-        #[serde(rename = "constraintObjs")]
-        constraint_objs: (Obj, Obj),
-        comparison: Comparison,
-    },
+    JustType(JustSomething<Obj>),
+    JustSort(JustSomething<Obj>),
+    CmpTypes(CmpSomething<Obj>),
+    CmpLevels(CmpSomething<Obj>),
+    CmpTeles(CmpSomething<Obj>),
+    CmpSorts(CmpSomething<Obj>),
     Guard {
         constraint_objs: Box<OutputConstraint<Obj>>,
         problem: String,
@@ -114,15 +115,7 @@ pub enum OutputConstraint<Obj> {
         of_type: String,
         value: String,
     },
-    PostponedCheckArgs {
-        #[serde(rename = "constraintObj")]
-        constraint_obj: Obj,
-        #[serde(rename = "ofType")]
-        of_type: String,
-        #[serde(rename = "type")]
-        the_type: String,
-        arguments: Vec<String>,
-    },
+    PostponedCheckArgs(PostponedCheckArgs<Obj>),
     IsEmptyType {
         #[serde(rename = "type")]
         the_type: String,
@@ -257,18 +250,20 @@ pub enum DisplayInfo {
     Version {
         version: String,
     },
-    GoalSpecific {
-        #[serde(rename = "interactionPoint")]
-        interaction_point: InteractionPoint,
-        #[serde(rename = "goalInfo")]
-        goal_info: GoalInfo,
-    },
+    GoalSpecific(GoalSpecific),
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct GoalSpecific {
+    pub interaction_point: InteractionPoint,
+    pub goal_info: GoalInfo,
 }
 
 /// A token highlighting information.
 /// The token is somehow called `Aspect` in Agda.
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct AspectHighlight {
     pub range: (Position, Position),
     pub atoms: Vec<String>,
@@ -279,7 +274,7 @@ pub struct AspectHighlight {
 
 /// Jump to library definition information.
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct DefinitionSite {
     pub filepath: String,
     pub position: Position,
@@ -287,7 +282,7 @@ pub struct DefinitionSite {
 
 /// A list of token highlighting information.
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct Highlighting {
     pub remove: bool,
     pub payload: Vec<AspectHighlight>,
@@ -297,7 +292,7 @@ pub struct Highlighting {
 ///
 /// The structure is very mysterious.
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct GiveResult {
     pub str: Option<String>,
     pub paren: Option<bool>,
@@ -316,7 +311,7 @@ impl GiveResult {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct HighlightingInfo {
     pub info: Option<Highlighting>,
     pub filepath: Option<String>,
