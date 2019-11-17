@@ -1,12 +1,15 @@
+use either::Either;
 use serde::{Deserialize, Serialize};
 
-use crate::base::{ComputeMode, InteractionPoint};
+use crate::base::InteractionPoint;
 
+pub use self::di::*;
 pub use self::goal::*;
 pub use self::hl::*;
 pub use self::oc::*;
-use either::Either;
 
+/// Display info.
+mod di;
 /// Goal information.
 mod goal;
 /// Highlighting.
@@ -32,83 +35,6 @@ pub struct CommandState {
 pub enum MakeCaseVariant {
     Function,
     ExtendedLambda,
-}
-
-#[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
-pub struct InferredType {
-    command_state: CommandState,
-    time: String,
-    expr: String,
-}
-
-#[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
-pub struct NormalForm {
-    pub compute_mode: ComputeMode,
-    pub command_state: CommandState,
-    pub time: String,
-    pub expr: String,
-}
-
-#[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
-pub struct AllGoalsWarnings {
-    pub visible_goals: Vec<VisibleGoal>,
-    pub invisible_goals: Vec<InvisibleGoal>,
-    pub warnings: String,
-    pub errors: String,
-}
-
-/// Something that is displayed in the Emacs mode,
-/// serialized with more details.
-#[serde(tag = "kind")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
-pub enum DisplayInfo {
-    CompilationOk {
-        warnings: String,
-        errors: String,
-    },
-    Constraints {
-        // TODO
-    },
-    AllGoalsWarnings(AllGoalsWarnings),
-    Time {
-        time: String,
-    },
-    Error {
-        message: Option<String>,
-    },
-    IntroNotFound {
-        // TODO
-    },
-    IntroConstructorUnknown {
-        // TODO
-    },
-    Auto {
-        info: String,
-    },
-    ModuleContents {
-        // TODO
-    },
-    SearchAbout {
-        search: String,
-        // TODO
-    },
-    WhyInScope {
-        // TODO
-    },
-    NormalForm(NormalForm),
-    InferredType(InferredType),
-    Context {
-        #[serde(rename = "interactionPoint")]
-        interaction_point: InteractionPoint,
-        context: Vec<ResponseContextEntry>,
-    },
-    Version {
-        version: String,
-    },
-    GoalSpecific(GoalSpecific),
 }
 
 /// Result of a "give" action.
