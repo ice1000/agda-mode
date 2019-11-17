@@ -1,4 +1,4 @@
-use crate::resp::{MakeCase, Resp};
+use crate::resp::{MakeCaseVariant, Resp};
 
 #[test]
 fn simple_running_info_de() {
@@ -9,7 +9,7 @@ fn simple_running_info_de() {
 #[test]
 fn simple_make_case_de() {
     let a = Resp::MakeCase {
-        variant: MakeCase::Function,
+        variant: MakeCaseVariant::Function,
         clauses: vec!["f a = a".to_owned()],
         interaction_point: 233,
     };
