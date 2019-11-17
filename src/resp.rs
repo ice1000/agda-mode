@@ -198,6 +198,7 @@ pub struct NormalForm {
     pub time: String,
     pub expr: String,
 }
+
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct AllGoalsWarnings {
@@ -291,7 +292,7 @@ pub struct DefinitionSite {
 /// A list of token highlighting information.
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
-pub struct HighlightingInfo {
+pub struct Highlighting {
     pub remove: bool,
     pub payload: Vec<AspectHighlight>,
 }
@@ -318,17 +319,21 @@ impl GiveResult {
     }
 }
 
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+pub struct HighlightingInfo {
+    pub info: Option<Highlighting>,
+    pub filepath: Option<String>,
+    pub direct: bool,
+}
+
 /// Agda response.
 ///
 /// TODO: This enum is incomplete, contribution is welcomed.
 #[serde(tag = "kind")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum Resp {
-    HighlightingInfo {
-        info: Option<HighlightingInfo>,
-        filepath: Option<String>,
-        direct: bool,
-    },
+    HighlightingInfo(HighlightingInfo),
     Status {
         status: Status,
     },

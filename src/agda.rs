@@ -176,7 +176,6 @@ impl ReplState {
     pub async fn next_all_goals_warnings(&mut self) -> NextResult<AllGoalsWarnings> {
         use crate::resp::DisplayInfo::AllGoalsWarnings as DisAGW;
         use crate::resp::DisplayInfo::Error as DisError;
-        use Resp::*;
         loop {
             match self.next_display_info().await? {
                 DisError { message } => {
