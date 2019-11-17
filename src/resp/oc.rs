@@ -252,6 +252,26 @@ impl<Obj: Display> Display for PostponedCheckArgs<Obj> {
     }
 }
 
+impl Display for FindInstanceCandidate {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{} : {}", self.value, self.of_type)
+    }
+}
+
+impl<Obj: Display> Display for FindInstanceOF<Obj> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(
+            f,
+            "Resolve instance argument {} : {}, candidates: ",
+            self.constraint_obj, self.of_type
+        )?;
+        for argument in &self.candidates {
+            write!(f, "{}, ", argument)?;
+        }
+        Ok(())
+    }
+}
+
 impl<Obj: Display + std::fmt::Debug> Display for OutputConstraint<Obj> {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         use OutputConstraint::*;
@@ -286,7 +306,7 @@ impl<Obj: Display + std::fmt::Debug> Display for OutputConstraint<Obj> {
             PostponedCheckArgs(o) => o.fmt(f),
             IsEmptyType { the_type } => write!(f, "Is empty: {}", the_type),
             SizeLtSat { the_type } => write!(f, "Not empty type of sizes: {}", the_type),
-            FindInstanceOF(_) => unimplemented!(),
+            FindInstanceOF(o) => o.fmt(f),
             PTSInstance {
                 constraint_objs: (a, b),
             } => write!(f, "PTS Instance for {}, {}", a, b),
