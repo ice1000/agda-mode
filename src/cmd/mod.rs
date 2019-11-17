@@ -1,115 +1,12 @@
 use std::fmt::{Display, Error as FmtError, Formatter};
 
-use crate::base::{ComputeMode, HaskellBool, InteractionPoint, Remove, Rewrite, UseForce};
+use crate::base::{ComputeMode, HaskellBool, Remove, Rewrite, UseForce};
 
-/// How much highlighting should be sent to the user interface?
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub enum HighlightingLevel {
-    None,
-    NonInteractive,
-    /// This includes both non-interactive highlighting and
-    /// interactive highlighting of the expression that is currently
-    /// being type-checked.
-    Interactive,
-}
+pub use self::goal::*;
+pub use self::iotcm::*;
 
-impl Default for HighlightingLevel {
-    fn default() -> Self {
-        HighlightingLevel::NonInteractive
-    }
-}
-
-/// How should highlighting be sent to the user interface?
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub enum HighlightingMethod {
-    /// Via stdout.
-    Direct,
-    /// Both via files and via stdout.
-    Indirect,
-}
-
-impl Default for HighlightingMethod {
-    fn default() -> Self {
-        HighlightingMethod::Direct
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct IOTCM {
-    level: HighlightingLevel,
-    file: String,
-    method: HighlightingMethod,
-    pub command: Cmd,
-}
-
-impl IOTCM {
-    pub fn new(
-        level: HighlightingLevel,
-        file: String,
-        method: HighlightingMethod,
-        command: Cmd,
-    ) -> Self {
-        Self {
-            level,
-            file,
-            method,
-            command,
-        }
-    }
-
-    pub fn simple(file: String, command: Cmd) -> Self {
-        Self::new(Default::default(), file, Default::default(), command)
-    }
-
-    /// Convert `self` into a command string.
-    pub fn to_string(&self) -> String {
-        format!("{}\n", self)
-    }
-}
-
-/// A position in the file.
-#[derive(Debug, Clone)]
-pub struct Pn {
-    pub offset: u32,
-    pub line: u32,
-    pub column: u32,
-}
-
-/// IDK why is this needed, but Emacs passes it to Agda.
-/// It's fine to omit this in the commands.
-#[derive(Debug, Clone)]
-pub enum Range {
-    NoRange,
-    Range { file: String, start: Pn, end: Pn },
-}
-
-impl Default for Range {
-    fn default() -> Self {
-        Range::NoRange
-    }
-}
-
-/// Text in the goal.
-#[derive(Debug, Clone)]
-pub struct GoalInput {
-    id: InteractionPoint,
-    range: Range,
-    code: String,
-}
-
-impl GoalInput {
-    pub fn new(id: InteractionPoint, range: Range, code: String) -> Self {
-        GoalInput { id, range, code }
-    }
-
-    pub fn simple(id: InteractionPoint) -> Self {
-        Self::no_range(id, String::new())
-    }
-
-    pub fn no_range(id: InteractionPoint, code: String) -> Self {
-        Self::new(id, Default::default(), code)
-    }
-}
+mod goal;
+mod iotcm;
 
 #[derive(Debug, Clone)]
 pub enum Cmd {
@@ -235,10 +132,7 @@ pub enum Cmd {
         rewrite: Rewrite,
         input: GoalInput,
     },
-    HelperFunction {
-        rewrite: Rewrite,
-        input: GoalInput,
-    },
+    HelperFunction(InputWithRewrite),
     Infer {
         rewrite: Rewrite,
         input: GoalInput,
@@ -290,47 +184,6 @@ pub enum Cmd {
     Abort,
 }
 
-type FmtMonad = Result<(), FmtError>;
-
-impl Display for Pn {
-    fn fmt(&self, f: &mut Formatter) -> FmtMonad {
-        write!(
-            f,
-            "(Pn () {:?} {:?} {:?})",
-            self.offset, self.line, self.column
-        )
-    }
-}
-
-impl Display for Range {
-    fn fmt(&self, f: &mut Formatter) -> FmtMonad {
-        match self {
-            Range::NoRange => f.write_str("noRange"),
-            Range::Range { file, start, end } => write!(
-                f,
-                "(intervalsToRange (Just (mkAbsolute {:?})) [Interval {} {}])",
-                file, start, end
-            ),
-        }
-    }
-}
-
-impl Display for GoalInput {
-    fn fmt(&self, f: &mut Formatter) -> FmtMonad {
-        write!(f, "{:?} {} {:?}", self.id, self.range, self.code)
-    }
-}
-
-impl Display for IOTCM {
-    fn fmt(&self, f: &mut Formatter) -> FmtMonad {
-        write!(
-            f,
-            "IOTCM {:?} {:?} {:?} {}",
-            self.file, self.level, self.method, self.command
-        )
-    }
-}
-
 impl Cmd {
     pub fn load_simple(path: String) -> Self {
         Cmd::Load {
@@ -364,7 +217,7 @@ impl Cmd {
 }
 
 impl Display for Cmd {
-    fn fmt(&self, f: &mut Formatter) -> FmtMonad {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), FmtError> {
         use Cmd::*;
         match self {
             Load { path, flags } => write!(f, "( Cmd_load {:?} {:?} )", path, flags),
@@ -416,9 +269,7 @@ impl Display for Cmd {
                 input
             ),
             Context { rewrite, input } => write!(f, "( Cmd_context {:?} {} )", rewrite, input),
-            HelperFunction { rewrite, input } => {
-                write!(f, "( Cmd_helper_function {:?} {} )", rewrite, input)
-            }
+            HelperFunction(info) => write!(f, "( Cmd_helper_function {} )", info),
             Infer { rewrite, input } => write!(f, "( Cmd_infer {:?} {} )", rewrite, input),
             GoalType { rewrite, input } => write!(f, "( Cmd_goal_type {:?} {} )", rewrite, input),
             ElaborateGive { rewrite, input } => {
