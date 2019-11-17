@@ -36,27 +36,27 @@ pub struct CmpSomething<Obj> {
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct FindInstanceOF<Obj> {
-    constraint_obj: Obj,
+    pub constraint_obj: Obj,
     #[serde(rename = "type")]
-    of_type: String,
-    candidates: Vec<FindInstanceCandidate>,
+    pub of_type: String,
+    pub candidates: Vec<FindInstanceCandidate>,
 }
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct TypedAssign<Obj> {
-    constraint_obj: Obj,
+    pub constraint_obj: Obj,
     #[serde(rename = "type")]
-    of_type: String,
-    value: String,
+    pub of_type: String,
+    pub value: String,
 }
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct OfType<Obj> {
-    constraint_obj: Obj,
+    pub constraint_obj: Obj,
     #[serde(rename = "type")]
-    of_type: String,
+    pub of_type: String,
 }
 
 #[serde(tag = "kind")]
