@@ -43,8 +43,8 @@ pub enum GoalTypeAux {
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct FindInstanceCandidate {
     #[serde(rename = "type")]
-    of_type: String,
-    value: String,
+    pub of_type: String,
+    pub value: String,
 }
 
 macro_rules! output_constraint {
@@ -159,12 +159,12 @@ output_constraint!(InvisibleGoal, String);
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct GoalType {
-    rewrite: Rewrite,
-    type_aux: GoalTypeAux,
+    pub rewrite: Rewrite,
+    pub type_aux: GoalTypeAux,
     #[serde(rename = "type")]
-    the_type: String,
-    entries: Vec<ResponseContextEntry>,
-    output_forms: Vec<String>,
+    pub the_type: String,
+    pub entries: Vec<ResponseContextEntry>,
+    pub output_forms: Vec<String>,
 }
 
 /// Information about one goal.
@@ -193,18 +193,18 @@ pub enum GoalInfo {
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct NormalForm {
-    compute_mode: ComputeMode,
-    command_state: CommandState,
-    time: String,
-    expr: String,
+    pub compute_mode: ComputeMode,
+    pub command_state: CommandState,
+    pub time: String,
+    pub expr: String,
 }
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct AllGoalsWarnings {
-    visible_goals: Vec<VisibleGoal>,
-    invisible_goals: Vec<InvisibleGoal>,
-    warnings: String,
-    errors: String,
+    pub visible_goals: Vec<VisibleGoal>,
+    pub invisible_goals: Vec<InvisibleGoal>,
+    pub warnings: String,
+    pub errors: String,
 }
 
 /// Something that is displayed in the Emacs mode,

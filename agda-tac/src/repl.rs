@@ -52,14 +52,16 @@ pub async fn reload(agda: &mut Repl) -> Monad {
 }
 
 pub async fn poll_goals(agda: &mut ReplState) -> Monad {
-    match agda.next_goals().await? {
-        Ok(iis) => {
-            if iis.is_empty() {
+    match agda.next_all_goals_warnings().await? {
+        Ok(agw) => {
+            if agw.visible_goals.is_empty() {
                 println!("No goals.");
             } else {
                 println!("Goals:");
             }
-            list_goals(agda, &iis).await?;
+            for goal in agw.visible_goals {
+                unimplemented!()
+            }
         }
         Err(err_msg) => {
             eprintln!("Errors:");
@@ -72,21 +74,4 @@ pub async fn poll_goals(agda: &mut ReplState) -> Monad {
 async fn finish(agda: &mut ReplState) -> Monad {
     agda.command(Cmd::Abort).await?;
     agda.shutdown().await
-}
-
-async fn list_goals(agda: &mut ReplState, iis: &[InteractionPoint]) -> Monad {
-    for &ii in iis {
-        agda.command(Cmd::goal_type(GoalInput::simple(ii))).await?;
-        let ty = loop {
-            if let DisplayInfo::GoalSpecific {
-                goal_info: GoalInfo::CurrentGoal { the_type, .. },
-                ..
-            } = agda.next_display_info().await?
-            {
-                break the_type;
-            }
-        };
-        println!("?{:?}: {}", ii, ty);
-    }
-    Ok(())
 }
