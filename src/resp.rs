@@ -49,6 +49,7 @@ pub struct FindInstanceCandidate {
 
 macro_rules! output_constraint {
     ($name:ident, $objTy:ty) => {
+        #[serde(tag = "kind")]
         #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
         pub enum $name {
             OfType {
@@ -152,7 +153,9 @@ macro_rules! output_constraint {
     };
 }
 
+/// User goal.
 output_constraint!(VisibleGoal, InteractionPoint);
+/// Unsolved meta.
 output_constraint!(InvisibleGoal, String);
 
 /// Information about one goal.
