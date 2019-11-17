@@ -153,10 +153,19 @@ macro_rules! output_constraint {
     };
 }
 
-/// User goal.
 output_constraint!(VisibleGoal, InteractionPoint);
-/// Unsolved meta.
 output_constraint!(InvisibleGoal, String);
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct GoalType {
+    rewrite: Rewrite,
+    type_aux: GoalTypeAux,
+    #[serde(rename = "type")]
+    the_type: String,
+    entries: Vec<ResponseContextEntry>,
+    output_forms: Vec<String>,
+}
 
 /// Information about one goal.
 #[serde(tag = "kind")]
@@ -170,16 +179,7 @@ pub enum GoalInfo {
         compute_mode: ComputeMode,
         expr: String,
     },
-    GoalType {
-        rewrite: Rewrite,
-        #[serde(rename = "typeAux")]
-        type_aux: GoalTypeAux,
-        #[serde(rename = "type")]
-        the_type: String,
-        entries: Vec<ResponseContextEntry>,
-        #[serde(rename = "outputForms")]
-        constraints: Vec<String>,
-    },
+    GoalType(GoalType),
     CurrentGoal {
         rewrite: Rewrite,
         #[serde(rename = "type")]
@@ -188,6 +188,23 @@ pub enum GoalInfo {
     InferredType {
         expr: String,
     },
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct NormalForm {
+    compute_mode: ComputeMode,
+    command_state: CommandState,
+    time: String,
+    expr: String,
+}
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct AllGoalsWarnings {
+    visible_goals: Vec<VisibleGoal>,
+    invisible_goals: Vec<InvisibleGoal>,
+    warnings: String,
+    errors: String,
 }
 
 /// Something that is displayed in the Emacs mode,
@@ -202,14 +219,7 @@ pub enum DisplayInfo {
     Constraints {
         // TODO
     },
-    AllGoalsWarnings {
-        #[serde(rename = "visibleGoals")]
-        visible_goals: Vec<VisibleGoal>,
-        #[serde(rename = "invisibleGoals")]
-        invisible_goals: Vec<InvisibleGoal>,
-        warnings: String,
-        errors: String,
-    },
+    AllGoalsWarnings(AllGoalsWarnings),
     Time {
         time: String,
     },
@@ -235,14 +245,7 @@ pub enum DisplayInfo {
     WhyInScope {
         // TODO
     },
-    NormalForm {
-        #[serde(rename = "computeMode")]
-        compute_mode: ComputeMode,
-        #[serde(rename = "commandState")]
-        command_state: CommandState,
-        time: String,
-        expr: String,
-    },
+    NormalForm(NormalForm),
     InferredType {
         #[serde(rename = "commandState")]
         command_state: CommandState,
