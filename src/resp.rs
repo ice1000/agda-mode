@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::base::{ComputeMode, InteractionPoint, Position, Rewrite, TokenBased};
+use crate::base::*;
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
@@ -39,21 +39,121 @@ pub enum GoalTypeAux {
     GoalAndElaboration { term: String },
 }
 
-/// One goal (visible meta).
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
-pub struct Goal {
-    pub interaction_point: InteractionPoint,
-    pub goal_type: String,
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+pub struct FindInstanceCandidate {
+    #[serde(rename = "type")]
+    of_type: String,
+    value: String,
 }
 
-/// One unsolved meta (invisible goal).
-#[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
-pub struct UnsolvedMeta {
-    pub pretty_meta: String,
-    pub meta_type: String,
+macro_rules! output_constraint {
+    ($name:ident, $objTy:ty) => {
+        #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+        pub enum $name {
+            OfType {
+                #[serde(rename = "constraintObj")]
+                constraint_obj: $objTy,
+                #[serde(rename = "type")]
+                of_type: String,
+            },
+            CmpInType {
+                #[serde(rename = "constraintObjs")]
+                constraint_objs: ($objTy, $objTy),
+                #[serde(rename = "type")]
+                of_type: String,
+                comparison: Comparison,
+            },
+            CmpElim {
+                #[serde(rename = "constraintObjs")]
+                constraint_objs: (Vec<$objTy>, Vec<$objTy>),
+                #[serde(rename = "type")]
+                of_type: String,
+                polarities: Vec<Polarity>,
+            },
+            JustType {
+                #[serde(rename = "constraintObj")]
+                constraint_obj: $objTy,
+            },
+            JustSort {
+                #[serde(rename = "constraintObj")]
+                constraint_obj: $objTy,
+            },
+            CmpTypes {
+                #[serde(rename = "constraintObjs")]
+                constraint_objs: ($objTy, $objTy),
+                comparison: Comparison,
+            },
+            CmpLevels {
+                #[serde(rename = "constraintObjs")]
+                constraint_objs: ($objTy, $objTy),
+                comparison: Comparison,
+            },
+            CmpTeles {
+                #[serde(rename = "constraintObjs")]
+                constraint_objs: ($objTy, $objTy),
+                comparison: Comparison,
+            },
+            CmpSorts {
+                #[serde(rename = "constraintObjs")]
+                constraint_objs: ($objTy, $objTy),
+                comparison: Comparison,
+            },
+            Guard {
+                constraint_objs: Box<$name>,
+                problem: String,
+            },
+            Assign {
+                #[serde(rename = "constraintObj")]
+                constraint_obj: $objTy,
+                value: String,
+            },
+            TypedAssign {
+                #[serde(rename = "constraintObj")]
+                constraint_obj: $objTy,
+                #[serde(rename = "type")]
+                of_type: String,
+                value: String,
+            },
+            PostponedCheckArgs {
+                #[serde(rename = "constraintObj")]
+                constraint_obj: $objTy,
+                #[serde(rename = "ofType")]
+                of_type: String,
+                #[serde(rename = "type")]
+                the_type: String,
+                arguments: Vec<String>,
+            },
+            IsEmptyType {
+                #[serde(rename = "type")]
+                the_type: String,
+            },
+            SizeLtSat {
+                #[serde(rename = "type")]
+                the_type: String,
+            },
+            FindInstanceOF {
+                #[serde(rename = "constraintObj")]
+                constraint_obj: $objTy,
+                #[serde(rename = "type")]
+                of_type: String,
+                candidates: Vec<FindInstanceCandidate>,
+            },
+            PTSInstance {
+                #[serde(rename = "constraintObjs")]
+                constraint_objs: ($objTy, $objTy),
+            },
+            PostponedCheckFunDef {
+                name: String,
+                #[serde(rename = "type")]
+                of_type: String,
+            },
+        }
+    };
 }
+
+output_constraint!(VisibleGoal, InteractionPoint);
+output_constraint!(InvisibleGoal, String);
 
 /// Information about one goal.
 #[serde(tag = "kind")]
@@ -101,9 +201,9 @@ pub enum DisplayInfo {
     },
     AllGoalsWarnings {
         #[serde(rename = "visibleGoals")]
-        visible_goals: Vec<Goal>,
+        visible_goals: Vec<VisibleGoal>,
         #[serde(rename = "invisibleGoals")]
-        invisible_goals: Vec<UnsolvedMeta>,
+        invisible_goals: Vec<InvisibleGoal>,
         warnings: String,
         errors: String,
     },
