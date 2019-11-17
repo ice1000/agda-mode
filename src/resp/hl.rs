@@ -36,3 +36,17 @@ pub struct HighlightingInfo {
     pub filepath: Option<String>,
     pub direct: bool,
 }
+
+impl HighlightingInfo {
+    /// The return value is not actually a result.
+    /// I just want an `Either` type.
+    pub fn into_either(self) -> Result<Highlighting, String> {
+        if self.direct {
+            debug_assert!(self.filepath.is_none());
+            Ok(self.info.unwrap())
+        } else {
+            debug_assert!(self.info.is_none());
+            Err(self.filepath.unwrap())
+        }
+    }
+}
