@@ -1,6 +1,13 @@
-use super::{CommandState, GoalSpecific, InvisibleGoal, ResponseContextEntry, VisibleGoal};
+use super::{GoalSpecific, InvisibleGoal, ResponseContextEntry, VisibleGoal};
 use crate::base::{ComputeMode, InteractionPoint};
 use serde::{Deserialize, Serialize};
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+pub struct CommandState {
+    pub interaction_points: Vec<InteractionPoint>,
+    pub current_file: String,
+}
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]

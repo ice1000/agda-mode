@@ -1,7 +1,6 @@
-use serde::{Deserialize, Serialize};
-
 use crate::base::InteractionPoint;
 use either::Either;
+use serde::{Deserialize, Serialize};
 
 /// Result of a "give" action.
 ///

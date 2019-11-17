@@ -26,13 +26,6 @@ pub struct Status {
     pub checked: bool,
 }
 
-#[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
-pub struct CommandState {
-    pub interaction_points: Vec<InteractionPoint>,
-    pub current_file: String,
-}
-
 #[derive(Serialize, Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MakeCaseVariant {
     Function,
