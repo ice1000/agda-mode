@@ -35,6 +35,24 @@ pub struct CmpSomething<Obj> {
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct FindInstanceOF<Obj> {
+    constraint_obj: Obj,
+    #[serde(rename = "type")]
+    of_type: String,
+    candidates: Vec<FindInstanceCandidate>,
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct TypedAssign<Obj> {
+    constraint_obj: Obj,
+    #[serde(rename = "type")]
+    of_type: String,
+    value: String,
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct OfType<Obj> {
     constraint_obj: Obj,
     #[serde(rename = "type")]
@@ -74,13 +92,7 @@ pub enum OutputConstraint<Obj> {
         constraint_obj: Obj,
         value: String,
     },
-    TypedAssign {
-        #[serde(rename = "constraintObj")]
-        constraint_obj: Obj,
-        #[serde(rename = "type")]
-        of_type: String,
-        value: String,
-    },
+    TypedAssign(TypedAssign<Obj>),
     PostponedCheckArgs(PostponedCheckArgs<Obj>),
     IsEmptyType {
         #[serde(rename = "type")]
@@ -90,13 +102,7 @@ pub enum OutputConstraint<Obj> {
         #[serde(rename = "type")]
         the_type: String,
     },
-    FindInstanceOF {
-        #[serde(rename = "constraintObj")]
-        constraint_obj: Obj,
-        #[serde(rename = "type")]
-        of_type: String,
-        candidates: Vec<FindInstanceCandidate>,
-    },
+    FindInstanceOF(FindInstanceOF<Obj>),
     PTSInstance {
         #[serde(rename = "constraintObjs")]
         constraint_objs: (Obj, Obj),
@@ -119,16 +125,24 @@ impl<Obj> OutputConstraint<Obj> {
             Err(self)
         }
     }
+
+    pub fn try_as_of_type(&self) -> Result<&OfType<Obj>, &Self> {
+        if let OutputConstraint::OfType(o) = self {
+            Ok(o)
+        } else {
+            Err(self)
+        }
+    }
 }
 
 pub trait CollectObjs<Obj> {
-    fn collect_objs(&self, collect: impl FnMut(&Obj) + Copy);
+    fn collect_objs(&self, collect: impl FnMut(&Obj));
 }
 
 macro_rules! simple_collect_objs {
     ($class:ident) => {
         impl<Obj> CollectObjs<Obj> for $class<Obj> {
-            fn collect_objs(&self, mut collect: impl FnMut(&Obj) + Copy) {
+            fn collect_objs(&self, mut collect: impl FnMut(&Obj)) {
                 collect(&self.constraint_obj)
             }
         }
@@ -138,15 +152,17 @@ macro_rules! simple_collect_objs {
 simple_collect_objs!(JustSomething);
 simple_collect_objs!(PostponedCheckArgs);
 simple_collect_objs!(OfType);
+simple_collect_objs!(FindInstanceOF);
+simple_collect_objs!(TypedAssign);
 
 impl<Obj> CollectObjs<Obj> for Vec<Obj> {
-    fn collect_objs(&self, collect: impl FnMut(&Obj) + Copy) {
+    fn collect_objs(&self, collect: impl FnMut(&Obj)) {
         self.iter().for_each(collect)
     }
 }
 
 impl<Obj> CollectObjs<Obj> for (Obj, Obj) {
-    fn collect_objs(&self, mut collect: impl FnMut(&Obj) + Copy) {
+    fn collect_objs(&self, mut collect: impl FnMut(&Obj)) {
         let (a, b) = self;
         collect(a);
         collect(b);
@@ -154,21 +170,21 @@ impl<Obj> CollectObjs<Obj> for (Obj, Obj) {
 }
 
 impl<Obj> CollectObjs<Obj> for (Vec<Obj>, Vec<Obj>) {
-    fn collect_objs(&self, collect: impl FnMut(&Obj) + Copy) {
+    fn collect_objs(&self, mut collect: impl FnMut(&Obj)) {
         let (a, b) = self;
-        a.collect_objs(collect);
+        a.collect_objs(|x| collect(x));
         b.collect_objs(collect);
     }
 }
 
 impl<Obj> CollectObjs<Obj> for CmpSomething<Obj> {
-    fn collect_objs(&self, collect: impl FnMut(&Obj) + Copy) {
+    fn collect_objs(&self, collect: impl FnMut(&Obj)) {
         self.constraint_objs.collect_objs(collect);
     }
 }
 
 impl<Obj> CollectObjs<Obj> for OutputConstraint<Obj> {
-    fn collect_objs(&self, mut collect: impl FnMut(&Obj) + Copy) {
+    fn collect_objs(&self, mut collect: impl FnMut(&Obj)) {
         use OutputConstraint::*;
         match self {
             OfType(o) => o.collect_objs(collect),
@@ -186,20 +202,71 @@ impl<Obj> CollectObjs<Obj> for OutputConstraint<Obj> {
             CmpSorts(c) => c.collect_objs(collect),
             Guard { constraint, .. } => constraint.collect_objs(collect),
             Assign { constraint_obj, .. } => collect(constraint_obj),
-            TypedAssign { constraint_obj, .. } => collect(constraint_obj),
+            TypedAssign(o) => o.collect_objs(collect),
             PostponedCheckArgs(o) => o.collect_objs(collect),
             IsEmptyType { .. } => {}
             SizeLtSat { .. } => {}
-            FindInstanceOF { constraint_obj, .. } => collect(constraint_obj),
+            FindInstanceOF(o) => o.collect_objs(collect),
             PTSInstance { constraint_objs } => constraint_objs.collect_objs(collect),
             PostponedCheckFunDef { .. } => {}
         }
     }
 }
 
-impl<Obj: Display> Display for OutputConstraint<Obj> {
+impl<Obj: Display> Display for JustSomething<Obj> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        self.constraint_obj.fmt(f)
+    }
+}
+
+impl<Obj: Display> Display for CmpSomething<Obj> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        let (a, b) = &self.constraint_objs;
+        write!(f, "{} {} {}", a, self.comparison, b)
+    }
+}
+
+impl<Obj: Display + std::fmt::Debug> Display for OutputConstraint<Obj> {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         use OutputConstraint::*;
-        unimplemented!()
+        match self {
+            OfType(o) => write!(f, "{} : {}", o.constraint_obj, o.of_type),
+            CmpInType {
+                constraint_objs: (a, b),
+                of_type,
+                comparison,
+            } => write!(f, "{} {} {} of type {}", a, comparison, b, of_type),
+            CmpElim {
+                constraint_objs: (xs, ys),
+                of_type,
+                polarities,
+                // TODO: this can be improved, and the debug trait bound can be removed
+            } => write!(f, "{:?} {:?} {:?} of type {}", xs, polarities, ys, of_type),
+            JustType(j) => j.fmt(f),
+            JustSort(j) => j.fmt(f),
+            CmpTypes(c) => c.fmt(f),
+            CmpLevels(c) => c.fmt(f),
+            CmpTeles(c) => c.fmt(f),
+            CmpSorts(c) => c.fmt(f),
+            Guard {
+                constraint,
+                problem,
+            } => write!(f, "{} (blocked by {})", constraint, problem),
+            Assign {
+                constraint_obj,
+                value,
+            } => write!(f, "{} := {}", constraint_obj, value),
+            TypedAssign(o) => write!(f, "{} := {} :? {}", o.constraint_obj, o.value, o.of_type),
+            PostponedCheckArgs(_) => unimplemented!(),
+            IsEmptyType { the_type } => write!(f, "Is empty: {}", the_type),
+            SizeLtSat { the_type } => write!(f, "Not empty type of sizes: {}", the_type),
+            FindInstanceOF(_) => unimplemented!(),
+            PTSInstance {
+                constraint_objs: (a, b),
+            } => write!(f, "PTS Instance for {}, {}", a, b),
+            PostponedCheckFunDef { name, of_type } => {
+                write!(f, "Check definition of {} : {}", name, of_type)
+            }
+        }
     }
 }

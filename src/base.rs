@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Error, Formatter};
 
 static mut DEBUG_COMMAND: bool = false;
 static mut DEBUG_RESPONSE: bool = false;
@@ -45,15 +46,24 @@ pub enum ComputeMode {
     UseShowInstance,
 }
 
+impl Default for ComputeMode {
+    fn default() -> Self {
+        ComputeMode::DefaultCompute
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Comparison {
     CmpEq,
     CmpLeq,
 }
 
-impl Default for ComputeMode {
-    fn default() -> Self {
-        ComputeMode::DefaultCompute
+impl Display for Comparison {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        f.write_str(match self {
+            Comparison::CmpEq => "==",
+            Comparison::CmpLeq => "<=",
+        })
     }
 }
 
@@ -85,6 +95,17 @@ pub enum Polarity {
     Invariant,
     /// constant
     Nonvariant,
+}
+
+impl Display for Polarity {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        f.write_str(match self {
+            Polarity::Covariant => "+",
+            Polarity::Contravariant => "-",
+            Polarity::Invariant => "*",
+            Polarity::Nonvariant => "_",
+        })
+    }
 }
 
 /// Modifier for interactive commands,
