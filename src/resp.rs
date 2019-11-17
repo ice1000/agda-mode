@@ -47,114 +47,110 @@ pub struct FindInstanceCandidate {
     pub value: String,
 }
 
-macro_rules! output_constraint {
-    ($name:ident, $objTy:ty) => {
-        #[serde(tag = "kind")]
-        #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
-        pub enum $name {
-            OfType {
-                #[serde(rename = "constraintObj")]
-                constraint_obj: $objTy,
-                #[serde(rename = "type")]
-                of_type: String,
-            },
-            CmpInType {
-                #[serde(rename = "constraintObjs")]
-                constraint_objs: ($objTy, $objTy),
-                #[serde(rename = "type")]
-                of_type: String,
-                comparison: Comparison,
-            },
-            CmpElim {
-                #[serde(rename = "constraintObjs")]
-                constraint_objs: (Vec<$objTy>, Vec<$objTy>),
-                #[serde(rename = "type")]
-                of_type: String,
-                polarities: Vec<Polarity>,
-            },
-            JustType {
-                #[serde(rename = "constraintObj")]
-                constraint_obj: $objTy,
-            },
-            JustSort {
-                #[serde(rename = "constraintObj")]
-                constraint_obj: $objTy,
-            },
-            CmpTypes {
-                #[serde(rename = "constraintObjs")]
-                constraint_objs: ($objTy, $objTy),
-                comparison: Comparison,
-            },
-            CmpLevels {
-                #[serde(rename = "constraintObjs")]
-                constraint_objs: ($objTy, $objTy),
-                comparison: Comparison,
-            },
-            CmpTeles {
-                #[serde(rename = "constraintObjs")]
-                constraint_objs: ($objTy, $objTy),
-                comparison: Comparison,
-            },
-            CmpSorts {
-                #[serde(rename = "constraintObjs")]
-                constraint_objs: ($objTy, $objTy),
-                comparison: Comparison,
-            },
-            Guard {
-                constraint_objs: Box<$name>,
-                problem: String,
-            },
-            Assign {
-                #[serde(rename = "constraintObj")]
-                constraint_obj: $objTy,
-                value: String,
-            },
-            TypedAssign {
-                #[serde(rename = "constraintObj")]
-                constraint_obj: $objTy,
-                #[serde(rename = "type")]
-                of_type: String,
-                value: String,
-            },
-            PostponedCheckArgs {
-                #[serde(rename = "constraintObj")]
-                constraint_obj: $objTy,
-                #[serde(rename = "ofType")]
-                of_type: String,
-                #[serde(rename = "type")]
-                the_type: String,
-                arguments: Vec<String>,
-            },
-            IsEmptyType {
-                #[serde(rename = "type")]
-                the_type: String,
-            },
-            SizeLtSat {
-                #[serde(rename = "type")]
-                the_type: String,
-            },
-            FindInstanceOF {
-                #[serde(rename = "constraintObj")]
-                constraint_obj: $objTy,
-                #[serde(rename = "type")]
-                of_type: String,
-                candidates: Vec<FindInstanceCandidate>,
-            },
-            PTSInstance {
-                #[serde(rename = "constraintObjs")]
-                constraint_objs: ($objTy, $objTy),
-            },
-            PostponedCheckFunDef {
-                name: String,
-                #[serde(rename = "type")]
-                of_type: String,
-            },
-        }
-    };
+#[serde(tag = "kind")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub enum OutputConstraint<Obj> {
+    OfType {
+        #[serde(rename = "constraintObj")]
+        constraint_obj: Obj,
+        #[serde(rename = "type")]
+        of_type: String,
+    },
+    CmpInType {
+        #[serde(rename = "constraintObjs")]
+        constraint_objs: (Obj, Obj),
+        #[serde(rename = "type")]
+        of_type: String,
+        comparison: Comparison,
+    },
+    CmpElim {
+        #[serde(rename = "constraintObjs")]
+        constraint_objs: (Vec<Obj>, Vec<Obj>),
+        #[serde(rename = "type")]
+        of_type: String,
+        polarities: Vec<Polarity>,
+    },
+    JustType {
+        #[serde(rename = "constraintObj")]
+        constraint_obj: Obj,
+    },
+    JustSort {
+        #[serde(rename = "constraintObj")]
+        constraint_obj: Obj,
+    },
+    CmpTypes {
+        #[serde(rename = "constraintObjs")]
+        constraint_objs: (Obj, Obj),
+        comparison: Comparison,
+    },
+    CmpLevels {
+        #[serde(rename = "constraintObjs")]
+        constraint_objs: (Obj, Obj),
+        comparison: Comparison,
+    },
+    CmpTeles {
+        #[serde(rename = "constraintObjs")]
+        constraint_objs: (Obj, Obj),
+        comparison: Comparison,
+    },
+    CmpSorts {
+        #[serde(rename = "constraintObjs")]
+        constraint_objs: (Obj, Obj),
+        comparison: Comparison,
+    },
+    Guard {
+        constraint_objs: Box<OutputConstraint<Obj>>,
+        problem: String,
+    },
+    Assign {
+        #[serde(rename = "constraintObj")]
+        constraint_obj: Obj,
+        value: String,
+    },
+    TypedAssign {
+        #[serde(rename = "constraintObj")]
+        constraint_obj: Obj,
+        #[serde(rename = "type")]
+        of_type: String,
+        value: String,
+    },
+    PostponedCheckArgs {
+        #[serde(rename = "constraintObj")]
+        constraint_obj: Obj,
+        #[serde(rename = "ofType")]
+        of_type: String,
+        #[serde(rename = "type")]
+        the_type: String,
+        arguments: Vec<String>,
+    },
+    IsEmptyType {
+        #[serde(rename = "type")]
+        the_type: String,
+    },
+    SizeLtSat {
+        #[serde(rename = "type")]
+        the_type: String,
+    },
+    FindInstanceOF {
+        #[serde(rename = "constraintObj")]
+        constraint_obj: Obj,
+        #[serde(rename = "type")]
+        of_type: String,
+        candidates: Vec<FindInstanceCandidate>,
+    },
+    PTSInstance {
+        #[serde(rename = "constraintObjs")]
+        constraint_objs: (Obj, Obj),
+    },
+    PostponedCheckFunDef {
+        name: String,
+        #[serde(rename = "type")]
+        of_type: String,
+    },
 }
 
-output_constraint!(VisibleGoal, InteractionPoint);
-output_constraint!(InvisibleGoal, String);
+pub type VisibleGoal = OutputConstraint<InteractionPoint>;
+pub type InvisibleGoal = OutputConstraint<String>;
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
