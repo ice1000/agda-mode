@@ -21,9 +21,9 @@ pub fn init_agda_process(agda_program: &str) -> io::Result<ProcessStdio> {
         .stdout(Stdio::piped())
         .stdin(Stdio::piped())
         .spawn()?; // cannot spawn
-    // These should not panic, because both stdio are piped
     let stdin = process.stdin().take().expect("Failed to pipe stdin");
     let stdout = process.stdout().take().expect("Failed to pipe stdout");
+    // The above two should not panic, because both stdio are piped
     Ok(ProcessStdio(process, JustStdio(stdin, stdout)))
 }
 

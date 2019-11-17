@@ -45,10 +45,46 @@ pub enum ComputeMode {
     UseShowInstance,
 }
 
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum Comparison {
+    CmpEq,
+    CmpLeq,
+}
+
 impl Default for ComputeMode {
     fn default() -> Self {
         ComputeMode::DefaultCompute
     }
+}
+
+/// An extension of [`Comparison`](self::Comparison) to `>=`.
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum CompareDirection {
+    DirEq,
+    DirLeq,
+    DirGeq,
+}
+
+impl From<Comparison> for CompareDirection {
+    fn from(from: Comparison) -> Self {
+        match from {
+            Comparison::CmpEq => CompareDirection::DirEq,
+            Comparison::CmpLeq => CompareDirection::DirLeq,
+        }
+    }
+}
+
+/// Polarity for equality and subtype checking.
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum Polarity {
+    /// monotone
+    Covariant,
+    /// antitone
+    Contravariant,
+    /// no information (mixed variance)
+    Invariant,
+    /// constant
+    Nonvariant,
 }
 
 /// Modifier for interactive commands,
