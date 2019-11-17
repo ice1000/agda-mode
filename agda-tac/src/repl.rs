@@ -1,4 +1,4 @@
-use agda_mode::agda::ReplState;
+use agda_mode::agda::{preprint_agda_result, ReplState};
 use agda_mode::base::InteractionPoint;
 use agda_mode::cmd::{Cmd, GoalInput};
 use agda_mode::resp::{DisplayInfo, GoalInfo, GoalSpecific};
@@ -28,16 +28,12 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         Infer(i, new) => {
             let command = Cmd::infer(GoalInput::no_range(i, new.to_owned()));
             agda.agda.command(command).await?;
-            match agda.agda.next_goal_specific().await? {
-                Ok(gs) => match gs.goal_info {
+            preprint_agda_result(agda.agda.next_goal_specific().await?, |gs| {
+                match gs.goal_info {
                     GoalInfo::InferredType { expr } => println!("{} : {}", new, expr),
                     _ => unreachable!(),
-                },
-                Err(msg) => {
-                    eprintln!("Errors:");
-                    eprintln!("{}", msg);
                 }
-            }
+            });
         }
         Reload => reload(agda).await?,
         Help => {
@@ -61,32 +57,26 @@ pub async fn reload(agda: &mut Repl) -> Monad {
 }
 
 pub async fn poll_goals(agda: &mut ReplState) -> Monad {
-    match agda.next_all_goals_warnings().await? {
-        Ok(agw) => {
-            if agw.visible_goals.is_empty() {
-                println!("No goals.");
-            } else {
-                println!("Goals:");
-            }
-            for goal in agw.visible_goals {
-                // I believe `goal` will always be `OfType`.
-                match goal.try_as_of_type() {
-                    Ok(ok) => println!("?{} : {}", ok.constraint_obj, ok.of_type),
-                    Err(bad) => eprintln!("[WARN]: unexpected goal: {:?}", bad),
-                }
-            }
-            if !agw.invisible_goals.is_empty() {
-                println!("Unsolved metas:");
-            }
-            for meta in agw.invisible_goals {
-                println!("{}", meta);
+    preprint_agda_result(agda.next_all_goals_warnings().await?, |agw| {
+        if agw.visible_goals.is_empty() {
+            println!("No goals.");
+        } else {
+            println!("Goals:");
+        }
+        for goal in agw.visible_goals {
+            // I believe `goal` will always be `OfType`.
+            match goal.try_as_of_type() {
+                Ok(ok) => println!("?{} : {}", ok.constraint_obj, ok.of_type),
+                Err(bad) => eprintln!("[WARN]: unexpected goal: {:?}", bad),
             }
         }
-        Err(err_msg) => {
-            eprintln!("Errors:");
-            eprintln!("{}", err_msg);
+        if !agw.invisible_goals.is_empty() {
+            println!("Unsolved metas:");
         }
-    }
+        for meta in agw.invisible_goals {
+            println!("{}", meta);
+        }
+    });
     Ok(())
 }
 

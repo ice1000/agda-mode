@@ -107,6 +107,16 @@ pub type AgdaResult<T> = Result<T, String>;
 /// Return type of `next_*` functions.
 pub type NextResult<T> = io::Result<AgdaResult<T>>;
 
+pub fn preprint_agda_result<T>(t: AgdaResult<T>, f: impl FnOnce(T)) {
+    match t {
+        Ok(o) => {f(o)},
+        Err(e) => {
+            eprintln!("Errors:");
+            eprintln!("{}", e);
+        },
+    }
+}
+
 impl ReplState {
     pub async fn start(agda_program: &str, file: String) -> io::Result<Self> {
         let JustStdio(stdin, out) = start_agda(agda_program);
