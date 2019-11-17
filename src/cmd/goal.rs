@@ -80,6 +80,15 @@ pub struct InputWithRewrite {
     pub input: GoalInput,
 }
 
+impl From<GoalInput> for InputWithRewrite {
+    fn from(input: GoalInput) -> Self {
+        InputWithRewrite {
+            input,
+            rewrite: Default::default(),
+        }
+    }
+}
+
 impl Display for InputWithRewrite {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         write!(f, "{:?} {}", self.rewrite, self.input)

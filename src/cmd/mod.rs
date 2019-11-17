@@ -44,10 +44,7 @@ pub enum Cmd {
     SolveAll(Rewrite),
     /// Solve the goal at point whose value is determined by
     /// the constraints.
-    SolveOne {
-        rewrite: Rewrite,
-        input: GoalInput,
-    },
+    SolveOne(InputWithRewrite),
     /// Solve the goal at point by using Auto.
     AutoOne(GoalInput),
     /// Solve all goals by using Auto.
@@ -128,48 +125,24 @@ pub enum Cmd {
         dunno: bool,
         input: GoalInput,
     },
-    Context {
-        rewrite: Rewrite,
-        input: GoalInput,
-    },
+    Context(InputWithRewrite),
     HelperFunction(InputWithRewrite),
-    Infer {
-        rewrite: Rewrite,
-        input: GoalInput,
-    },
-    GoalType {
-        rewrite: Rewrite,
-        input: GoalInput,
-    },
+    Infer(InputWithRewrite),
+    GoalType(InputWithRewrite),
     /// Grabs the current goal's type and checks the expression in the hole
     /// against it. Returns the elaborated term.
-    ElaborateGive {
-        rewrite: Rewrite,
-        input: GoalInput,
-    },
+    ElaborateGive(InputWithRewrite),
     /// Displays the current goal and context.
-    GoalTypeContext {
-        rewrite: Rewrite,
-        input: GoalInput,
-    },
+    GoalTypeContext(InputWithRewrite),
     /// Displays the current goal and context **and** infers the type of an
     /// expression.
-    GoalTypeContextInfer {
-        rewrite: Rewrite,
-        input: GoalInput,
-    },
+    GoalTypeContextInfer(InputWithRewrite),
     /// Grabs the current goal's type and checks the expression in the hole
     /// against it
-    GoalTypeContextCheck {
-        rewrite: Rewrite,
-        input: GoalInput,
-    },
+    GoalTypeContextCheck(InputWithRewrite),
     /// Shows all the top-level names in the given module, along with
     /// their types. Uses the scope of the given goal.
-    ShowModuleContents {
-        rewrite: Rewrite,
-        input: GoalInput,
-    },
+    ShowModuleContents(InputWithRewrite),
     MakeCase(GoalInput),
     Compute {
         compute_mode: ComputeMode,
@@ -194,18 +167,12 @@ impl Cmd {
 
     /// Produces [CurrentGoal](crate::resp::GoalInfo::CurrentGoal).
     pub fn goal_type(input: GoalInput) -> Self {
-        Cmd::GoalType {
-            rewrite: Default::default(),
-            input,
-        }
+        Cmd::GoalType(From::from(input))
     }
 
     /// Produces [InferredType](crate::resp::GoalInfo::InferredType).
     pub fn infer(input: GoalInput) -> Self {
-        Cmd::Infer {
-            rewrite: Default::default(),
-            input,
-        }
+        Cmd::Infer(From::from(input))
     }
 
     pub fn give(input: GoalInput) -> Self {
@@ -239,7 +206,7 @@ impl Display for Cmd {
                 rewrite, search
             ),
             SolveAll(rewrite) => write!(f, "( Cmd_solveAll {:?} )", rewrite),
-            SolveOne { rewrite, input } => write!(f, "( Cmd_solveOne {:?} {} )", rewrite, input),
+            SolveOne(info) => write!(f, "( Cmd_solveOne {} )", info),
             AutoOne(input) => write!(f, "( Cmd_autoOne {} )", input),
             AutoAll => f.write_str("Cmd_autoAll"),
             InferToplevel { rewrite, code } => {
@@ -268,25 +235,15 @@ impl Display for Cmd {
                 HaskellBool::from(*dunno),
                 input
             ),
-            Context { rewrite, input } => write!(f, "( Cmd_context {:?} {} )", rewrite, input),
+            Context(info) => write!(f, "( Cmd_context {} )", info),
             HelperFunction(info) => write!(f, "( Cmd_helper_function {} )", info),
-            Infer { rewrite, input } => write!(f, "( Cmd_infer {:?} {} )", rewrite, input),
-            GoalType { rewrite, input } => write!(f, "( Cmd_goal_type {:?} {} )", rewrite, input),
-            ElaborateGive { rewrite, input } => {
-                write!(f, "( Cmd_elaborate_give {:?} {} )", rewrite, input)
-            }
-            GoalTypeContext { rewrite, input } => {
-                write!(f, "( Cmd_goal_type_context {:?} {} )", rewrite, input)
-            }
-            GoalTypeContextInfer { rewrite, input } => {
-                write!(f, "( Cmd_goal_type_context_infer {:?} {} )", rewrite, input)
-            }
-            GoalTypeContextCheck { rewrite, input } => {
-                write!(f, "( Cmd_goal_type_context_check {:?} {} )", rewrite, input)
-            }
-            ShowModuleContents { rewrite, input } => {
-                write!(f, "( Cmd_show_module_contents {:?} {} )", rewrite, input)
-            }
+            Infer(info) => write!(f, "( Cmd_infer {} )", info),
+            GoalType(info) => write!(f, "( Cmd_goal_type {} )", info),
+            ElaborateGive(info) => write!(f, "( Cmd_elaborate_give {} )", info),
+            GoalTypeContext(info) => write!(f, "( Cmd_goal_type_context {} )", info),
+            GoalTypeContextInfer(info) => write!(f, "( Cmd_goal_type_context_infer {} )", info),
+            GoalTypeContextCheck(info) => write!(f, "( Cmd_goal_type_context_check {} )", info),
+            ShowModuleContents(info) => write!(f, "( Cmd_show_module_contents {} )", info),
             MakeCase(input) => write!(f, "( Cmd_make_case {} )", input),
             Compute {
                 compute_mode,
