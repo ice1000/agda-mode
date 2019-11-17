@@ -1,15 +1,17 @@
-use either::Either;
 use serde::{Deserialize, Serialize};
 
 use crate::base::InteractionPoint;
 
 pub use self::di::*;
+pub use self::give::*;
 pub use self::goal::*;
 pub use self::hl::*;
 pub use self::oc::*;
 
 /// Display info.
 mod di;
+/// About the "Give" action.
+mod give;
 /// Goal information.
 mod goal;
 /// Highlighting.
@@ -37,26 +39,6 @@ pub enum MakeCaseVariant {
     ExtendedLambda,
 }
 
-/// Result of a "give" action.
-///
-/// The structure is very mysterious.
-#[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
-pub struct GiveResult {
-    pub str: Option<String>,
-    pub paren: Option<bool>,
-}
-
-impl GiveResult {
-    pub fn into_either(self) -> Either<String, bool> {
-        match (self.str, self.paren) {
-            (Some(s), None) => Either::Left(s),
-            (None, Some(b)) => Either::Right(b),
-            _ => unreachable!(),
-        }
-    }
-}
-
 /// Agda response.
 ///
 /// TODO: This enum is incomplete, contribution is welcomed.
@@ -75,12 +57,7 @@ pub enum Resp {
         #[serde(rename = "interactionPoints")]
         interaction_points: Vec<InteractionPoint>,
     },
-    GiveAction {
-        #[serde(rename = "giveResult")]
-        give_result: GiveResult,
-        #[serde(rename = "interactionPoint")]
-        interaction_point: InteractionPoint,
-    },
+    GiveAction(GiveAction),
     /// Response is list of printed clauses.
     MakeCase {
         variant: MakeCaseVariant,
