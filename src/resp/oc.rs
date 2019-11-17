@@ -242,6 +242,16 @@ impl<Obj: Display> Display for TypedAssign<Obj> {
     }
 }
 
+impl<Obj: Display> Display for PostponedCheckArgs<Obj> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{} := ({}", self.constraint_obj, self.of_type)?;
+        for argument in &self.arguments {
+            write!(f, " {}", argument)?;
+        }
+        write!(f, ") ?: {}", self.the_type)
+    }
+}
+
 impl<Obj: Display + std::fmt::Debug> Display for OutputConstraint<Obj> {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         use OutputConstraint::*;
@@ -273,7 +283,7 @@ impl<Obj: Display + std::fmt::Debug> Display for OutputConstraint<Obj> {
                 value,
             } => write!(f, "{} := {}", constraint_obj, value),
             TypedAssign(o) => o.fmt(f),
-            PostponedCheckArgs(_) => unimplemented!(),
+            PostponedCheckArgs(o) => o.fmt(f),
             IsEmptyType { the_type } => write!(f, "Is empty: {}", the_type),
             SizeLtSat { the_type } => write!(f, "Not empty type of sizes: {}", the_type),
             FindInstanceOF(_) => unimplemented!(),
