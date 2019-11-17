@@ -1,7 +1,7 @@
 use agda_mode::agda::ReplState;
 use agda_mode::base::InteractionPoint;
 use agda_mode::cmd::{Cmd, GoalInput};
-use agda_mode::resp::{DisplayInfo, GoalInfo};
+use agda_mode::resp::{DisplayInfo, GoalInfo, GoalSpecific};
 
 use crate::file_io::{Monad, Repl};
 use crate::input::UserInput;
@@ -28,7 +28,16 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         Infer(i, new) => {
             let command = Cmd::infer(GoalInput::no_range(i, new.to_owned()));
             agda.agda.command(command).await?;
-            // TODO: check for error message & successful give result
+            match agda.agda.next_goal_specific().await? {
+                Ok(gs) => match gs.goal_info {
+                    GoalInfo::InferredType { expr } => println!("{} : {}", new, expr),
+                    _ => unreachable!(),
+                },
+                Err(msg) => {
+                    eprintln!("Errors:");
+                    eprintln!("{}", msg);
+                }
+            }
         }
         Reload => reload(agda).await?,
         Help => {

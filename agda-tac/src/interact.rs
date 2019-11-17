@@ -51,14 +51,8 @@ pub async fn ion(mut agda: Repl) -> io::Result<()> {
                     }
                 }
                 Err(ReadlineError::Interrupted) => {}
-                Err(ReadlineError::Eof) => {
-                    println!("Interrupted by Ctrl-d");
-                    break Ok(());
-                }
-                Err(err) => {
-                    println!("Error: {:?}", err);
-                    break Ok(());
-                }
+                Err(ReadlineError::Eof) => break Ok(println!("Interrupted")),
+                Err(err) => break Ok(eprintln!("Error: {:?}", err)),
             }
         }
     }
