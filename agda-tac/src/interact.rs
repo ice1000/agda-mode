@@ -35,7 +35,7 @@ pub async fn ion(mut agda: Repl) -> io::Result<()> {
             let mut next = String::new();
             stdin.read_line(&mut next)?;
             if line(&mut agda, next.trim()).await? {
-                break Ok(());
+                break;
             }
         }
     } else {
@@ -60,8 +60,8 @@ pub async fn ion(mut agda: Repl) -> io::Result<()> {
             }
         }
         if let Err(err) = r.save_history(&history_dir) {
-            eprintln!("Failed to load REPL history: {:?}", err)
+            eprintln!("Failed to save REPL history: {:?}", err)
         }
-        Ok(())
     }
+    Ok(())
 }
