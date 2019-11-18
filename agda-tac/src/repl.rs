@@ -27,12 +27,7 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
             let command = Cmd::give(GoalInput::no_range(i, new.to_owned()));
             agda.agda.command(command).await?;
             // TODO: write to buffer
-            preprint_agda_result(agda.agda.next_goal_specific().await?, |gs| {
-                match gs.goal_info {
-                    GoalInfo::InferredType { expr } => println!("{} : {}", new, expr),
-                    _ => unreachable!(),
-                }
-            });
+            preprint_agda_result(agda.agda.next_give_action().await?, |gs| unimplemented!());
         }
         Infer(i, new) => {
             let command = Cmd::infer(GoalInput::no_range(i, new.to_owned()));

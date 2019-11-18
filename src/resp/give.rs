@@ -8,8 +8,8 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct GiveResult {
-    pub str: Option<String>,
-    pub paren: Option<bool>,
+    str: Option<String>,
+    paren: Option<bool>,
 }
 
 impl GiveResult {

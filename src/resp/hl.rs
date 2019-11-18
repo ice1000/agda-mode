@@ -33,9 +33,9 @@ pub struct Highlighting {
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct HighlightingInfo {
-    pub info: Option<Highlighting>,
-    pub filepath: Option<String>,
-    pub direct: bool,
+    info: Option<Highlighting>,
+    filepath: Option<String>,
+    direct: bool,
 }
 
 impl HighlightingInfo {
