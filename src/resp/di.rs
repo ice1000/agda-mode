@@ -1,17 +1,17 @@
 use super::{GoalSpecific, InvisibleGoal, ResponseContextEntry, VisibleGoal};
 use crate::base::ComputeMode;
 use crate::pos::InteractionPoint;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct CommandState {
     pub interaction_points: Vec<InteractionPoint>,
     pub current_file: String,
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct InferredType {
     pub command_state: CommandState,
     pub time: String,
@@ -19,7 +19,7 @@ pub struct InferredType {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct NormalForm {
     pub compute_mode: ComputeMode,
     pub command_state: CommandState,
@@ -28,14 +28,14 @@ pub struct NormalForm {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct Context {
     interaction_point: InteractionPoint,
     context: Vec<ResponseContextEntry>,
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct AgdaError {
     pub message: Option<String>,
 }
@@ -53,7 +53,7 @@ impl<Ok> Into<Result<Ok, String>> for AgdaError {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct AllGoalsWarnings {
     pub visible_goals: Vec<VisibleGoal>,
     pub invisible_goals: Vec<InvisibleGoal>,
@@ -64,7 +64,7 @@ pub struct AllGoalsWarnings {
 /// Something that is displayed in the Emacs mode,
 /// serialized with more details.
 #[serde(tag = "kind")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum DisplayInfo {
     CompilationOk {
         warnings: String,

@@ -1,9 +1,9 @@
 use crate::base::{ComputeMode, Rewrite};
 use crate::pos::InteractionPoint;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct ResponseContextEntry {
     pub original_name: String,
     pub reified_name: String,
@@ -12,7 +12,7 @@ pub struct ResponseContextEntry {
 }
 
 #[serde(tag = "kind")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum GoalTypeAux {
     GoalOnly,
     GoalAndHave { expr: String },
@@ -20,7 +20,7 @@ pub enum GoalTypeAux {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct GoalType {
     pub rewrite: Rewrite,
     pub type_aux: GoalTypeAux,
@@ -32,7 +32,7 @@ pub struct GoalType {
 
 /// Information about one goal.
 #[serde(tag = "kind")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum GoalInfo {
     HelperFunction {
         signature: String,
@@ -54,7 +54,7 @@ pub enum GoalInfo {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct GoalSpecific {
     pub interaction_point: InteractionPoint,
     pub goal_info: GoalInfo,

@@ -1,12 +1,12 @@
 use crate::base::TokenBased;
 use crate::pos::IntPos;
 use either::Either;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 /// A token highlighting information.
 /// The token is somehow called `Aspect` in Agda.
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct AspectHighlight {
     pub range: (IntPos, IntPos),
     pub atoms: Vec<String>,
@@ -17,7 +17,7 @@ pub struct AspectHighlight {
 
 /// Jump to library definition information.
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct DefinitionSite {
     pub filepath: String,
     pub position: IntPos,
@@ -25,14 +25,14 @@ pub struct DefinitionSite {
 
 /// A list of token highlighting information.
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct Highlighting {
     pub remove: bool,
     pub payload: Vec<AspectHighlight>,
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct HighlightingInfo {
     info: Option<Highlighting>,
     filepath: Option<String>,

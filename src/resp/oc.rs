@@ -1,10 +1,10 @@
 use crate::base::{Comparison, Polarity};
 use crate::pos::InteractionPoint;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::fmt::{Display, Error, Formatter};
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct FindInstanceCandidate {
     #[serde(rename = "type")]
     pub of_type: String,
@@ -12,13 +12,13 @@ pub struct FindInstanceCandidate {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct JustSomething<Obj> {
     pub constraint_obj: Obj,
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct PostponedCheckArgs<Obj> {
     pub constraint_obj: Obj,
     pub of_type: String,
@@ -28,14 +28,14 @@ pub struct PostponedCheckArgs<Obj> {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct CmpSomething<Obj> {
     pub constraint_objs: (Obj, Obj),
     pub comparison: Comparison,
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct FindInstanceOF<Obj> {
     pub constraint_obj: Obj,
     #[serde(rename = "type")]
@@ -44,7 +44,7 @@ pub struct FindInstanceOF<Obj> {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct TypedAssign<Obj> {
     pub constraint_obj: Obj,
     #[serde(rename = "type")]
@@ -53,7 +53,7 @@ pub struct TypedAssign<Obj> {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct OfType<Obj> {
     pub constraint_obj: Obj,
     #[serde(rename = "type")]
@@ -61,7 +61,7 @@ pub struct OfType<Obj> {
 }
 
 #[serde(tag = "kind")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum OutputConstraint<Obj> {
     OfType(OfType<Obj>),
     CmpInType {

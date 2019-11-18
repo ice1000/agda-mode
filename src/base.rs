@@ -1,9 +1,9 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::fmt::{Display, Error, Formatter};
 
 /// Modifier for interactive commands,
 /// specifying the amount of normalization in the output.
-#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Rewrite {
     AsIs,
     Instantiated,
@@ -20,7 +20,7 @@ impl Default for Rewrite {
 
 /// Modifier for the interactive computation command,
 /// specifying the mode of computation and result display.
-#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum ComputeMode {
     DefaultCompute,
     IgnoreAbstract,
@@ -33,7 +33,7 @@ impl Default for ComputeMode {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Comparison {
     CmpEq,
     CmpLeq,
@@ -49,7 +49,7 @@ impl Display for Comparison {
 }
 
 /// An extension of [`Comparison`](self::Comparison) to `>=`.
-#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum CompareDirection {
     DirEq,
     DirLeq,
@@ -66,7 +66,7 @@ impl From<Comparison> for CompareDirection {
 }
 
 /// Polarity for equality and subtype checking.
-#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Polarity {
     /// monotone
     Covariant,
@@ -91,7 +91,7 @@ impl Display for Polarity {
 
 /// Modifier for interactive commands,
 /// specifying whether safety checks should be ignored.
-#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum UseForce {
     /// Ignore additional checks, like termination/positivity...
     WithForce,
@@ -99,7 +99,7 @@ pub enum UseForce {
     WithoutForce,
 }
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Remove {
     Remove,
     Keep,
@@ -107,7 +107,7 @@ pub enum Remove {
 
 /// Is the highlighting "token-based", i.e. based only on
 /// information from the lexer?
-#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum TokenBased {
     TokenBased,
     NotOnlyTokenBased,
@@ -119,7 +119,7 @@ impl Default for TokenBased {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum HaskellBool {
     True,
     False,

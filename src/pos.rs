@@ -1,11 +1,11 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::fmt::{Display, Error, Formatter};
 
 pub type IntPos = i32;
 
 /// A position in the file.
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct Pos {
     pub pos: u32,
     pub line: u32,
@@ -13,7 +13,7 @@ pub struct Pos {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct Interval {
     pub file: Option<String>,
     pub start: Pos,
@@ -24,7 +24,7 @@ pub struct Interval {
 pub type InteractionId = i32;
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct InteractionPoint {
     pub id: InteractionId,
     pub range: Vec<Interval>,

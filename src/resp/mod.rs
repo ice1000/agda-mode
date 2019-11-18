@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 use crate::pos::InteractionPoint;
 
@@ -20,13 +20,13 @@ mod hl;
 mod oc;
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct Status {
     pub show_implicit_arguments: bool,
     pub checked: bool,
 }
 
-#[derive(Serialize, Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum MakeCaseVariant {
     Function,
     ExtendedLambda,
@@ -36,7 +36,7 @@ pub enum MakeCaseVariant {
 ///
 /// TODO: This enum is incomplete, contribution is welcomed.
 #[serde(tag = "kind")]
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum Resp {
     HighlightingInfo(HighlightingInfo),
     Status {
