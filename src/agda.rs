@@ -5,10 +5,10 @@ use serde::Deserialize;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
 
-use crate::pos::InteractionPoint;
 use crate::cmd::{Cmd, IOTCM};
 use crate::debug::{debug_command, debug_response};
-use crate::resp::{AllGoalsWarnings, DisplayInfo, GoalSpecific, Resp, GiveAction};
+use crate::pos::InteractionPoint;
+use crate::resp::{AllGoalsWarnings, DisplayInfo, GiveAction, GoalSpecific, Resp};
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";
@@ -97,6 +97,7 @@ pub struct ReplState {
     pub stdin: ChildStdin,
     pub agda: AgdaRead,
     pub file: String,
+    interaction_points: Vec<InteractionPoint>,
     iotcm: IOTCM,
 }
 
@@ -128,12 +129,12 @@ impl ReplState {
     ) -> io::Result<Self> {
         let iotcm = load_file(file.clone());
         send_command(&mut stdin, &iotcm).await?;
-        let agda = AgdaRead::from(stdout);
         Ok(Self {
             file,
             iotcm,
             stdin,
-            agda,
+            interaction_points: vec![],
+            agda: AgdaRead::from(stdout),
         })
     }
 
@@ -165,19 +166,29 @@ impl ReplState {
         }
     }
 
+    /// Returns the latest [`next_goals`](Self::next_goals) result.
+    pub fn interaction_points(&self) -> &[InteractionPoint] {
+        &self.interaction_points
+    }
+
     /// Skip information until the next interaction point (goal) list.
-    pub async fn next_goals(&mut self) -> NextResult<Vec<InteractionPoint>> {
-        use crate::resp::DisplayInfo::Error as DisError;
+    /// The result can be queried via [`interaction_points`](Self::interaction_points).
+    ///
+    /// # Note
+    ///
+    /// This information normally comes right after `all_goals_warnings`,
+    /// and when you call [`next_all_goals_warnings`](Self::next_all_goals_warnings),
+    /// you've already eliminated errors.
+    /// Therefore this method don't deal with errors.
+    pub async fn next_goals(&mut self) -> io::Result<()> {
         use Resp::*;
-        loop {
+        self.interaction_points = loop {
             match self.response().await? {
-                InteractionPoints { interaction_points } => break Ok(Ok(interaction_points)),
-                DisplayInfo {
-                    info: Some(DisError(e)),
-                } => break Ok(e.into()),
+                InteractionPoints { interaction_points } => break interaction_points,
                 _ => {}
             }
-        }
+        };
+        Ok(())
     }
 
     /// Skip information until the next give-action info.
@@ -202,7 +213,7 @@ impl ReplState {
         loop {
             match self.next_display_info().await? {
                 DisError(e) => break Ok(e.into()),
-                DisGS(payload) => break Ok(Ok(payload)),
+                DisGS(gs) => break Ok(Ok(gs)),
                 _ => {}
             }
         }
@@ -215,7 +226,7 @@ impl ReplState {
         loop {
             match self.next_display_info().await? {
                 DisError(e) => break Ok(e.into()),
-                DisAGW(payload) => break Ok(Ok(payload)),
+                DisAGW(agw) => break Ok(Ok(agw)),
                 _ => {}
             }
         }

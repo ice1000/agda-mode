@@ -1,7 +1,7 @@
 use agda_mode::agda::{preprint_agda_result, ReplState};
 use agda_mode::base::ComputeMode;
 use agda_mode::cmd::{Cmd, GoalInput};
-use agda_mode::pos::{InteractionId};
+use agda_mode::pos::InteractionId;
 use agda_mode::resp::GoalInfo;
 
 use crate::file_io::{Monad, Repl};
@@ -109,7 +109,7 @@ pub async fn poll_goals(agda: &mut ReplState) -> Monad {
             println!("{}", meta);
         }
     });
-    Ok(())
+    agda.next_goals().await
 }
 
 async fn finish(agda: &mut ReplState) -> Monad {

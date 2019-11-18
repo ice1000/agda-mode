@@ -1,5 +1,5 @@
 use crate::base::{Comparison, Polarity};
-use crate::pos::InteractionPoint;
+use crate::pos::InteractionId;
 use serde::Deserialize;
 use std::fmt::{Display, Error, Formatter};
 
@@ -115,7 +115,7 @@ pub enum OutputConstraint<Obj> {
     },
 }
 
-pub type VisibleGoal = OutputConstraint<InteractionPoint>;
+pub type VisibleGoal = OutputConstraint<InteractionId>;
 pub type InvisibleGoal = OutputConstraint<String>;
 
 impl<Obj> OutputConstraint<Obj> {
