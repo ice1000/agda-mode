@@ -39,6 +39,9 @@ pub mod base;
 /// Debugging utilities.
 pub mod debug;
 
+/// Position types, used in both `resp` & `cmd`.
+pub mod pos;
+
 /// Response data types (output of Agda).
 pub mod resp;
 

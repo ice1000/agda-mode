@@ -1,4 +1,5 @@
-use crate::base::{ComputeMode, InteractionPoint, Rewrite};
+use crate::base::{ComputeMode, Rewrite};
+use crate::pos::InteractionPoint;
 use serde::{Deserialize, Serialize};
 
 #[serde(rename_all = "camelCase")]

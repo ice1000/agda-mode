@@ -1,4 +1,5 @@
-use crate::base::{IntPos, TokenBased};
+use crate::base::TokenBased;
+use crate::pos::IntPos;
 use either::Either;
 use serde::{Deserialize, Serialize};
 

@@ -1,4 +1,4 @@
-use agda_mode::base::InteractionId;
+use agda_mode::pos::InteractionId;
 
 /// Parsed user input.
 #[derive(Debug, Clone, Copy)]

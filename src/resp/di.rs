@@ -1,5 +1,6 @@
 use super::{GoalSpecific, InvisibleGoal, ResponseContextEntry, VisibleGoal};
-use crate::base::{ComputeMode, InteractionPoint};
+use crate::base::ComputeMode;
+use crate::pos::InteractionPoint;
 use serde::{Deserialize, Serialize};
 
 #[serde(rename_all = "camelCase")]

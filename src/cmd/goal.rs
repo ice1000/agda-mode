@@ -1,19 +1,6 @@
-use crate::base::{InteractionId, Pos, Rewrite};
+use crate::base::Rewrite;
+use crate::pos::{InteractionId, Pos, Range};
 use std::fmt::{Display, Error, Formatter};
-
-/// IDK why is this needed, but Emacs passes it to Agda.
-/// It's fine to omit this in the commands.
-#[derive(Debug, Clone)]
-pub enum Range {
-    NoRange,
-    Range { file: String, start: Pos, end: Pos },
-}
-
-impl Default for Range {
-    fn default() -> Self {
-        Range::NoRange
-    }
-}
 
 /// Text in the goal.
 #[derive(Debug, Clone)]
@@ -53,11 +40,14 @@ impl Display for Range {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         match self {
             Range::NoRange => f.write_str("noRange"),
-            Range::Range { file, start, end } => write!(
-                f,
-                "(intervalsToRange (Just (mkAbsolute {:?})) [Interval {} {}])",
-                file, start, end
-            ),
+            Range::Range(r) => {
+                write!(f, "(intervalsToRange ")?;
+                match &r.file {
+                    None => f.write_str("Nothing"),
+                    Some(file) => write!(f, "(Just (mkAbsolute {:?}))", file),
+                }?;
+                write!(f, " [Interval {} {}])", r.start, r.end)
+            }
         }
     }
 }

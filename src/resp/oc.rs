@@ -1,4 +1,5 @@
-use crate::base::{Comparison, InteractionPoint, Polarity};
+use crate::base::{Comparison, Polarity};
+use crate::pos::InteractionPoint;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Error, Formatter};
 

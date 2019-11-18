@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::base::InteractionPoint;
+use crate::pos::InteractionPoint;
 
 pub use self::di::*;
 pub use self::give::*;

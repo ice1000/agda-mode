@@ -1,6 +1,7 @@
 use agda_mode::agda::{preprint_agda_result, ReplState};
-use agda_mode::base::{ComputeMode, InteractionPoint, InteractionId};
+use agda_mode::base::ComputeMode;
 use agda_mode::cmd::{Cmd, GoalInput};
+use agda_mode::pos::{InteractionId};
 use agda_mode::resp::GoalInfo;
 
 use crate::file_io::{Monad, Repl};

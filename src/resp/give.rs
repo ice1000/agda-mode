@@ -1,4 +1,4 @@
-use crate::base::InteractionPoint;
+use crate::pos::InteractionPoint;
 use either::Either;
 use serde::{Deserialize, Serialize};
 
