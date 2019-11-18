@@ -5,7 +5,7 @@ pub type IntPos = i32;
 
 /// A position in the file.
 #[serde(rename_all = "camelCase")]
-#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Copy, Default, Debug, Eq, PartialEq)]
 pub struct Pos {
     pub pos: u32,
     pub line: u32,
@@ -39,13 +39,13 @@ impl Display for InteractionPoint {
 /// IDK why is this needed, but Emacs passes it to Agda.
 /// It's fine to omit this in the commands.
 #[derive(Debug, Clone)]
-pub enum Range {
+pub enum AgdaRange {
     NoRange,
     Range(Interval),
 }
 
-impl Default for Range {
+impl Default for AgdaRange {
     fn default() -> Self {
-        Range::NoRange
+        AgdaRange::NoRange
     }
 }

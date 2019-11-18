@@ -1,3 +1,5 @@
+use either::Either;
+
 use agda_mode::agda::{preprint_agda_result, ReplState};
 use agda_mode::base::ComputeMode;
 use agda_mode::cmd::{Cmd, GoalInput};
@@ -16,19 +18,27 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
     use UserInput::*;
     match line {
         Define(function_name) => {
-            agda.append_line(&format!("{} : ?", function_name))?;
-            agda.append_line(&format!("{} = ?", function_name))?;
+            agda.append(&format!("{} : ?\n", function_name))?;
+            agda.append(&format!("{} = ?\n", function_name))?;
             reload(agda).await?;
         }
         RawLine(code) => {
-            agda.append_line(code)?;
+            agda.append(code)?;
+            agda.append("\n")?;
             reload(agda).await?;
         }
         Give(i, new) => {
             let command = Cmd::give(GoalInput::no_range(i, new.to_owned()));
             agda.agda.command(command).await?;
-            // TODO: write to buffer
-            preprint_agda_result(agda.agda.next_give_action().await?, |gs| unimplemented!());
+            preprint_agda_result(agda.agda.next_give_action().await?, |gs| {
+                match gs.give_result.into_either() {
+                    Either::Left(s) => agda.fill_goal_buffer(gs.interaction_point, &s),
+                    Either::Right(b) => unimplemented!(),
+                }
+            });
+            agda.sync_buffer()?;
+            // Poll the goals' information (note in case of errors this won't work)
+            agda.agda.next_goals().await?;
         }
         Infer(i, new) => {
             let command = Cmd::infer(GoalInput::no_range(i, new.to_owned()));

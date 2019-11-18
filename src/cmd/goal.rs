@@ -1,17 +1,17 @@
 use crate::base::Rewrite;
-use crate::pos::{InteractionId, Pos, Range};
+use crate::pos::{AgdaRange, InteractionId, Pos};
 use std::fmt::{Display, Error, Formatter};
 
 /// Text in the goal.
 #[derive(Debug, Clone)]
 pub struct GoalInput {
     id: InteractionId,
-    range: Range,
+    range: AgdaRange,
     code: String,
 }
 
 impl GoalInput {
-    pub fn new(id: InteractionId, range: Range, code: String) -> Self {
+    pub fn new(id: InteractionId, range: AgdaRange, code: String) -> Self {
         GoalInput { id, range, code }
     }
 
@@ -36,11 +36,11 @@ impl Display for Pos {
     }
 }
 
-impl Display for Range {
+impl Display for AgdaRange {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         match self {
-            Range::NoRange => f.write_str("noRange"),
-            Range::Range(r) => {
+            AgdaRange::NoRange => f.write_str("noRange"),
+            AgdaRange::Range(r) => {
                 write!(f, "(intervalsToRange ")?;
                 match &r.file {
                     None => f.write_str("Nothing"),

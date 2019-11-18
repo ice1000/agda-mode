@@ -3,6 +3,7 @@ use std::io::{self, BufWriter, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 
 use agda_mode::agda::ReplState;
+use agda_mode::pos::InteractionPoint;
 use ropey::{Rope, RopeSlice};
 
 const FAIL_CREATE_DEFAULT: &str = "Failed to create default working file";
@@ -29,9 +30,8 @@ pub fn init_module(mut file: String) -> Monad<(File, PathBuf, String)> {
         .map(|s| s.trim())
         .expect("File does not have a name");
     // TODO: check if it's a valid module name
-    let first_line = format!("module {} where", mod_name);
+    let first_line = format!("module {} where\n", mod_name);
     f.write(first_line.as_bytes())?;
-    f.write("\n".as_bytes())?;
     f.flush()?;
     Ok((f, path.to_path_buf().canonicalize()?, first_line))
 }
@@ -85,9 +85,18 @@ impl Repl {
         }
     }
 
-    pub fn append_line_buffer(&mut self, line: &str) {
+    pub fn append_buffer(&mut self, text: &str) {
         let index = self.file_buf.len_chars();
-        self.file_buf.insert(index, line)
+        self.file_buf.insert(index, text)
+    }
+
+    pub fn fill_goal_buffer(&mut self, mut i: InteractionPoint, text: &str) {
+        assert_eq!(i.range.len(), 1);
+        let interval = i.range.remove(0);
+        let start = interval.start.pos as usize - 1;
+        let range = start..interval.end.pos as usize - 1;
+        self.file_buf.remove(range);
+        self.file_buf.insert(start, text);
     }
 
     pub fn insert_line_buffer(&mut self, line_num: usize, line: &str) {
@@ -103,16 +112,14 @@ impl Repl {
         self.file.flush()
     }
 
-    pub fn append_line(&mut self, line: &str) -> Monad {
-        Self::append_line_to_file(&mut self.file, line)?;
-        self.flush_file()?;
-        self.append_line_buffer(line);
-        Ok(())
+    pub fn append(&mut self, text: &str) -> Monad {
+        self.append_buffer(text);
+        Self::append_to_file(&mut self.file, text.as_bytes())?;
+        self.flush_file()
     }
 
-    fn append_line_to_file(file: &mut File, line: &str) -> Monad {
-        file.write(line.as_bytes())?;
-        file.write("\n".as_bytes())?;
+    fn append_to_file(file: &mut File, text: &[u8]) -> Monad {
+        file.write(text)?;
         Ok(())
     }
 
