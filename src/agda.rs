@@ -5,7 +5,7 @@ use serde::Deserialize;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
 
-use crate::base::{InteractionPoint};
+use crate::base::InteractionPoint;
 use crate::cmd::{Cmd, IOTCM};
 use crate::debug::{debug_command, debug_response};
 use crate::resp::{AllGoalsWarnings, DisplayInfo, GoalSpecific, Resp};
@@ -173,8 +173,8 @@ impl ReplState {
             match self.response().await? {
                 InteractionPoints { interaction_points } => break Ok(Ok(interaction_points)),
                 DisplayInfo {
-                    info: Some(DisError { message }),
-                } => break Ok(Err(message.unwrap_or_else(|| "Unknown error".to_owned()))),
+                    info: Some(DisError(e)),
+                } => break Ok(Err(e.into())),
                 _ => {}
             }
         }
@@ -186,9 +186,7 @@ impl ReplState {
         use crate::resp::DisplayInfo::GoalSpecific as DisGS;
         loop {
             match self.next_display_info().await? {
-                DisError { message } => {
-                    break Ok(Err(message.unwrap_or_else(|| "Unknown error".to_owned())));
-                }
+                DisError(e) => break Ok(Err(e.into())),
                 DisGS(payload) => break Ok(Ok(payload)),
                 _ => {}
             }
@@ -201,9 +199,7 @@ impl ReplState {
         use crate::resp::DisplayInfo::Error as DisError;
         loop {
             match self.next_display_info().await? {
-                DisError { message } => {
-                    break Ok(Err(message.unwrap_or_else(|| "Unknown error".to_owned())));
-                }
+                DisError(e) => break Ok(Err(e.into())),
                 DisAGW(payload) => break Ok(Ok(payload)),
                 _ => {}
             }

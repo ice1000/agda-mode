@@ -35,6 +35,18 @@ pub struct Context {
 
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct AgdaError {
+    pub message: Option<String>,
+}
+
+impl Into<String> for AgdaError {
+    fn into(self) -> String {
+        self.message.unwrap_or_else(|| "Unknown error".to_owned())
+    }
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct AllGoalsWarnings {
     pub visible_goals: Vec<VisibleGoal>,
     pub invisible_goals: Vec<InvisibleGoal>,
@@ -58,9 +70,7 @@ pub enum DisplayInfo {
     Time {
         time: String,
     },
-    Error {
-        message: Option<String>,
-    },
+    Error(AgdaError),
     IntroNotFound {
         // TODO
     },
