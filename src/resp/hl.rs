@@ -1,4 +1,4 @@
-use crate::base::{Position, TokenBased};
+use crate::base::{IntPos, TokenBased};
 use either::Either;
 use serde::{Deserialize, Serialize};
 
@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct AspectHighlight {
-    pub range: (Position, Position),
+    pub range: (IntPos, IntPos),
     pub atoms: Vec<String>,
     pub token_based: TokenBased,
     pub note: Option<String>,
@@ -19,7 +19,7 @@ pub struct AspectHighlight {
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct DefinitionSite {
     pub filepath: String,
-    pub position: Position,
+    pub position: IntPos,
 }
 
 /// A list of token highlighting information.

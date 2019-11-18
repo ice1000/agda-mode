@@ -144,5 +144,5 @@ impl Into<bool> for HaskellBool {
     }
 }
 
-pub type Position = i32;
+pub type IntPos = i32;
 pub type InteractionPoint = u32;
