@@ -4,6 +4,7 @@ use agda_mode::base::InteractionPoint;
 #[derive(Debug, Clone, Copy)]
 pub enum UserInput<'a> {
     Define(&'a str),
+    RawLine(&'a str),
     Give(InteractionPoint, &'a str),
     Reload,
     Help,
@@ -16,8 +17,8 @@ pub enum UserInput<'a> {
 }
 
 static VALUES: &[&str] = &[
-    "help", "define", "fill", "give", "reload", "infer", "simpl", "norm", "deduce", "type", "exit",
-    "quit",
+    "help", "define", "line", "fill", "give", "reload", "infer", "simpl", "norm", "deduce", "type",
+    "exit", "quit",
 ];
 
 impl<'a> UserInput<'a> {
@@ -53,6 +54,8 @@ impl<'a> From<&'a str> for UserInput<'a> {
             UserInput::Help
         } else if line.starts_with("define") {
             UserInput::Define(line.trim_start_matches("define").trim_start())
+        } else if line.starts_with("line") {
+            UserInput::RawLine(line.trim_start_matches("line").trim_start())
         } else if line.starts_with("type") {
             match line
                 .trim_start_matches("type")

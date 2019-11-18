@@ -19,6 +19,10 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
             agda.append_line(format!("{} = ?", function_name))?;
             reload(agda).await?;
         }
+        RawLine(code) => {
+            agda.append_line(code.to_owned())?;
+            reload(agda).await?;
+        }
         Give(i, new) => {
             let command = Cmd::give(GoalInput::no_range(i, new.to_owned()));
             agda.agda.command(command).await?;
