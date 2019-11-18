@@ -5,10 +5,9 @@ use serde::Deserialize;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
 
-use crate::base::{
-    debug_command, debug_response, InteractionPoint,
-};
+use crate::base::InteractionPoint;
 use crate::cmd::{Cmd, IOTCM};
+use crate::debug::{debug_command, debug_response};
 use crate::resp::{AllGoalsWarnings, DisplayInfo, GoalSpecific, Resp};
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";

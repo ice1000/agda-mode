@@ -30,6 +30,9 @@ and do async process io handling via `tokio`.
 /// Common types (used in both input/output to Agda).
 pub mod base;
 
+/// Debugging utilities.
+pub mod debug;
+
 /// Response data types (output of Agda).
 pub mod resp;
 

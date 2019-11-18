@@ -1,5 +1,5 @@
 use agda_mode::agda::ReplState;
-use agda_mode::base::{
+use agda_mode::debug::{
     debug_command_via, debug_response_via, dont_debug_command, dont_debug_response,
 };
 
