@@ -9,12 +9,15 @@ pub enum UserInput<'a> {
     Help,
     Exit,
     Infer(InteractionPoint, &'a str),
+    Simplify(InteractionPoint, &'a str),
+    Normalize(InteractionPoint, &'a str),
     Type(InteractionPoint),
     Unknown(Option<&'a str>),
 }
 
 static VALUES: &[&str] = &[
-    "help", "define", "fill", "give", "reload", "infer", "deduce", "type", "exit", "quit",
+    "help", "define", "fill", "give", "reload", "infer", "simpl", "norm", "deduce", "type", "exit",
+    "quit",
 ];
 
 impl<'a> UserInput<'a> {
@@ -63,6 +66,10 @@ impl<'a> From<&'a str> for UserInput<'a> {
             Self::trim_and_parse_to_ip_str(line, "fill", "give", UserInput::Give)
         } else if line.starts_with("infer") || line.starts_with("deduce") {
             Self::trim_and_parse_to_ip_str(line, "infer", "deduce", UserInput::Infer)
+        } else if line.starts_with("simpl") {
+            Self::trim_and_parse_to_ip_str(line, "simpl", "", UserInput::Simplify)
+        } else if line.starts_with("norm") {
+            Self::trim_and_parse_to_ip_str(line, "norm", "", UserInput::Normalize)
         } else if line == "reload" {
             UserInput::Reload
         } else if line == "exit" || line == "quit" {

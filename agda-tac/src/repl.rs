@@ -1,7 +1,7 @@
 use agda_mode::agda::{preprint_agda_result, ReplState};
-use agda_mode::base::InteractionPoint;
+use agda_mode::base::{ComputeMode, InteractionPoint};
 use agda_mode::cmd::{Cmd, GoalInput};
-use agda_mode::resp::{DisplayInfo, GoalInfo, GoalSpecific};
+use agda_mode::resp::GoalInfo;
 
 use crate::file_io::{Monad, Repl};
 use crate::input::UserInput;
@@ -35,6 +35,8 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
                 }
             });
         }
+        Simplify(i, new) => norm(agda, i, new, ComputeMode::DefaultCompute).await?,
+        Normalize(i, new) => norm(agda, i, new, ComputeMode::UseShowInstance).await?,
         Type(i) => {
             let command = Cmd::goal_type(GoalInput::simple(i));
             agda.agda.command(command).await?;
@@ -58,6 +60,21 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         }
     }
     Ok(false)
+}
+
+async fn norm(agda: &mut Repl, i: InteractionPoint, new: &str, mode: ComputeMode) -> Monad {
+    let command = Cmd::Compute {
+        compute_mode: mode,
+        input: GoalInput::no_range(i, new.to_owned()),
+    };
+    agda.agda.command(command).await?;
+    preprint_agda_result(agda.agda.next_goal_specific().await?, |gs| {
+        match gs.goal_info {
+            GoalInfo::NormalForm { expr, .. } => println!("{} --> {}", new, expr),
+            _ => unreachable!(),
+        }
+    });
+    Ok(())
 }
 
 pub async fn reload(agda: &mut Repl) -> Monad {
