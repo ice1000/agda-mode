@@ -30,37 +30,38 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         Give(i, new) => {
             let command = Cmd::give(GoalInput::no_range(i, new.to_owned()));
             agda.agda.command(command).await?;
-            preprint_agda_result(agda.agda.next_give_action().await?, |gs| {
+            if let Some(gs) = preprint_agda_result(agda.agda.next_give_action().await?) {
                 match gs.give_result.into_either() {
                     Either::Left(s) => agda.fill_goal_buffer(gs.interaction_point, &s),
+                    // Don't know yet what to do
                     Either::Right(b) => unimplemented!(),
                 }
-            });
-            agda.sync_buffer()?;
-            // Poll the goals' information (note in case of errors this won't work)
-            agda.agda.next_goals().await?;
+                agda.sync_buffer()?;
+                // Poll the goals' information
+                agda.agda.next_goals().await?;
+            }
         }
         Infer(i, new) => {
             let command = Cmd::infer(GoalInput::no_range(i, new.to_owned()));
             agda.agda.command(command).await?;
-            preprint_agda_result(agda.agda.next_goal_specific().await?, |gs| {
+            if let Some(gs) = preprint_agda_result(agda.agda.next_goal_specific().await?) {
                 match gs.goal_info {
                     GoalInfo::InferredType { expr } => println!("{} : {}", new, expr),
                     _ => unreachable!(),
                 }
-            });
+            }
         }
         Simplify(i, new) => norm(agda, i, new, ComputeMode::DefaultCompute).await?,
         Normalize(i, new) => norm(agda, i, new, ComputeMode::UseShowInstance).await?,
         Type(i) => {
             let command = Cmd::goal_type(GoalInput::simple(i));
             agda.agda.command(command).await?;
-            preprint_agda_result(agda.agda.next_goal_specific().await?, |gs| {
+            if let Some(gs) = preprint_agda_result(agda.agda.next_goal_specific().await?) {
                 match gs.goal_info {
                     GoalInfo::CurrentGoal { the_type, .. } => println!("{}", the_type),
                     _ => unreachable!(),
                 }
-            });
+            }
         }
         Reload => reload(agda).await?,
         Help => {
@@ -83,12 +84,12 @@ async fn norm(agda: &mut Repl, i: InteractionId, new: &str, mode: ComputeMode) -
         input: GoalInput::no_range(i, new.to_owned()),
     };
     agda.agda.command(command).await?;
-    preprint_agda_result(agda.agda.next_goal_specific().await?, |gs| {
+    if let Some(gs) = preprint_agda_result(agda.agda.next_goal_specific().await?) {
         match gs.goal_info {
             GoalInfo::NormalForm { expr, .. } => println!("{} --> {}", new, expr),
             _ => unreachable!(),
         }
-    });
+    }
     Ok(())
 }
 
@@ -99,7 +100,7 @@ pub async fn reload(agda: &mut Repl) -> Monad {
 }
 
 pub async fn poll_goals(agda: &mut ReplState) -> Monad {
-    preprint_agda_result(agda.next_all_goals_warnings().await?, |agw| {
+    if let Some(agw) = preprint_agda_result(agda.next_all_goals_warnings().await?) {
         if agw.visible_goals.is_empty() {
             println!("No goals.");
         } else {
@@ -118,7 +119,7 @@ pub async fn poll_goals(agda: &mut ReplState) -> Monad {
         for meta in agw.invisible_goals {
             println!("{}", meta);
         }
-    });
+    }
     agda.next_goals().await
 }
 

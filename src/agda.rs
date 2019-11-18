@@ -106,12 +106,13 @@ pub type AgdaResult<T> = Result<T, String>;
 /// Return type of `next_*` functions.
 pub type NextResult<T> = io::Result<AgdaResult<T>>;
 
-pub fn preprint_agda_result<T>(t: AgdaResult<T>, f: impl FnOnce(T)) {
+pub fn preprint_agda_result<T>(t: AgdaResult<T>) -> Option<T> {
     match t {
-        Ok(o) => f(o),
+        Ok(o) => Some(o),
         Err(e) => {
             eprintln!("Errors:");
             eprintln!("{}", e);
+            None
         }
     }
 }

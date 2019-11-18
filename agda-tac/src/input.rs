@@ -54,8 +54,8 @@ impl<'a> From<&'a str> for UserInput<'a> {
             UserInput::Help
         } else if line.starts_with("define") {
             UserInput::Define(line.trim_start_matches("define").trim_start())
-        } else if line.starts_with("line") {
-            UserInput::RawLine(line.trim_start_matches("line").trim_start())
+        } else if line.starts_with("line ") {
+            UserInput::RawLine(line.trim_start_matches("line "))
         } else if line.starts_with("type") {
             match line
                 .trim_start_matches("type")
