@@ -5,14 +5,17 @@ use serde::Deserialize;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
 
-use crate::base::{is_debugging_command, is_debugging_response, InteractionPoint};
+use crate::base::{
+    debug_command, debug_response, InteractionPoint,
+};
 use crate::cmd::{Cmd, IOTCM};
-use crate::resp::{AllGoalsWarnings, DisplayInfo, Resp, GoalSpecific};
+use crate::resp::{AllGoalsWarnings, DisplayInfo, GoalSpecific, Resp};
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";
 
 pub struct ProcessStdio(pub Child, pub JustStdio);
+
 pub struct JustStdio(pub ChildStdin, pub ChildStdout);
 
 pub fn init_agda_process(agda_program: &str) -> io::Result<ProcessStdio> {
@@ -48,9 +51,7 @@ pub fn deserialize_agda<'a, T: Deserialize<'a>>(buf: &'a str) -> serde_json::Res
 /// Send an [`IOTCM`](crate::cmd::IOTCM) command to Agda.
 pub async fn send_command(stdin: &mut ChildStdin, command: &IOTCM) -> io::Result<()> {
     let string = command.to_string();
-    if unsafe { is_debugging_command() } {
-        eprint!("[CMD]: {}", string);
-    }
+    unsafe { debug_command(format!("[CMD]: {}", string)) };
     stdin.write(string.as_bytes()).await?;
     stdin.flush().await
 }
@@ -79,9 +80,7 @@ impl AgdaRead {
     /// Take Agda's response from the next line.
     pub async fn response(&mut self) -> io::Result<Resp> {
         self.agda.read_line(&mut self.buf).await?;
-        if unsafe { is_debugging_response() } {
-            eprintln!("[RES]: {}", self.buf);
-        }
+        unsafe { debug_response(format!("[RES]: {}\n", self.buf)) };
         let resp = deserialize_agda(&self.buf)?;
         self.buf.clear();
         Ok(resp)
@@ -109,11 +108,11 @@ pub type NextResult<T> = io::Result<AgdaResult<T>>;
 
 pub fn preprint_agda_result<T>(t: AgdaResult<T>, f: impl FnOnce(T)) {
     match t {
-        Ok(o) => {f(o)},
+        Ok(o) => f(o),
         Err(e) => {
             eprintln!("Errors:");
             eprintln!("{}", e);
-        },
+        }
     }
 }
 
@@ -189,7 +188,7 @@ impl ReplState {
         loop {
             match self.next_display_info().await? {
                 DisError { message } => {
-                    break Ok(Err(message.unwrap_or_else(|| "Unknown error".to_owned())))
+                    break Ok(Err(message.unwrap_or_else(|| "Unknown error".to_owned())));
                 }
                 DisGS(payload) => break Ok(Ok(payload)),
                 _ => {}
@@ -204,7 +203,7 @@ impl ReplState {
         loop {
             match self.next_display_info().await? {
                 DisError { message } => {
-                    break Ok(Err(message.unwrap_or_else(|| "Unknown error".to_owned())))
+                    break Ok(Err(message.unwrap_or_else(|| "Unknown error".to_owned())));
                 }
                 DisAGW(payload) => break Ok(Ok(payload)),
                 _ => {}

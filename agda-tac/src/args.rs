@@ -18,7 +18,7 @@ pub struct CliOptions {
     pub agda: Option<String>,
 
     /// Print all commands that `agda-tac` sends to `agda`
-    #[structopt(long)]
+    #[structopt(alias = "dc", long)]
     pub debug_command: bool,
 
     /// Disable completion/hints/colored output in interaction
@@ -26,7 +26,7 @@ pub struct CliOptions {
     pub plain: bool,
 
     /// Print all responses that `agda` sends to `agda-tac`
-    #[structopt(long)]
+    #[structopt(alias = "dr", long)]
     pub debug_response: bool,
 
     #[structopt(subcommand)]

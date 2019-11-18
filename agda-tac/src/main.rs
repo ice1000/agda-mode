@@ -1,5 +1,7 @@
 use agda_mode::agda::ReplState;
-use agda_mode::base::{debug_command, debug_response};
+use agda_mode::base::{
+    debug_command_via, debug_response_via, dont_debug_command, dont_debug_response,
+};
 
 use crate::file_io::{find_default_unwrap, Repl};
 
@@ -24,8 +26,17 @@ const FAIL_CMD: &str = "Failed to evaluate Agda command";
 async fn main() {
     let args = args::pre();
     unsafe {
-        debug_command(args.debug_command);
-        debug_response(args.debug_response);
+        if args.debug_command {
+            // Maybe we can do some fancy printing
+            debug_command_via(|s| print!("{}", s))
+        } else {
+            dont_debug_command()
+        }
+        if args.debug_response {
+            debug_response_via(|s| print!("{}", s))
+        } else {
+            dont_debug_response()
+        }
     };
     let agda_program = args.agda.as_ref().map_or("agda", |s| &*s);
     let file = match args.file {
