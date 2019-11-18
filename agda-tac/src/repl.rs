@@ -15,12 +15,12 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
     use UserInput::*;
     match line {
         Define(function_name) => {
-            agda.append_line(format!("{} : ?", function_name))?;
-            agda.append_line(format!("{} = ?", function_name))?;
+            agda.append_line(&format!("{} : ?", function_name))?;
+            agda.append_line(&format!("{} = ?", function_name))?;
             reload(agda).await?;
         }
         RawLine(code) => {
-            agda.append_line(code.to_owned())?;
+            agda.append_line(code)?;
             reload(agda).await?;
         }
         Give(i, new) => {

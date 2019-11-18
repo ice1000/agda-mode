@@ -1,8 +1,9 @@
 use std::fs::{create_dir_all, remove_file, File};
-use std::io::{self, Seek, SeekFrom, Write};
+use std::io::{self, BufWriter, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 
 use agda_mode::agda::ReplState;
+use ropey::{Rope, RopeSlice};
 
 const FAIL_CREATE_DEFAULT: &str = "Failed to create default working file";
 
@@ -69,67 +70,41 @@ pub struct Repl {
     pub agda: ReplState,
     pub file: File,
     pub path: PathBuf,
-    file_buf: Vec<String>,
-    last_line: usize,
+    file_buf: Rope,
     pub is_plain: bool,
 }
 
 impl Repl {
     pub fn new(agda: ReplState, file: File, path: PathBuf) -> Self {
-        let file_buf = Vec::with_capacity(5);
         Self {
             agda,
             file,
             path,
-            file_buf,
-            last_line: 0,
+            file_buf: Rope::new(),
             is_plain: false,
         }
     }
 
-    pub fn any_goals_in_buffer(&self) -> bool {
-        self.last_line == self.file_buf.len()
+    pub fn append_line_buffer(&mut self, line: &str) {
+        let index = self.file_buf.len_chars();
+        self.file_buf.insert(index, line)
     }
 
-    pub fn append_line_buffer(&mut self, line: String) {
-        // TODO: support {!!}?
-        if self.any_goals_in_buffer() && !line.contains("?") {
-            self.last_line += 1;
-        }
-        self.file_buf.push(line)
+    pub fn insert_line_buffer(&mut self, line_num: usize, line: &str) {
+        let index = self.file_buf.line_to_char(line_num);
+        self.file_buf.insert(index, line)
     }
 
-    pub fn pop_line_buffer(&mut self) -> Option<String> {
-        if self.any_goals_in_buffer() && self.last_line > 0 {
-            self.last_line -= 1;
-        }
-        self.file_buf.pop()
-    }
-
-    pub fn set_line_buffer(&mut self, line_num: usize, line: String) {
-        if line.contains("?") {
-            self.last_line = line_num.min(self.last_line);
-        }
-        self.file_buf[line_num] = line
-    }
-
-    pub fn insert_line_buffer(&mut self, line_num: usize, line: String) {
-        if line.contains("?") {
-            self.last_line = line_num.min(self.last_line);
-        }
-        self.file_buf.insert(line_num, line)
-    }
-
-    pub fn get_line_buffer(&mut self, line_num: usize) -> &String {
-        &self.file_buf[line_num]
+    pub fn line_in_buffer(&mut self, line_num: usize) -> RopeSlice {
+        self.file_buf.line(line_num)
     }
 
     fn flush_file(&mut self) -> Monad {
         self.file.flush()
     }
 
-    pub fn append_line(&mut self, line: String) -> Monad {
-        Self::append_line_to_file(&mut self.file, &line)?;
+    pub fn append_line(&mut self, line: &str) -> Monad {
+        Self::append_line_to_file(&mut self.file, line)?;
         self.flush_file()?;
         self.append_line_buffer(line);
         Ok(())
@@ -151,20 +126,8 @@ impl Repl {
 
     pub fn sync_buffer(&mut self) -> Monad {
         self.clear_file()?;
-        let mut recalculated_last_line = 0usize;
-        let mut found_goal = false;
-        for line in self.file_buf.iter() {
-            Self::append_line_to_file(&mut self.file, &line)?;
-            if !found_goal {
-                if line.contains("?") {
-                    found_goal = true;
-                } else {
-                    recalculated_last_line += 1;
-                }
-            }
-        }
+        self.file_buf.write_to(BufWriter::new(&self.file))?;
         self.flush_file()?;
-        self.last_line = recalculated_last_line;
         Ok(())
     }
 }
