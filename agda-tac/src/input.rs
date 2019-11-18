@@ -1,18 +1,18 @@
-use agda_mode::base::InteractionPoint;
+use agda_mode::base::InteractionId;
 
 /// Parsed user input.
 #[derive(Debug, Clone, Copy)]
 pub enum UserInput<'a> {
     Define(&'a str),
     RawLine(&'a str),
-    Give(InteractionPoint, &'a str),
+    Give(InteractionId, &'a str),
     Reload,
     Help,
     Exit,
-    Infer(InteractionPoint, &'a str),
-    Simplify(InteractionPoint, &'a str),
-    Normalize(InteractionPoint, &'a str),
-    Type(InteractionPoint),
+    Infer(InteractionId, &'a str),
+    Simplify(InteractionId, &'a str),
+    Normalize(InteractionId, &'a str),
+    Type(InteractionId),
     Unknown(Option<&'a str>),
 }
 
@@ -32,7 +32,7 @@ impl<'a> UserInput<'a> {
         line: &'a str,
         cmd: &str,
         alias: &str,
-        ok: impl FnOnce(InteractionPoint, &'a str) -> Self,
+        ok: impl FnOnce(InteractionId, &'a str) -> Self,
     ) -> Self {
         let s = line
             .trim_start_matches(cmd)
@@ -40,7 +40,7 @@ impl<'a> UserInput<'a> {
             .trim_start();
         match s.find(" ") {
             None => UserInput::Unknown(Some("please specify a goal.")),
-            Some(idx) => match s[..idx].trim().parse::<InteractionPoint>() {
+            Some(idx) => match s[..idx].trim().parse::<InteractionId>() {
                 Ok(i) => ok(i, s[idx..].trim()),
                 Err(_) => UserInput::Unknown(Some("I cannot parse the goal number.")),
             },
@@ -60,7 +60,7 @@ impl<'a> From<&'a str> for UserInput<'a> {
             match line
                 .trim_start_matches("type")
                 .trim()
-                .parse::<InteractionPoint>()
+                .parse::<InteractionId>()
             {
                 Ok(i) => UserInput::Type(i),
                 Err(_) => UserInput::Unknown(Some("I cannot parse the goal number.")),

@@ -145,4 +145,35 @@ impl Into<bool> for HaskellBool {
 }
 
 pub type IntPos = i32;
-pub type InteractionPoint = u32;
+
+/// A position in the file.
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+pub struct Pos {
+    pub pos: u32,
+    pub line: u32,
+    pub col: u32,
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+pub struct IPRange {
+    pub start: Pos,
+    pub end: Pos,
+}
+
+/// Normally, it's positive.
+pub type InteractionId = i32;
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+pub struct InteractionPoint {
+    pub id: InteractionId,
+    pub range: Vec<IPRange>,
+}
+
+impl Display for InteractionPoint {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{:?}", self.id)
+    }
+}

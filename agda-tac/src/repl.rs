@@ -1,5 +1,5 @@
 use agda_mode::agda::{preprint_agda_result, ReplState};
-use agda_mode::base::{ComputeMode, InteractionPoint};
+use agda_mode::base::{ComputeMode, InteractionPoint, InteractionId};
 use agda_mode::cmd::{Cmd, GoalInput};
 use agda_mode::resp::GoalInfo;
 
@@ -66,7 +66,7 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
     Ok(false)
 }
 
-async fn norm(agda: &mut Repl, i: InteractionPoint, new: &str, mode: ComputeMode) -> Monad {
+async fn norm(agda: &mut Repl, i: InteractionId, new: &str, mode: ComputeMode) -> Monad {
     let command = Cmd::Compute {
         compute_mode: mode,
         input: GoalInput::no_range(i, new.to_owned()),
