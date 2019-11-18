@@ -14,7 +14,8 @@
  [dep-svg]: https://deps.rs/repo/github/ice1000/agda-mode/status.svg
  [ga-svg]: https://github.com/ice1000/agda-mode/workflows/build/badge.svg
  [ga-url]: https://github.com/ice1000/agda-mode/actions
- [agda-issue]: https://github.com/agda/agda/issues/4183
+ [agda#4183]: https://github.com/agda/agda/issues/4183
+ [agda#4209]: https://github.com/agda/agda/issues/4209
  [agda-tac]: https://github.com/ice1000/agda-mode/tree/master/agda-tac
 
 Accessing Agda's interaction mode via command line.
@@ -22,4 +23,7 @@ This library is created for [agda-tac].
 It works with stable rust starting from 1.39.0.
 
 This crate will work only with master-branch Agda until Agda 2.6.1 is released.
-Tracking issue for the feature is [agda#4183][agda-issue].
+Tracking issues for the feature are:
+
++ [agda#4183]
++ [agda#4209]

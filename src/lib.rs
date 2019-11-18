@@ -3,10 +3,14 @@ Accessing Agda's interaction mode via command line.
 This library is created for [agda-tac](https://lib.rs/agda-tac).
 It works with stable rust starting from 1.39.0.
 
- [agda-issue]: https://github.com/agda/agda/issues/4183
+ [agda#4183]: https://github.com/agda/agda/issues/4183
+ [agda#4209]: https://github.com/agda/agda/issues/4209
 
 This crate will work only with master-branch Agda until Agda 2.6.1 is released.
-Tracking issue for the feature is [agda#4183][agda-issue].
+Tracking issues for the feature are:
+
++ [agda#4183]
++ [agda#4209]
 
 ## Basic usage
 
