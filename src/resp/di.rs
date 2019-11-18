@@ -45,6 +45,12 @@ impl Into<String> for AgdaError {
     }
 }
 
+impl<Ok> Into<Result<Ok, String>> for AgdaError {
+    fn into(self) -> Result<Ok, String> {
+        Err(self.into())
+    }
+}
+
 #[serde(rename_all = "camelCase")]
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct AllGoalsWarnings {

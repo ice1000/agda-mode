@@ -174,7 +174,7 @@ impl ReplState {
                 InteractionPoints { interaction_points } => break Ok(Ok(interaction_points)),
                 DisplayInfo {
                     info: Some(DisError(e)),
-                } => break Ok(Err(e.into())),
+                } => break Ok(e.into()),
                 _ => {}
             }
         }
@@ -186,7 +186,7 @@ impl ReplState {
         use crate::resp::DisplayInfo::GoalSpecific as DisGS;
         loop {
             match self.next_display_info().await? {
-                DisError(e) => break Ok(Err(e.into())),
+                DisError(e) => break Ok(e.into()),
                 DisGS(payload) => break Ok(Ok(payload)),
                 _ => {}
             }
@@ -199,7 +199,7 @@ impl ReplState {
         use crate::resp::DisplayInfo::Error as DisError;
         loop {
             match self.next_display_info().await? {
-                DisError(e) => break Ok(Err(e.into())),
+                DisError(e) => break Ok(e.into()),
                 DisAGW(payload) => break Ok(Ok(payload)),
                 _ => {}
             }
