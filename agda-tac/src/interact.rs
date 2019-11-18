@@ -3,7 +3,7 @@ use std::io::{self, Write};
 use rustyline::error::ReadlineError;
 
 use crate::editor::CliEditor;
-use crate::file_io::Repl;
+use crate::file_io::{history_file, Repl};
 use crate::repl::{line, poll_goals};
 
 const LAMBDA_LT: &str = "\u{03bb}> ";
@@ -41,19 +41,27 @@ pub async fn ion(mut agda: Repl) -> io::Result<()> {
     } else {
         let editor = CliEditor {};
         let mut r = editor.into_editor();
+        let history_dir = history_file()?;
+        if let Err(err) = r.load_history(&history_dir) {
+            eprintln!("Failed to load REPL history: {:?}", err)
+        }
         loop {
             match r.readline(LAMBDA_LT) {
                 Ok(input) => {
                     let trim = input.trim();
                     r.add_history_entry(trim);
                     if line(&mut agda, trim).await? {
-                        break Ok(());
+                        break;
                     }
                 }
                 Err(ReadlineError::Interrupted) => {}
-                Err(ReadlineError::Eof) => break Ok(println!("Interrupted")),
-                Err(err) => break Ok(eprintln!("Error: {:?}", err)),
+                Err(ReadlineError::Eof) => break println!("Interrupted"),
+                Err(err) => break eprintln!("Error: {:?}", err),
             }
         }
+        if let Err(err) = r.save_history(&history_dir) {
+            eprintln!("Failed to load REPL history: {:?}", err)
+        }
+        Ok(())
     }
 }

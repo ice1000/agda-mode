@@ -39,12 +39,21 @@ pub fn find_default_unwrap() -> String {
     find_default().expect(FAIL_CREATE_DEFAULT)
 }
 
-pub fn find_default() -> io::Result<String> {
-    println!("No input file specified, using default.");
+pub fn config_dir() -> Monad<PathBuf> {
     let agda_tac_dir = dirs::home_dir()
         .expect(FAIL_CREATE_DEFAULT)
         .join(".agda-tac");
-    let file_path = agda_tac_dir
+    create_dir_all(&agda_tac_dir)?;
+    Ok(agda_tac_dir)
+}
+
+pub fn history_file() -> Monad<PathBuf> {
+    Ok(config_dir()?.join(".repl_history"))
+}
+
+pub fn find_default() -> Monad<String> {
+    println!("No input file specified, using default.");
+    let file_path = config_dir()?
         .join("Nameless.agda")
         .into_os_string()
         .into_string()
@@ -53,7 +62,6 @@ pub fn find_default() -> io::Result<String> {
     if Path::new(&file_path).exists() {
         remove_file(&file_path)?;
     }
-    create_dir_all(agda_tac_dir)?;
     Ok(file_path)
 }
 
