@@ -3,13 +3,13 @@ use either::Either;
 use agda_mode::agda::{preprint_agda_result, ReplState};
 use agda_mode::base::ComputeMode;
 use agda_mode::cmd::{Cmd, GoalInput};
+use agda_mode::debug::{toggle_debug_command, toggle_debug_response};
 use agda_mode::pos::InteractionId;
 use agda_mode::resp::GoalInfo;
 
 use crate::file_io::{Monad, Repl};
 use crate::input::UserInput;
 use crate::interact::help;
-use agda_mode::debug::{toggle_debug_command, toggle_debug_response};
 
 pub async fn line(agda: &mut Repl, line: &str) -> Monad<bool> {
     line_impl(agda, UserInput::from(line)).await
@@ -69,6 +69,19 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         Reload => {
             reload(agda).await?;
         },
+        ListGoals => {
+            let ips = agda.agda.interaction_points();
+            if ips.is_empty() {
+                println!("No goals, you're all set.");
+            }
+            for interaction_point in ips {
+                // This shouldn't fail
+                let range = &interaction_point.range;
+                debug_assert_eq!(range.len(), 1);
+                let interval = &range[0];
+                println!("?{} at line {}", interaction_point.id, interval.start.line)
+            }
+        }
         Help => {
             println!("{}", help(agda.is_plain));
             // TODO: info for commands.

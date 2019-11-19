@@ -148,6 +148,11 @@ impl ReplState {
         send_command(&mut self.stdin, &self.iotcm).await
     }
 
+    pub async fn command_raw(&mut self, raw_command: &str) -> io::Result<()> {
+        self.stdin.write(raw_command.as_bytes()).await?;
+        self.stdin.flush().await
+    }
+
     pub async fn shutdown(&mut self) -> io::Result<()> {
         self.stdin.shutdown().await
     }

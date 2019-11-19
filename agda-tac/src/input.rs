@@ -8,6 +8,7 @@ pub enum UserInput<'a> {
     Give(InteractionId, &'a str),
     Reload,
     Help,
+    ListGoals,
     Exit,
     Infer(InteractionId, &'a str),
     Simplify(InteractionId, &'a str),
@@ -25,6 +26,7 @@ static VALUES: &[&str] = &[
     "fill",
     "give",
     "reload",
+    "list-goals",
     "infer",
     "simpl",
     "norm",
@@ -88,6 +90,8 @@ impl<'a> From<&'a str> for UserInput<'a> {
             Self::trim_and_parse_to_ip_str(line, "norm", "", UserInput::Normalize)
         } else if line == "reload" {
             UserInput::Reload
+        } else if line == "list-goals" {
+            UserInput::ListGoals
         } else if line == "exit" || line == "quit" {
             UserInput::Exit
         } else if line == "debug-response" {
