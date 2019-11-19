@@ -26,9 +26,10 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         RawLine(code) => {
             agda.append(code)?;
             agda.append("\n")?;
-            if !reload(agda).await? {
-                agda.remove_last_line()?;
-            }
+            reload(agda).await?;
+            // if !reload(agda).await? {
+            //     agda.remove_last_line()?;
+            // }
         }
         Give(i, new) => {
             let command = Cmd::give(GoalInput::no_range(i, new.to_owned()));
@@ -68,7 +69,7 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         }
         Reload => {
             reload(agda).await?;
-        },
+        }
         ListGoals => {
             let ips = agda.agda.interaction_points();
             if ips.is_empty() {

@@ -7,6 +7,7 @@ pub use self::give::*;
 pub use self::goal::*;
 pub use self::hl::*;
 pub use self::oc::*;
+use crate::base::TokenBased;
 
 /// Display info.
 mod di;
@@ -30,6 +31,13 @@ pub struct Status {
 pub enum MakeCaseVariant {
     Function,
     ExtendedLambda,
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct OneSolution {
+    pub interaction_point: InteractionPoint,
+    pub expression: String,
 }
 
 /// Agda response.
@@ -60,7 +68,7 @@ pub enum Resp {
     },
     /// Solution for one or more meta-variables.
     SolveAll {
-        // TODO
+        solutions: Vec<OneSolution>,
     },
     DisplayInfo {
         info: Option<DisplayInfo>,
@@ -74,7 +82,8 @@ pub enum Resp {
     ClearRunningInfo,
     /// Clear highlighting of the given kind.
     ClearHighlighting {
-        // TODO
+        #[serde(rename = "tokenBased")]
+        token_based: TokenBased,
     },
     /// A command sent when an abort command has completed successfully.
     DoneAborting,
