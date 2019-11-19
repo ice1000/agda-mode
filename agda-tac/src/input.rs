@@ -4,7 +4,8 @@ use agda_mode::pos::InteractionId;
 #[derive(Debug, Clone, Copy)]
 pub enum UserInput<'a> {
     Define(&'a str),
-    RawLine(&'a str),
+    PushLine(&'a str),
+    PopLine,
     Give(InteractionId, &'a str),
     Reload,
     ReadToEnd,
@@ -24,7 +25,8 @@ pub enum UserInput<'a> {
 static VALUES: &[&str] = &[
     "help",
     "define",
-    "line-raw",
+    "line-push",
+    "line-pop",
     "fill",
     "give",
     "reload",
@@ -45,7 +47,8 @@ static VALUES: &[&str] = &[
 pub static HELP: &[&str] = &[
     "help: print this message.",
     "define <name>: define a function, with the given `name`.",
-    "line-raw <line>: append a `line` to the agda file, with leading whitespaces preserved.",
+    "line-push <line>: push a `line` to the agda file, with leading whitespaces preserved.",
+    "line-pop: pop the last line of the agda file.",
     "list-goals: list the goals and their line number.",
     "reload: let agda reload the current file.",
     "find-in-module: find a definition in the current module. (mysterious API)",
@@ -88,8 +91,8 @@ impl<'a> From<&'a str> for UserInput<'a> {
             UserInput::Help
         } else if line.starts_with("define") {
             UserInput::Define(line.trim_start_matches("define").trim_start())
-        } else if line.starts_with("line-raw ") {
-            UserInput::RawLine(line.trim_start_matches("line-raw "))
+        } else if line.starts_with("line-push ") {
+            UserInput::PushLine(line.trim_start_matches("line-push "))
         } else if line.starts_with("type") {
             match line
                 .trim_start_matches("type")
@@ -111,6 +114,8 @@ impl<'a> From<&'a str> for UserInput<'a> {
             UserInput::Reload
         } else if line == "list-goals" {
             UserInput::ListGoals
+        } else if line == "line-pop" {
+            UserInput::PopLine
         } else if line.starts_with("find-in-module") {
             UserInput::SearchModule(line.trim_start_matches("find-in-module").trim())
         } else if line == "exit" || line == "quit" {

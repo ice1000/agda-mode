@@ -8,7 +8,7 @@ use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
 use crate::cmd::{Cmd, IOTCM};
 use crate::debug::{debug_command, debug_response};
 use crate::pos::InteractionPoint;
-use crate::resp::{AllGoalsWarnings, DisplayInfo, GiveAction, GoalSpecific, Resp, AgdaError};
+use crate::resp::{AgdaError, AllGoalsWarnings, DisplayInfo, GiveAction, GoalSpecific, Resp};
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";
