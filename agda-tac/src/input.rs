@@ -7,6 +7,7 @@ pub enum UserInput<'a> {
     RawLine(&'a str),
     Give(InteractionId, &'a str),
     Reload,
+    ReadToEnd,
     Help,
     ListGoals,
     SearchModule(&'a str),
@@ -27,7 +28,9 @@ static VALUES: &[&str] = &[
     "fill",
     "give",
     "reload",
+    "read-to-end",
     "list-goals",
+    "find-in-module",
     "infer",
     "simpl",
     "norm",
@@ -43,7 +46,10 @@ pub static HELP: &[&str] = &[
     "help: print this message.",
     "define <name>: define a function, with the given `name`.",
     "line-raw <line>: append a `line` to the agda file, with leading whitespaces preserved.",
-    "list-goals: list the goals and their line number",
+    "list-goals: list the goals and their line number.",
+    "reload: let agda reload the current file.",
+    "find-in-module: find a definition in the current module. (mysterious API)",
+    "read-to-end: consume all available agda responses, for debugging agda-tac only.",
     "fill <goal> <code>: fill the `goal` with `code` (alias: give).",
     "infer <goal> <code>: infer the type of `code` under the context of `goal` (alias: deduce).",
     "norm <goal> <code>: normalize `code` in `goal` (alias: simpl).",
@@ -105,10 +111,12 @@ impl<'a> From<&'a str> for UserInput<'a> {
             UserInput::Reload
         } else if line == "list-goals" {
             UserInput::ListGoals
-        } else if line == "list-module-contents" {
-            UserInput::SearchModule(line.trim_start_matches("list-module-contents").trim())
+        } else if line.starts_with("find-in-module") {
+            UserInput::SearchModule(line.trim_start_matches("find-in-module").trim())
         } else if line == "exit" || line == "quit" {
             UserInput::Exit
+        } else if line == "read-to-end" {
+            UserInput::ReadToEnd
         } else if line == "debug-response" {
             UserInput::ToggleDebugResponse
         } else if line == "debug-command" {

@@ -1,5 +1,5 @@
 use crate::base::{Comparison, Polarity};
-use crate::pos::{Interval, InteractionId, ProblemId};
+use crate::pos::{InteractionId, Interval, ProblemId};
 use serde::Deserialize;
 use std::fmt::{Display, Error, Formatter};
 

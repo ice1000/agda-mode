@@ -8,7 +8,7 @@ use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
 use crate::cmd::{Cmd, IOTCM};
 use crate::debug::{debug_command, debug_response};
 use crate::pos::InteractionPoint;
-use crate::resp::{AllGoalsWarnings, DisplayInfo, GiveAction, GoalSpecific, Resp};
+use crate::resp::{AllGoalsWarnings, DisplayInfo, GiveAction, GoalSpecific, Resp, AgdaError};
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";
@@ -220,6 +220,17 @@ impl ReplState {
             match self.next_display_info().await? {
                 DisError(e) => break Ok(e.into()),
                 DisGS(gs) => break Ok(Ok(gs)),
+                _ => {}
+            }
+        }
+    }
+
+    /// Skip information until an error.
+    pub async fn next_error(&mut self) -> io::Result<AgdaError> {
+        use crate::resp::DisplayInfo::Error as DisError;
+        loop {
+            match self.next_display_info().await? {
+                DisError(e) => break Ok(e),
                 _ => {}
             }
         }

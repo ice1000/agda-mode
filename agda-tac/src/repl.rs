@@ -70,11 +70,15 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         Reload => {
             reload(agda).await?;
         }
+        ReadToEnd => loop {
+            agda.agda.response().await?;
+        },
         SearchModule(s) => {
             let command = Cmd::search_module(s.to_owned());
             agda.agda.command(command).await?;
-            unimplemented!()
-        }
+            let e: String = agda.agda.next_error().await?.into();
+            eprintln!("Error:");
+            eprintln!("{}", e);    }
         ListGoals => {
             let ips = agda.agda.interaction_points();
             if ips.is_empty() {
