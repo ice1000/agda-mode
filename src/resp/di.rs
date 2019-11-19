@@ -1,5 +1,5 @@
 use super::{GoalSpecific, InvisibleGoal, ResponseContextEntry, VisibleGoal};
-use crate::base::ComputeMode;
+use crate::base::{Cohesion, ComputeMode, Hiding, Relevance};
 use crate::pos::InteractionPoint;
 use serde::Deserialize;
 
@@ -59,6 +59,18 @@ pub struct NamedPrettyTCM {
     pub term: String,
 }
 
+/// One item in the `telToList` telescope list.
+#[serde(rename_all = "camelCase")]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct TelescopicItem {
+    pub dom: String,
+    pub name: Option<String>,
+    pub finite: bool,
+    pub cohesion: Cohesion,
+    pub relevance: Relevance,
+    pub hiding: Hiding,
+}
+
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct AllGoalsWarnings {
@@ -96,7 +108,7 @@ pub enum DisplayInfo {
     ModuleContents {
         names: Vec<String>,
         contents: Vec<NamedPrettyTCM>,
-        // TODO
+        telescope: Vec<TelescopicItem>,
     },
     SearchAbout {
         search: String,

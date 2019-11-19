@@ -120,6 +120,43 @@ impl Default for TokenBased {
 }
 
 #[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum Hiding {
+    YesOverlap,
+    NoOverlap,
+    Hidden,
+    NotHidden,
+}
+
+/// A function argument can be relevant or irrelevant.
+/// See "Agda.TypeChecking.Irrelevance".
+#[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum Relevance {
+    /// The argument is (possibly) relevant at compile-time.
+    Relevant,
+    /// The argument may never flow into evaluation position.
+    /// Therefore, it is irrelevant at run-time.
+    /// It is treated relevantly during equality checking.
+    NonStrict,
+    /// The argument is irrelevant at compile- and runtime.
+    Irrelevant,
+}
+
+/// Cohesion modalities
+/// see "Brouwer's fixed-point theorem in real-cohesive homotopy type theory" (arXiv:1509.07584)
+/// types are now given an additional topological layer which the modalities interact with.
+#[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum Cohesion {
+    /// Same points, discrete topology, idempotent comonad, box - like.
+    Flat,
+    /// Identity modality.
+    Continuous,
+    /// Same points, codiscrete topology, idempotent monad, diamond-like.
+    Sharp,
+    /// Single point space, artificially added for Flat left-composition.
+    Squash,
+}
+
+#[derive(Deserialize, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum HaskellBool {
     True,
     False,
