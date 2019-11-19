@@ -129,23 +129,20 @@ impl Repl {
         self.sync_buffer()
     }
 
-    fn append_to_file(file: &mut File, text: &[u8]) -> Monad {
-        file.write(text)?;
-        Ok(())
+    fn append_to_file(file: &mut File, text: &[u8]) -> Monad<usize> {
+        file.write(text)
     }
 
-    fn clear_file(&mut self) -> Monad {
+    fn clear_file(&mut self) -> Monad<u64> {
         let file = &mut self.file;
         file.sync_all()?;
         file.set_len(0)?;
-        file.seek(SeekFrom::Start(0))?;
-        Ok(())
+        file.seek(SeekFrom::Start(0))
     }
 
     pub fn sync_buffer(&mut self) -> Monad {
         self.clear_file()?;
         self.file_buf.write_to(BufWriter::new(&self.file))?;
-        self.flush_file()?;
-        Ok(())
+        self.flush_file()
     }
 }
