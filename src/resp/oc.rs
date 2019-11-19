@@ -1,12 +1,12 @@
 use crate::base::{Comparison, Polarity};
-use crate::pos::{AgdaRange, InteractionId, ProblemId};
+use crate::pos::{Interval, InteractionId, ProblemId};
 use serde::Deserialize;
 use std::fmt::{Display, Error, Formatter};
 
 #[serde(rename_all = "camelCase")]
-#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct OutputForm {
-    pub range: AgdaRange,
+    pub range: Vec<Interval>,
     pub problems: Vec<ProblemId>,
     pub constraint: OutputConstraint<String>,
 }

@@ -38,7 +38,7 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
                 match gs.give_result.into_either() {
                     Either::Left(s) => agda.fill_goal_buffer(gs.interaction_point, &s),
                     // Don't know yet what to do
-                    Either::Right(b) => unimplemented!(),
+                    Either::Right(_b) => unimplemented!(),
                 }
                 agda.sync_buffer()?;
                 // Poll the goals' information

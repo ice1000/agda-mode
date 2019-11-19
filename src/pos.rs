@@ -41,7 +41,7 @@ impl Display for InteractionPoint {
 
 /// IDK why is this needed, but Emacs passes it to Agda.
 /// It's fine to omit this in the commands.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum AgdaRange {
     NoRange,
     Range(Interval),
