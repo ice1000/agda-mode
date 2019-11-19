@@ -19,8 +19,21 @@ pub enum UserInput<'a> {
 }
 
 static VALUES: &[&str] = &[
-    "help", "define", "line", "fill", "give", "reload", "infer", "simpl", "norm", "deduce", "type",
-    "exit", "quit",
+    "help",
+    "define",
+    "line",
+    "fill",
+    "give",
+    "reload",
+    "infer",
+    "simpl",
+    "norm",
+    "deduce",
+    "type",
+    "exit",
+    "quit",
+    "debug-response",
+    "debug-command",
 ];
 
 impl<'a> UserInput<'a> {
@@ -77,9 +90,9 @@ impl<'a> From<&'a str> for UserInput<'a> {
             UserInput::Reload
         } else if line == "exit" || line == "quit" {
             UserInput::Exit
-        } else if line == "dr" {
+        } else if line == "debug-response" {
             UserInput::ToggleDebugResponse
-        } else if line == "dc" {
+        } else if line == "debug-command" {
             UserInput::ToggleDebugCommand
         } else {
             UserInput::Unknown(None)

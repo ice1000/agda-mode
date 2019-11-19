@@ -51,7 +51,7 @@ impl CliEditor {
         let mut r = Editor::with_config(
             Config::builder()
                 .history_ignore_space(true)
-                .completion_type(CompletionType::Circular)
+                .completion_type(CompletionType::List)
                 .build(),
         );
         r.set_helper(Some(self));
