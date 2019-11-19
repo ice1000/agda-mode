@@ -54,6 +54,13 @@ impl<Ok> Into<Result<Ok, String>> for AgdaError {
 
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct SearchResult {
+    pub name: String,
+    pub term: String,
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct AllGoalsWarnings {
     pub visible_goals: Vec<VisibleGoal>,
     pub invisible_goals: Vec<InvisibleGoal>,
@@ -92,7 +99,7 @@ pub enum DisplayInfo {
     },
     SearchAbout {
         search: String,
-        // TODO
+        results: Vec<SearchResult>,
     },
     WhyInScope {
         // TODO
