@@ -66,7 +66,9 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
                 }
             }
         }
-        Reload => reload(agda).await?,
+        Reload => {
+            reload(agda).await?;
+        },
         Help => {
             println!("{}", help(agda.is_plain));
             // TODO: info for commands.
