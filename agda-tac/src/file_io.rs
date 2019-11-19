@@ -90,6 +90,13 @@ impl Repl {
         self.file_buf.insert(index, text)
     }
 
+    pub fn remove_last_line_buffer(&mut self) {
+        let line_last = self.file_buf.len_lines();
+        let line_start = self.file_buf.line_to_char(line_last);
+        let doc_end = self.file_buf.len_chars();
+        self.file_buf.remove(line_start..doc_end)
+    }
+
     pub fn fill_goal_buffer(&mut self, mut i: InteractionPoint, text: &str) {
         assert_eq!(i.range.len(), 1);
         let interval = i.range.remove(0);
@@ -116,6 +123,11 @@ impl Repl {
         self.append_buffer(text);
         Self::append_to_file(&mut self.file, text.as_bytes())?;
         self.flush_file()
+    }
+
+    pub fn remove_last_line(&mut self) -> Monad {
+        self.remove_last_line_buffer();
+        self.sync_buffer()
     }
 
     fn append_to_file(file: &mut File, text: &[u8]) -> Monad {

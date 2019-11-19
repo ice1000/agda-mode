@@ -26,7 +26,9 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         RawLine(code) => {
             agda.append(code)?;
             agda.append("\n")?;
-            reload(agda).await?;
+            if !reload(agda).await? {
+                agda.remove_last_line()?;
+            }
         }
         Give(i, new) => {
             let command = Cmd::give(GoalInput::no_range(i, new.to_owned()));
@@ -96,13 +98,13 @@ async fn norm(agda: &mut Repl, i: InteractionId, new: &str, mode: ComputeMode) -
     Ok(())
 }
 
-pub async fn reload(agda: &mut Repl) -> Monad {
+pub async fn reload(agda: &mut Repl) -> Monad<bool> {
     let da = &mut agda.agda;
     da.reload_file().await?;
     poll_goals(da).await
 }
 
-pub async fn poll_goals(agda: &mut ReplState) -> Monad {
+pub async fn poll_goals(agda: &mut ReplState) -> Monad<bool> {
     if let Some(agw) = preprint_agda_result(agda.next_all_goals_warnings().await?) {
         if agw.visible_goals.is_empty() {
             println!("No goals.");
@@ -123,8 +125,10 @@ pub async fn poll_goals(agda: &mut ReplState) -> Monad {
             println!("{}", meta);
         }
         agda.next_goals().await?;
+        Ok(true)
+    } else {
+        Ok(false)
     }
-    Ok(())
 }
 
 async fn finish(agda: &mut ReplState) -> Monad {
