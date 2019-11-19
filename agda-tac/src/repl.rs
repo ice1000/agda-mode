@@ -119,8 +119,9 @@ pub async fn poll_goals(agda: &mut ReplState) -> Monad {
         for meta in agw.invisible_goals {
             println!("{}", meta);
         }
+        agda.next_goals().await?;
     }
-    agda.next_goals().await
+    Ok(())
 }
 
 async fn finish(agda: &mut ReplState) -> Monad {
