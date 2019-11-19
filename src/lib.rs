@@ -33,6 +33,9 @@ This crate deserialize json via `serde_json`,
 and do async process io handling via `tokio`.
 */
 
+/// Haskell interaction utilities.
+pub mod hs;
+
 /// Common types (used in both input/output to Agda).
 pub mod base;
 

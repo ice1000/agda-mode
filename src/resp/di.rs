@@ -73,6 +73,14 @@ pub struct TelescopicItem {
 
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct ModuleContents {
+    pub names: Vec<String>,
+    pub contents: Vec<NamedPrettyTCM>,
+    pub telescope: Vec<TelescopicItem>,
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct AllGoalsWarnings {
     pub visible_goals: Vec<VisibleGoal>,
     pub invisible_goals: Vec<InvisibleGoal>,
@@ -105,11 +113,7 @@ pub enum DisplayInfo {
     Auto {
         info: String,
     },
-    ModuleContents {
-        names: Vec<String>,
-        contents: Vec<NamedPrettyTCM>,
-        telescope: Vec<TelescopicItem>,
-    },
+    ModuleContents(ModuleContents),
     SearchAbout {
         search: String,
         results: Vec<NamedPrettyTCM>,

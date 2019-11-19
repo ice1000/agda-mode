@@ -1,6 +1,7 @@
 use std::fmt::{Display, Error as FmtError, Formatter};
 
-use crate::base::{ComputeMode, HaskellBool, Remove, Rewrite, UseForce};
+use crate::base::{ComputeMode, Remove, Rewrite, UseForce};
+use crate::hs::HaskellBool;
 
 pub use self::goal::*;
 pub use self::iotcm::*;
