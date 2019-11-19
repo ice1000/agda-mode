@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use std::fmt::{Display, Error, Formatter};
+use std::ops::Range;
 
 pub type IntPos = i32;
 
@@ -18,6 +19,20 @@ pub struct Interval {
     pub file: Option<String>,
     pub start: Pos,
     pub end: Pos,
+}
+
+impl Interval {
+    pub fn range(&self) -> Range<usize> {
+        self.range_shift_left(0)
+    }
+
+    pub fn range_shift_left(&self, shift: usize) -> Range<usize> {
+        self.start.pos - shift..self.end.pos - shift
+    }
+
+    pub fn range_shift_right(&self, shift: usize) -> Range<usize> {
+        self.start.pos + shift..self.end.pos + shift
+    }
 }
 
 /// Normally, it's positive.
@@ -45,6 +60,21 @@ impl Display for InteractionPoint {
 pub enum AgdaRange {
     NoRange,
     Range(Interval),
+}
+
+impl Into<Option<Interval>> for AgdaRange {
+    fn into(self) -> Option<Interval> {
+        match self {
+            AgdaRange::NoRange => None,
+            AgdaRange::Range(i) => Some(i),
+        }
+    }
+}
+
+impl From<Option<Interval>> for AgdaRange {
+    fn from(i: Option<Interval>) -> Self {
+        i.map_or_else(Default::default, AgdaRange::Range)
+    }
 }
 
 impl Default for AgdaRange {

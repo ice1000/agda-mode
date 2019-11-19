@@ -100,10 +100,9 @@ impl Repl {
     pub fn fill_goal_buffer(&mut self, mut i: InteractionPoint, text: &str) {
         assert_eq!(i.range.len(), 1);
         let interval = i.range.remove(0);
-        let start = interval.start.pos - 1;
-        let range = start..interval.end.pos - 1;
+        let range = interval.range_shift_left(1);
         self.file_buf.remove(range);
-        self.file_buf.insert(start, text);
+        self.file_buf.insert(interval.start.pos - 1, text);
     }
 
     pub fn insert_line_buffer(&mut self, line_num: usize, line: &str) {
