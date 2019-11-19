@@ -38,6 +38,18 @@ static VALUES: &[&str] = &[
     "debug-command",
 ];
 
+pub static HELP: &[&str] = &[
+    "help: print this message.",
+    "define <name>: define a function, with the given `name`.",
+    "line <line>: append a `line` to the agda file, with leading whitespaces preserved.",
+    "list-goals: list the goals and their line number",
+    "fill <goal> <code>: fill the `goal` with `code` (alias: give).",
+    "infer <goal> <code>: infer the type of `code` under the context of `goal` (alias: deduce).",
+    "norm <goal> <code>: normalize `code` in `goal` (alias: simpl).",
+    "type <goal>: show the type of the `goal`.",
+    "exit: exit the REPL (alias: quit).",
+];
+
 impl<'a> UserInput<'a> {
     pub fn values() -> &'static [&'static str] {
         VALUES

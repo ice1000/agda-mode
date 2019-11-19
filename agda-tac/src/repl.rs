@@ -8,7 +8,7 @@ use agda_mode::pos::InteractionId;
 use agda_mode::resp::GoalInfo;
 
 use crate::file_io::{Monad, Repl};
-use crate::input::UserInput;
+use crate::input::{UserInput, HELP};
 use crate::interact::help;
 
 pub async fn line(agda: &mut Repl, line: &str) -> Monad<bool> {
@@ -84,7 +84,9 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         }
         Help => {
             println!("{}", help(agda.is_plain));
-            // TODO: info for commands.
+            for line in HELP {
+                println!("{}", line);
+            }
         }
         ToggleDebugCommand => unsafe { toggle_debug_command() },
         ToggleDebugResponse => unsafe { toggle_debug_response() },
