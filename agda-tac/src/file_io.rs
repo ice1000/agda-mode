@@ -100,8 +100,8 @@ impl Repl {
     pub fn fill_goal_buffer(&mut self, mut i: InteractionPoint, text: &str) {
         assert_eq!(i.range.len(), 1);
         let interval = i.range.remove(0);
-        let start = interval.start.pos as usize - 1;
-        let range = start..interval.end.pos as usize - 1;
+        let start = interval.start.pos - 1;
+        let range = start..interval.end.pos - 1;
         self.file_buf.remove(range);
         self.file_buf.insert(start, text);
     }

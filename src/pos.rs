@@ -7,9 +7,9 @@ pub type IntPos = i32;
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Copy, Default, Debug, Eq, PartialEq)]
 pub struct Pos {
-    pub pos: u32,
-    pub line: u32,
-    pub col: u32,
+    pub pos: usize,
+    pub line: usize,
+    pub col: usize,
 }
 
 #[serde(rename_all = "camelCase")]
