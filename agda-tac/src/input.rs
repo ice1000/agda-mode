@@ -9,6 +9,7 @@ pub enum UserInput<'a> {
     Reload,
     Help,
     ListGoals,
+    SearchModule(&'a str),
     Exit,
     Infer(InteractionId, &'a str),
     Simplify(InteractionId, &'a str),
@@ -22,7 +23,7 @@ pub enum UserInput<'a> {
 static VALUES: &[&str] = &[
     "help",
     "define",
-    "line",
+    "line-raw",
     "fill",
     "give",
     "reload",
@@ -41,7 +42,7 @@ static VALUES: &[&str] = &[
 pub static HELP: &[&str] = &[
     "help: print this message.",
     "define <name>: define a function, with the given `name`.",
-    "line <line>: append a `line` to the agda file, with leading whitespaces preserved.",
+    "line-raw <line>: append a `line` to the agda file, with leading whitespaces preserved.",
     "list-goals: list the goals and their line number",
     "fill <goal> <code>: fill the `goal` with `code` (alias: give).",
     "infer <goal> <code>: infer the type of `code` under the context of `goal` (alias: deduce).",
@@ -81,8 +82,8 @@ impl<'a> From<&'a str> for UserInput<'a> {
             UserInput::Help
         } else if line.starts_with("define") {
             UserInput::Define(line.trim_start_matches("define").trim_start())
-        } else if line.starts_with("line ") {
-            UserInput::RawLine(line.trim_start_matches("line "))
+        } else if line.starts_with("line-raw ") {
+            UserInput::RawLine(line.trim_start_matches("line-raw "))
         } else if line.starts_with("type") {
             match line
                 .trim_start_matches("type")
@@ -104,6 +105,8 @@ impl<'a> From<&'a str> for UserInput<'a> {
             UserInput::Reload
         } else if line == "list-goals" {
             UserInput::ListGoals
+        } else if line == "list-module-contents" {
+            UserInput::SearchModule(line.trim_start_matches("list-module-contents").trim())
         } else if line == "exit" || line == "quit" {
             UserInput::Exit
         } else if line == "debug-response" {

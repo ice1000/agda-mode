@@ -171,6 +171,13 @@ impl Cmd {
         Cmd::GoalType(From::from(input))
     }
 
+    pub fn search_module(search: String) -> Self {
+        Cmd::ShowModuleContentsToplevel {
+            rewrite: Default::default(),
+            search,
+        }
+    }
+
     /// Produces [InferredType](crate::resp::GoalInfo::InferredType).
     pub fn infer(input: GoalInput) -> Self {
         Cmd::Infer(From::from(input))
