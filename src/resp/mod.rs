@@ -20,6 +20,14 @@ mod hl;
 /// Output constraints (user goals & unsolved metas).
 mod oc;
 
+#[serde(rename_all = "camelCase")]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct MakeCase {
+    pub variant: MakeCaseVariant,
+    pub interaction_point: InteractionPoint,
+    pub clauses: Vec<String>,
+}
+
 /// Status information.
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
@@ -44,8 +52,6 @@ pub struct OneSolution {
 }
 
 /// Agda response.
-///
-/// TODO: This enum is incomplete, contribution is welcomed.
 #[serde(tag = "kind")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum Resp {
@@ -63,12 +69,7 @@ pub enum Resp {
     },
     GiveAction(GiveAction),
     /// Response is list of printed clauses.
-    MakeCase {
-        variant: MakeCaseVariant,
-        #[serde(rename = "interactionPoint")]
-        interaction_point: InteractionPoint,
-        clauses: Vec<String>,
-    },
+    MakeCase(MakeCase),
     /// Solution for one or more meta-variables.
     SolveAll {
         solutions: Vec<OneSolution>,

@@ -122,7 +122,7 @@ pub enum DisplayInfo {
     WhyInScope {
         thing: String,
         filepath: String,
-        // TODO
+        message: String,
     },
     NormalForm(NormalForm),
     InferredType(InferredType),
