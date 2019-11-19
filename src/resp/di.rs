@@ -54,7 +54,7 @@ impl<Ok> Into<Result<Ok, String>> for AgdaError {
 
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
-pub struct SearchResult {
+pub struct NamedPrettyTCM {
     pub name: String,
     pub term: String,
 }
@@ -85,23 +85,26 @@ pub enum DisplayInfo {
         time: String,
     },
     Error(AgdaError),
-    IntroNotFound {
-        // TODO
-    },
+    IntroNotFound,
     IntroConstructorUnknown {
-        // TODO
+        /// Available constructors
+        constructors: Vec<String>,
     },
     Auto {
         info: String,
     },
     ModuleContents {
+        names: Vec<String>,
+        contents: Vec<NamedPrettyTCM>,
         // TODO
     },
     SearchAbout {
         search: String,
-        results: Vec<SearchResult>,
+        results: Vec<NamedPrettyTCM>,
     },
     WhyInScope {
+        thing: String,
+        filepath: String,
         // TODO
     },
     NormalForm(NormalForm),
