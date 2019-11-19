@@ -14,6 +14,8 @@ pub enum UserInput<'a> {
     Normalize(InteractionId, &'a str),
     Type(InteractionId),
     Unknown(Option<&'a str>),
+    ToggleDebugCommand,
+    ToggleDebugResponse,
 }
 
 static VALUES: &[&str] = &[
@@ -25,9 +27,7 @@ impl<'a> UserInput<'a> {
     pub fn values() -> &'static [&'static str] {
         VALUES
     }
-}
 
-impl<'a> UserInput<'a> {
     fn trim_and_parse_to_ip_str(
         line: &'a str,
         cmd: &str,
@@ -77,6 +77,10 @@ impl<'a> From<&'a str> for UserInput<'a> {
             UserInput::Reload
         } else if line == "exit" || line == "quit" {
             UserInput::Exit
+        } else if line == "dr" {
+            UserInput::ToggleDebugResponse
+        } else if line == "dc" {
+            UserInput::ToggleDebugCommand
         } else {
             UserInput::Unknown(None)
         }
