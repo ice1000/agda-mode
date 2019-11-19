@@ -23,6 +23,9 @@ pub struct Interval {
 /// Normally, it's positive.
 pub type InteractionId = i32;
 
+/// Normally, it's also positive.
+pub type ProblemId = i32;
+
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct InteractionPoint {

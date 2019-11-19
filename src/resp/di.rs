@@ -1,6 +1,7 @@
 use super::{GoalSpecific, InvisibleGoal, ResponseContextEntry, VisibleGoal};
 use crate::base::{Cohesion, ComputeMode, Hiding, Relevance};
 use crate::pos::InteractionPoint;
+use crate::resp::OutputForm;
 use serde::Deserialize;
 
 #[serde(rename_all = "camelCase")]
@@ -98,7 +99,7 @@ pub enum DisplayInfo {
         errors: String,
     },
     Constraints {
-        // TODO
+        constraints: Vec<OutputForm>,
     },
     AllGoalsWarnings(AllGoalsWarnings),
     Time {

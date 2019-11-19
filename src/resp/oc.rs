@@ -1,7 +1,15 @@
 use crate::base::{Comparison, Polarity};
-use crate::pos::InteractionId;
+use crate::pos::{AgdaRange, InteractionId, ProblemId};
 use serde::Deserialize;
 use std::fmt::{Display, Error, Formatter};
+
+#[serde(rename_all = "camelCase")]
+#[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+pub struct OutputForm {
+    pub range: AgdaRange,
+    pub problems: Vec<ProblemId>,
+    pub constraint: OutputConstraint<String>,
+}
 
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
@@ -86,7 +94,7 @@ pub enum OutputConstraint<Obj> {
     CmpSorts(CmpSomething<Obj>),
     Guard {
         constraint: Box<OutputConstraint<Obj>>,
-        problem: String,
+        problem: ProblemId,
     },
     Assign {
         #[serde(rename = "constraintObj")]
