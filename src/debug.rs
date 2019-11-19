@@ -24,3 +24,29 @@ pub(crate) unsafe fn debug_command(s: String) -> bool {
 pub(crate) unsafe fn debug_response(s: String) -> bool {
     DEBUG_RESPONSE.as_ref().map(|f| f(s)).is_some()
 }
+
+pub unsafe fn toggle_debug_command() {
+    match DEBUG_COMMAND {
+        None => {
+            println!("Command debug mode is ON");
+            debug_command_via(|s| print!("{}", s))
+        }
+        Some(_) => {
+            println!("Command debug mode is OFF");
+            DEBUG_COMMAND = None
+        }
+    }
+}
+
+pub unsafe fn toggle_debug_response() {
+    match DEBUG_RESPONSE {
+        None => {
+            println!("Response debug mode is ON");
+            debug_response_via(|s| print!("{}", s))
+        }
+        Some(_) => {
+            println!("Response debug mode is OFF");
+            DEBUG_RESPONSE = None
+        }
+    }
+}
