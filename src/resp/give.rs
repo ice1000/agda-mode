@@ -2,9 +2,13 @@ use crate::pos::InteractionPoint;
 use either::Either;
 use serde::Deserialize;
 
-/// Result of a "give" action.
+/// Give action result
 ///
-/// The structure is very mysterious.
+/// Comment derived from agda2-mode.el
+///
+/// If 'GiveResult' is 'Give_String s', then the goal is replaced by 's',
+/// and otherwise the text inside the goal is retained (parenthesised
+/// if 'GiveResult' is 'Give_Paren').
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 pub struct GiveResult {

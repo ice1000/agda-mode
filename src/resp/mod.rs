@@ -20,10 +20,13 @@ mod hl;
 /// Output constraints (user goals & unsolved metas).
 mod oc;
 
+/// Status information.
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
 pub struct Status {
+    /// Are implicit arguments displayed?
     pub show_implicit_arguments: bool,
+    /// Has the module been successfully type checked?
     pub checked: bool,
 }
 
