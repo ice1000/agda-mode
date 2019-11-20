@@ -8,8 +8,12 @@ use agda_mode::pos::InteractionId;
 use agda_mode::resp::GoalInfo;
 
 use crate::file_io::{Monad, Repl};
-use crate::input::{UserInput, HELP};
+use crate::input::{HELP, UserInput};
 use crate::interact::help;
+
+pub use self::goal_list::*;
+
+mod goal_list;
 
 pub async fn line(agda: &mut Repl, line: &str) -> Monad<bool> {
     line_impl(agda, UserInput::from(line)).await
@@ -36,8 +40,7 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
             let line_max = agda.line_count();
             if i >= line_max {
                 eprintln!("There are only {} lines in total.", line_max);
-            }
-            else {
+            } else {
                 print!("{}", agda.line_in_buffer(i))
             }
         }
@@ -134,39 +137,6 @@ async fn norm(agda: &mut Repl, i: InteractionId, new: &str, mode: ComputeMode) -
         }
     }
     Ok(())
-}
-
-pub async fn reload(agda: &mut Repl) -> Monad<bool> {
-    let da = &mut agda.agda;
-    da.reload_file().await?;
-    poll_goals(da).await
-}
-
-pub async fn poll_goals(agda: &mut ReplState) -> Monad<bool> {
-    if let Some(agw) = preprint_agda_result(agda.next_all_goals_warnings().await?) {
-        if agw.visible_goals.is_empty() {
-            println!("No goals.");
-        } else {
-            println!("Goals:");
-        }
-        for goal in agw.visible_goals {
-            // I believe `goal` will always be `OfType`.
-            match goal.try_as_of_type() {
-                Ok(ok) => println!("?{} : {}", ok.constraint_obj, ok.of_type),
-                Err(bad) => eprintln!("[WARN]: unexpected goal: {:?}", bad),
-            }
-        }
-        if !agw.invisible_goals.is_empty() {
-            println!("Unsolved metas:");
-        }
-        for meta in agw.invisible_goals {
-            println!("{}", meta);
-        }
-        agda.next_goals().await?;
-        Ok(true)
-    } else {
-        Ok(false)
-    }
 }
 
 async fn finish(agda: &mut ReplState) -> Monad {
