@@ -171,6 +171,10 @@ impl Cmd {
         Cmd::GoalType(From::from(input))
     }
 
+    pub fn split(input: GoalInput) -> Self {
+        Cmd::MakeCase(From::from(input))
+    }
+
     pub fn search_module(search: String) -> Self {
         Cmd::ShowModuleContentsToplevel {
             rewrite: Default::default(),

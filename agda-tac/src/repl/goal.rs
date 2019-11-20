@@ -50,6 +50,12 @@ pub async fn infer(agda: &mut Repl, i: InteractionId, new: &str) -> Monad {
     Ok(())
 }
 
+pub async fn split(agda: &mut Repl, i: InteractionId, pat: &str) -> Monad {
+    let command = Cmd::split(GoalInput::no_range(i, pat.to_owned()));
+    agda.agda.command(command).await?;
+    unimplemented!()
+}
+
 pub async fn ty(agda: &mut Repl, i: InteractionId) -> Monad {
     let command = Cmd::goal_type(GoalInput::simple(i));
     agda.agda.command(command).await?;

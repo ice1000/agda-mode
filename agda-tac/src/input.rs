@@ -8,6 +8,7 @@ pub enum UserInput<'a> {
     PopLine,
     ShowLine(usize),
     Give(InteractionId, &'a str),
+    Split(InteractionId, &'a str),
     Reload,
     ReadToEnd,
     Help,
@@ -30,6 +31,7 @@ static VALUES: &[&str] = &[
     "line-pop",
     "line-show",
     "fill",
+    "split",
     "give",
     "reload",
     "read-to-end",
@@ -115,6 +117,8 @@ impl<'a> From<&'a str> for UserInput<'a> {
             Self::trim_and_parse_to_ip_str(line, "simpl", "", UserInput::Simplify)
         } else if line.starts_with("norm") {
             Self::trim_and_parse_to_ip_str(line, "norm", "", UserInput::Normalize)
+        } else if line.starts_with("split") {
+            Self::trim_and_parse_to_ip_str(line, "split", "", UserInput::Split)
         } else if line == "reload" {
             UserInput::Reload
         } else if line == "list-goals" {
