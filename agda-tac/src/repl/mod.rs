@@ -8,11 +8,13 @@ use agda_mode::pos::InteractionId;
 use agda_mode::resp::GoalInfo;
 
 use crate::file_io::{Monad, Repl};
-use crate::input::{HELP, UserInput};
+use crate::input::{UserInput, HELP};
 use crate::interact::help;
 
+pub use self::goal::*;
 pub use self::goal_list::*;
 
+mod goal;
 mod goal_list;
 
 pub async fn line(agda: &mut Repl, line: &str) -> Monad<bool> {
@@ -44,30 +46,8 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
                 print!("{}", agda.line_in_buffer(i))
             }
         }
-        Give(i, new) => {
-            let command = Cmd::give(GoalInput::no_range(i, new.to_owned()));
-            agda.agda.command(command).await?;
-            if let Some(gs) = preprint_agda_result(agda.agda.next_give_action().await?) {
-                match gs.give_result.into_either() {
-                    Either::Left(s) => agda.fill_goal_buffer(gs.interaction_point, &s),
-                    // Don't know yet what to do
-                    Either::Right(_b) => unimplemented!(),
-                }
-                agda.sync_buffer()?;
-                // Poll the goals' information
-                agda.agda.next_goals().await?;
-            }
-        }
-        Infer(i, new) => {
-            let command = Cmd::infer(GoalInput::no_range(i, new.to_owned()));
-            agda.agda.command(command).await?;
-            if let Some(gs) = preprint_agda_result(agda.agda.next_goal_specific().await?) {
-                match gs.goal_info {
-                    GoalInfo::InferredType { expr } => println!("{} : {}", new, expr),
-                    _ => unreachable!(),
-                }
-            }
-        }
+        Give(i, new) => give(agda, i, new),
+        Infer(i, new) => infer(agda, i, new),
         Simplify(i, new) => norm(agda, i, new, ComputeMode::DefaultCompute).await?,
         Normalize(i, new) => norm(agda, i, new, ComputeMode::UseShowInstance).await?,
         Type(i) => {
@@ -122,21 +102,6 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         }
     }
     Ok(false)
-}
-
-async fn norm(agda: &mut Repl, i: InteractionId, new: &str, mode: ComputeMode) -> Monad {
-    let command = Cmd::Compute {
-        compute_mode: mode,
-        input: GoalInput::no_range(i, new.to_owned()),
-    };
-    agda.agda.command(command).await?;
-    if let Some(gs) = preprint_agda_result(agda.agda.next_goal_specific().await?) {
-        match gs.goal_info {
-            GoalInfo::NormalForm { expr, .. } => println!("{} --> {}", new, expr),
-            _ => unreachable!(),
-        }
-    }
-    Ok(())
 }
 
 async fn finish(agda: &mut ReplState) -> Monad {
