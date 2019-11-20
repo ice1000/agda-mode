@@ -286,3 +286,15 @@ next_disp_of!(
     GoalSpecific,
     "Skip until next goal specific information."
 );
+next_disp_of!(
+    next_module_contents,
+    ModuleContents,
+    "Skip until next module contents response."
+);
+next_disp_of!(next_normal_form, NormalForm, "Skip until next normal form.");
+next_disp_of!(next_context, Context, "Skip until next context.");
+next_disp_of!(
+    next_inferred_type,
+    InferredType,
+    "Skip until next inferred type."
+);
