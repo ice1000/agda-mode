@@ -1,10 +1,12 @@
 use std::fs::{create_dir_all, remove_file, File};
 use std::io::{self, BufWriter, Seek, SeekFrom, Write};
+use std::ops::Range;
 use std::path::{Path, PathBuf};
 
-use agda_mode::agda::ReplState;
-use agda_mode::pos::InteractionPoint;
 use ropey::{Rope, RopeSlice};
+
+use agda_mode::agda::ReplState;
+use agda_mode::pos::{InteractionPoint, Interval};
 
 const FAIL_CREATE_DEFAULT: &str = "Failed to create default working file";
 
@@ -66,6 +68,10 @@ pub fn find_default() -> Monad<String> {
     Ok(file_path)
 }
 
+pub fn agda_to_rope_range(i: &Interval) -> Range<usize> {
+    i.range_shift_left(1)
+}
+
 pub struct Repl {
     pub agda: ReplState,
     pub file: File,
@@ -100,8 +106,7 @@ impl Repl {
     pub fn fill_goal_buffer(&mut self, mut i: InteractionPoint, text: &str) {
         assert_eq!(i.range.len(), 1);
         let interval = i.range.remove(0);
-        let range = interval.range_shift_left(1);
-        self.file_buf.remove(range);
+        self.file_buf.remove(agda_to_rope_range(&interval));
         self.file_buf.insert(interval.start.pos - 1, text);
     }
 
