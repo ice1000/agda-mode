@@ -31,7 +31,8 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         Simplify(i, new) => norm(agda, i, new, ComputeMode::DefaultCompute).await?,
         Normalize(i, new) => norm(agda, i, new, ComputeMode::UseShowInstance).await?,
         Type(i) => ty(agda, i).await?,
-        Split(i, pat) => split(agda, i, pat).await?,        Reload => {
+        Split(i, pat) => split(agda, i, pat).await?,
+        Reload => {
             reload(agda).await?;
         }
         ReadToEnd => loop {

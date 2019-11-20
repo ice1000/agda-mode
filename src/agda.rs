@@ -8,7 +8,9 @@ use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
 use crate::cmd::{Cmd, IOTCM};
 use crate::debug::{debug_command, debug_response};
 use crate::pos::InteractionPoint;
-use crate::resp::{AgdaError, AllGoalsWarnings, DisplayInfo, GiveAction, GoalSpecific, Resp, MakeCase};
+use crate::resp::{
+    AgdaError, AllGoalsWarnings, DisplayInfo, GiveAction, GoalSpecific, MakeCase, Resp,
+};
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";
@@ -212,36 +214,6 @@ impl ReplState {
         Ok(())
     }
 
-    /// Skip information until the next give-action info.
-    pub async fn next_give_action(&mut self) -> NextResult<GiveAction> {
-        use crate::resp::DisplayInfo::Error as DisError;
-        use Resp::*;
-        loop {
-            match self.response().await? {
-                GiveAction(ga) => break Ok(Ok(ga)),
-                DisplayInfo {
-                    info: Some(DisError(e)),
-                } => break Ok(e.into()),
-                _ => {}
-            }
-        }
-    }
-
-    /// Skip information until the next make-case info.
-    pub async fn next_make_case(&mut self) -> NextResult<MakeCase> {
-        use crate::resp::DisplayInfo::Error as DisError;
-        use Resp::*;
-        loop {
-            match self.response().await? {
-                MakeCase(mk) => break Ok(Ok(mk)),
-                DisplayInfo {
-                    info: Some(DisError(e)),
-                } => break Ok(e.into()),
-                _ => {}
-            }
-        }
-    }
-
     /// Skip information until the next goal specific information.
     pub async fn next_goal_specific(&mut self) -> NextResult<GoalSpecific> {
         use crate::resp::DisplayInfo::Error as DisError;
@@ -279,3 +251,29 @@ impl ReplState {
         }
     }
 }
+
+macro_rules! next_resp_of {
+    ($f:ident, $p:ident, $d:literal) => {
+        next_resp_of!($f, $p, $p, $d);
+    };
+
+    ($f:ident, $p:ident, $t:ty, $d:literal) => {
+        impl ReplState {
+            #[doc($d)]
+            pub async fn $f(&mut self) -> NextResult<$t> {
+                loop {
+                    match self.response().await? {
+                        Resp::$p(ga) => break Ok(Ok(ga)),
+                        Resp::DisplayInfo {
+                            info: Some(crate::resp::DisplayInfo::Error(e)),
+                        } => break Ok(e.into()),
+                        _ => {}
+                    }
+                }
+            }
+        }
+    };
+}
+
+next_resp_of!(next_give_action, GiveAction, "Skip until next give-action.");
+next_resp_of!(next_make_case, MakeCase, "Skip until next make-case.");
