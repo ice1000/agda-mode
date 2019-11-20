@@ -1,10 +1,7 @@
-use either::Either;
-
 use agda_mode::agda::{preprint_agda_result, ReplState};
 use agda_mode::base::ComputeMode;
 use agda_mode::cmd::{Cmd, GoalInput};
 use agda_mode::debug::{toggle_debug_command, toggle_debug_response};
-use agda_mode::pos::InteractionId;
 use agda_mode::resp::GoalInfo;
 
 use crate::file_io::{Monad, Repl};
@@ -13,9 +10,11 @@ use crate::interact::help;
 
 pub use self::goal::*;
 pub use self::goal_list::*;
+pub use self::line::*;
 
 mod goal;
 mod goal_list;
+mod line;
 
 pub async fn line(agda: &mut Repl, line: &str) -> Monad<bool> {
     line_impl(agda, UserInput::from(line)).await
@@ -24,30 +23,12 @@ pub async fn line(agda: &mut Repl, line: &str) -> Monad<bool> {
 async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
     use UserInput::*;
     match line {
-        Define(function_name) => {
-            agda.append(&format!("{} : ?\n", function_name))?;
-            agda.append(&format!("{} = ?\n", function_name))?;
-            reload(agda).await?;
-        }
-        PushLine(code) => {
-            agda.append(code)?;
-            agda.append("\n")?;
-            reload(agda).await?;
-        }
-        PopLine => {
-            agda.remove_last_line()?;
-            reload(agda).await?;
-        }
-        ShowLine(i) => {
-            let line_max = agda.line_count();
-            if i >= line_max {
-                eprintln!("There are only {} lines in total.", line_max);
-            } else {
-                print!("{}", agda.line_in_buffer(i))
-            }
-        }
-        Give(i, new) => give(agda, i, new),
-        Infer(i, new) => infer(agda, i, new),
+        Define(function_name) => define(agda, &function_name).await?,
+        PushLine(code) => push_line(agda, code).await?,
+        PopLine => pop_line(agda).await?,
+        ShowLine(i) => show_line(agda, i),
+        Give(i, new) => give(agda, i, new).await?,
+        Infer(i, new) => infer(agda, i, new).await?,
         Simplify(i, new) => norm(agda, i, new, ComputeMode::DefaultCompute).await?,
         Normalize(i, new) => norm(agda, i, new, ComputeMode::UseShowInstance).await?,
         Type(i) => {

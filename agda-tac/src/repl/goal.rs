@@ -49,4 +49,3 @@ pub async fn infer(agda: &mut Repl, i: InteractionId, new: &str) -> Monad {
     }
     Ok(())
 }
-
