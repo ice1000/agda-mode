@@ -44,19 +44,7 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
             eprintln!("Error:");
             eprintln!("{}", e);
         }
-        ListGoals => {
-            let ips = agda.agda.interaction_points();
-            if ips.is_empty() {
-                println!("No goals, you're all set.");
-            }
-            for interaction_point in ips {
-                // This shouldn't fail
-                let range = &interaction_point.range;
-                debug_assert_eq!(range.len(), 1);
-                let interval = &range[0];
-                println!("?{} at line {}", interaction_point.id, interval.start.line)
-            }
-        }
+        ListGoals => list_goals(agda),
         Help => {
             println!("{}", help(agda.is_plain));
             for line in HELP {
