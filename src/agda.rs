@@ -8,7 +8,7 @@ use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
 use crate::cmd::{Cmd, IOTCM};
 use crate::debug::{debug_command, debug_response};
 use crate::pos::InteractionPoint;
-use crate::resp::{AgdaError, AllGoalsWarnings, DisplayInfo, GoalSpecific, Resp};
+use crate::resp::{AgdaError, DisplayInfo, Resp};
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";
@@ -212,38 +212,12 @@ impl ReplState {
         Ok(())
     }
 
-    /// Skip information until the next goal specific information.
-    pub async fn next_goal_specific(&mut self) -> NextResult<GoalSpecific> {
-        use crate::resp::DisplayInfo::Error as DisError;
-        use crate::resp::DisplayInfo::GoalSpecific as DisGS;
-        loop {
-            match self.next_display_info().await? {
-                DisError(e) => break Ok(e.into()),
-                DisGS(gs) => break Ok(Ok(gs)),
-                _ => {}
-            }
-        }
-    }
-
     /// Skip information until an error.
     pub async fn next_error(&mut self) -> io::Result<AgdaError> {
         use crate::resp::DisplayInfo::Error as DisError;
         loop {
             match self.next_display_info().await? {
                 DisError(e) => break Ok(e),
-                _ => {}
-            }
-        }
-    }
-
-    /// Skip information until the next interaction point (goal) list.
-    pub async fn next_all_goals_warnings(&mut self) -> NextResult<AllGoalsWarnings> {
-        use crate::resp::DisplayInfo::AllGoalsWarnings as DisAGW;
-        use crate::resp::DisplayInfo::Error as DisError;
-        loop {
-            match self.next_display_info().await? {
-                DisError(e) => break Ok(e.into()),
-                DisAGW(agw) => break Ok(Ok(agw)),
                 _ => {}
             }
         }
@@ -279,4 +253,36 @@ next_resp_of!(
     next_highlight,
     HighlightingInfo,
     "Skip until next highlight."
+);
+
+macro_rules! next_disp_of {
+    ($f:ident, $p:ident, $d:literal) => {
+        next_disp_of!($f, $p, crate::resp::$p, $d);
+    };
+
+    ($f:ident, $p:ident, $t:ty, $d:literal) => {
+        impl ReplState {
+            #[doc($d)]
+            pub async fn $f(&mut self) -> NextResult<$t> {
+                loop {
+                    match self.next_display_info().await? {
+                        DisplayInfo::Error(e) => break Ok(e.into()),
+                        DisplayInfo::$p(agw) => break Ok(Ok(agw)),
+                        _ => {}
+                    }
+                }
+            }
+        }
+    };
+}
+
+next_disp_of!(
+    next_all_goals_warnings,
+    AllGoalsWarnings,
+    "Skip until next interaction point (goal) list."
+);
+next_disp_of!(
+    next_goal_specific,
+    GoalSpecific,
+    "Skip until next goal specific information."
 );
