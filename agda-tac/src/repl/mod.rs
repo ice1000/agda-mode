@@ -1,8 +1,7 @@
-use agda_mode::agda::{preprint_agda_result, ReplState};
+use agda_mode::agda::ReplState;
 use agda_mode::base::ComputeMode;
-use agda_mode::cmd::{Cmd, GoalInput};
+use agda_mode::cmd::Cmd;
 use agda_mode::debug::{toggle_debug_command, toggle_debug_response};
-use agda_mode::resp::GoalInfo;
 
 use crate::file_io::{Monad, Repl};
 use crate::input::{UserInput, HELP};
@@ -31,16 +30,7 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         Infer(i, new) => infer(agda, i, new).await?,
         Simplify(i, new) => norm(agda, i, new, ComputeMode::DefaultCompute).await?,
         Normalize(i, new) => norm(agda, i, new, ComputeMode::UseShowInstance).await?,
-        Type(i) => {
-            let command = Cmd::goal_type(GoalInput::simple(i));
-            agda.agda.command(command).await?;
-            if let Some(gs) = preprint_agda_result(agda.agda.next_goal_specific().await?) {
-                match gs.goal_info {
-                    GoalInfo::CurrentGoal { the_type, .. } => println!("{}", the_type),
-                    _ => unreachable!(),
-                }
-            }
-        }
+        Type(i) => ty(agda, i).await?,
         Reload => {
             reload(agda).await?;
         }

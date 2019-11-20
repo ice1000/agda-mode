@@ -49,3 +49,15 @@ pub async fn infer(agda: &mut Repl, i: InteractionId, new: &str) -> Monad {
     }
     Ok(())
 }
+
+pub async fn ty(agda: &mut Repl, i: InteractionId) -> Monad {
+    let command = Cmd::goal_type(GoalInput::simple(i));
+    agda.agda.command(command).await?;
+    if let Some(gs) = preprint_agda_result(agda.agda.next_goal_specific().await?) {
+        match gs.goal_info {
+            GoalInfo::CurrentGoal { the_type, .. } => println!("{}", the_type),
+            _ => unreachable!(),
+        }
+    }
+    Ok(())
+}
