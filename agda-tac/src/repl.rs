@@ -32,6 +32,15 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
             agda.remove_last_line()?;
             reload(agda).await?;
         }
+        ShowLine(i) => {
+            let line_max = agda.line_count();
+            if i >= line_max {
+                eprintln!("There are only {} lines in total.", line_max);
+            }
+            else {
+                print!("{}", agda.line_in_buffer(i))
+            }
+        }
         Give(i, new) => {
             let command = Cmd::give(GoalInput::no_range(i, new.to_owned()));
             agda.agda.command(command).await?;

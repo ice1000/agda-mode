@@ -6,6 +6,7 @@ pub enum UserInput<'a> {
     Define(&'a str),
     PushLine(&'a str),
     PopLine,
+    ShowLine(usize),
     Give(InteractionId, &'a str),
     Reload,
     ReadToEnd,
@@ -27,6 +28,7 @@ static VALUES: &[&str] = &[
     "define",
     "line-push",
     "line-pop",
+    "line-show",
     "fill",
     "give",
     "reload",
@@ -49,6 +51,7 @@ pub static HELP: &[&str] = &[
     "define <name>: define a function, with the given `name`.",
     "line-push <line>: push a `line` to the agda file, with leading whitespaces preserved.",
     "line-pop: pop the last line of the agda file.",
+    "line-show <line>: show the `line`-th line.",
     "list-goals: list the goals and their line number.",
     "reload: let agda reload the current file.",
     "find-in-module: find a definition in the current module. (mysterious API)",
@@ -63,6 +66,13 @@ pub static HELP: &[&str] = &[
 impl<'a> UserInput<'a> {
     pub fn values() -> &'static [&'static str] {
         VALUES
+    }
+
+    fn trim_and_parse_ip(line: &str, cmd: &str, ok: impl FnOnce(InteractionId) -> Self) -> Self {
+        match line.trim_start_matches(cmd).trim().parse::<InteractionId>() {
+            Ok(i) => ok(i),
+            Err(_) => UserInput::Unknown(Some("I cannot parse the goal number.")),
+        }
     }
 
     fn trim_and_parse_to_ip_str(
@@ -94,14 +104,9 @@ impl<'a> From<&'a str> for UserInput<'a> {
         } else if line.starts_with("line-push ") {
             UserInput::PushLine(line.trim_start_matches("line-push "))
         } else if line.starts_with("type") {
-            match line
-                .trim_start_matches("type")
-                .trim()
-                .parse::<InteractionId>()
-            {
-                Ok(i) => UserInput::Type(i),
-                Err(_) => UserInput::Unknown(Some("I cannot parse the goal number.")),
-            }
+            Self::trim_and_parse_ip(line, "type", UserInput::Type)
+        } else if line.starts_with("line-show") {
+            Self::trim_and_parse_ip(line, "line-show", |i| UserInput::ShowLine(i as usize))
         } else if line.starts_with("fill") || line.starts_with("give") {
             Self::trim_and_parse_to_ip_str(line, "fill", "give", UserInput::Give)
         } else if line.starts_with("infer") || line.starts_with("deduce") {

@@ -118,6 +118,10 @@ impl Repl {
         self.file.flush()
     }
 
+    pub fn line_count(&self) -> usize {
+        self.file_buf.len_lines()
+    }
+
     pub fn append(&mut self, text: &str) -> Monad {
         self.append_buffer(text);
         Self::append_to_file(&mut self.file, text.as_bytes())?;
