@@ -8,9 +8,7 @@ use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
 use crate::cmd::{Cmd, IOTCM};
 use crate::debug::{debug_command, debug_response};
 use crate::pos::InteractionPoint;
-use crate::resp::{
-    AgdaError, AllGoalsWarnings, DisplayInfo, GiveAction, GoalSpecific, MakeCase, Resp,
-};
+use crate::resp::{AgdaError, AllGoalsWarnings, DisplayInfo, GoalSpecific, Resp};
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";
@@ -254,7 +252,7 @@ impl ReplState {
 
 macro_rules! next_resp_of {
     ($f:ident, $p:ident, $d:literal) => {
-        next_resp_of!($f, $p, $p, $d);
+        next_resp_of!($f, $p, crate::resp::$p, $d);
     };
 
     ($f:ident, $p:ident, $t:ty, $d:literal) => {
@@ -277,3 +275,8 @@ macro_rules! next_resp_of {
 
 next_resp_of!(next_give_action, GiveAction, "Skip until next give-action.");
 next_resp_of!(next_make_case, MakeCase, "Skip until next make-case.");
+next_resp_of!(
+    next_highlight,
+    HighlightingInfo,
+    "Skip until next highlight."
+);
