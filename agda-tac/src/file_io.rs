@@ -104,7 +104,7 @@ impl Repl {
     }
 
     pub fn fill_goal_buffer(&mut self, mut i: InteractionPoint, text: &str) {
-        assert_eq!(i.range.len(), 1);
+        debug_assert_eq!(i.range.len(), 1);
         let interval = i.range.remove(0);
         self.file_buf.remove(agda_to_rope_range(&interval));
         self.file_buf.insert(interval.start.pos - 1, text);
