@@ -123,6 +123,21 @@ impl ReplState {
         Self::from_io(stdin, BufReader::new(out), file).await
     }
 
+    /// Print all goals.
+    pub fn print_goal_list(&self) {
+        let ips = self.interaction_points();
+        if ips.is_empty() {
+            println!("No goals, you're all set.");
+        }
+        for interaction_point in ips {
+            // This shouldn't fail
+            let range = &interaction_point.range;
+            debug_assert_eq!(range.len(), 1);
+            let interval = &range[0];
+            println!("?{} at line {}", interaction_point.id, interval.start.line)
+        }
+    }
+
     pub async fn from_io(
         mut stdin: ChildStdin,
         stdout: BufReader<ChildStdout>,

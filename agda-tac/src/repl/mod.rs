@@ -44,7 +44,7 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
             eprintln!("Error:");
             eprintln!("{}", e);
         }
-        ListGoals => list_goals(agda),
+        ListGoals => agda.agda.print_goal_list(),
         Help => {
             println!("{}", help(agda.is_plain));
             for line in HELP {
