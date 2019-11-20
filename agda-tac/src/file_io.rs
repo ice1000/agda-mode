@@ -91,7 +91,7 @@ impl Repl {
     }
 
     pub fn remove_last_line_buffer(&mut self) {
-        let line_last = self.file_buf.len_lines();
+        let line_last = self.file_buf.len_lines() - 2;
         let line_start = self.file_buf.line_to_char(line_last);
         let doc_end = self.file_buf.len_chars();
         self.file_buf.remove(line_start..doc_end)

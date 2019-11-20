@@ -8,7 +8,7 @@ use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
 use crate::cmd::{Cmd, IOTCM};
 use crate::debug::{debug_command, debug_response};
 use crate::pos::InteractionPoint;
-use crate::resp::{AgdaError, AllGoalsWarnings, DisplayInfo, GiveAction, GoalSpecific, Resp};
+use crate::resp::{AgdaError, AllGoalsWarnings, DisplayInfo, GiveAction, GoalSpecific, Resp, MakeCase};
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";
@@ -219,6 +219,21 @@ impl ReplState {
         loop {
             match self.response().await? {
                 GiveAction(ga) => break Ok(Ok(ga)),
+                DisplayInfo {
+                    info: Some(DisError(e)),
+                } => break Ok(e.into()),
+                _ => {}
+            }
+        }
+    }
+
+    /// Skip information until the next make-case info.
+    pub async fn next_make_case(&mut self) -> NextResult<MakeCase> {
+        use crate::resp::DisplayInfo::Error as DisError;
+        use Resp::*;
+        loop {
+            match self.response().await? {
+                MakeCase(mk) => break Ok(Ok(mk)),
                 DisplayInfo {
                     info: Some(DisError(e)),
                 } => break Ok(e.into()),

@@ -53,7 +53,10 @@ pub async fn infer(agda: &mut Repl, i: InteractionId, new: &str) -> Monad {
 pub async fn split(agda: &mut Repl, i: InteractionId, pat: &str) -> Monad {
     let command = Cmd::split(GoalInput::no_range(i, pat.to_owned()));
     agda.agda.command(command).await?;
-    unimplemented!()
+    if let Some(mk) = preprint_agda_result(agda.agda.next_make_case().await?) {
+        unimplemented!()
+    }
+    Ok(())
 }
 
 pub async fn ty(agda: &mut Repl, i: InteractionId) -> Monad {
