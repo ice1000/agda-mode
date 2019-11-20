@@ -26,7 +26,4 @@ This library is created for [agda-tac].
 It works with stable rust starting from 1.39.0.
 
 This crate will work only with master-branch Agda until Agda 2.6.1 is released.
-Tracking issues for the feature are:
-
-+ [agda#4183]
-+ [agda#4209]
+Tracking issues for the feature are [agda#4183] and [agda#4209], both work for JSON now.
