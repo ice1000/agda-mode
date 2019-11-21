@@ -26,7 +26,6 @@ pub fn help(plain: bool) -> &'static str {
 
 /// `interact::ion` stands for `interaction`.
 pub async fn ion(mut agda: Repl) -> io::Result<()> {
-    agda.agda.resend_command().await?;
     poll_goals(&mut agda.agda).await?;
     if agda.is_plain {
         let stdin = io::stdin();
