@@ -1,8 +1,7 @@
 use std::io;
 use std::process::Stdio;
 
-use serde::Deserialize;
-use tokio::io::AsyncWriteExt;
+use tokio::io::{AsyncWriteExt, BufReader};
 use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
 
 use crate::cmd::{Cmd, IOTCM};
@@ -33,6 +32,29 @@ pub fn init_agda_process(agda_program: &str) -> io::Result<ProcessStdio> {
     Ok(ProcessStdio(process, JustStdio(stdin, stdout)))
 }
 
+impl ReplState {
+    pub async fn start(agda_program: &str, file: String) -> io::Result<Self> {
+        let JustStdio(stdin, out) = start_agda(agda_program);
+        Self::from_io(stdin, BufReader::new(out), file).await
+    }
+
+    pub async fn from_io(
+        mut stdin: ChildStdin,
+        stdout: BufReader<ChildStdout>,
+        file: String,
+    ) -> io::Result<Self> {
+        let iotcm = load_file(file.clone());
+        send_command(&mut stdin, &iotcm).await?;
+        Ok(Self {
+            file,
+            iotcm,
+            stdin,
+            interaction_points: vec![],
+            agda: AgdaRead::from(stdout),
+        })
+    }
+}
+
 /// Start the Agda process and return the stdio handles.
 ///
 /// Note that this function may panic.
@@ -43,12 +65,6 @@ pub fn start_agda(agda_program: &str) -> JustStdio {
         println!("Agda exits with status {}.", status);
     });
     stdio
-}
-
-/// Deserialize from Agda's command line output.
-pub fn deserialize_agda<'a, T: Deserialize<'a>>(buf: &'a str) -> serde_json::Result<T> {
-    let buf = buf.trim_start_matches("JSON>").trim();
-    serde_json::from_str(buf)
 }
 
 /// Send an [`IOTCM`](crate::cmd::IOTCM) command to Agda.

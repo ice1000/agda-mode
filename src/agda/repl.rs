@@ -1,21 +1,21 @@
 use std::io;
 
-use tokio::io::{AsyncWriteExt, BufReader};
-use tokio::net::process::{ChildStdin, ChildStdout};
+use tokio::io::AsyncWriteExt;
+use tokio::net::process::ChildStdin;
 
 use crate::cmd::{Cmd, IOTCM};
 use crate::pos::InteractionPoint;
 use crate::resp::{AgdaError, DisplayInfo, Resp};
 
-use super::{load_file, send_command, start_agda, AgdaRead, JustStdio};
+use super::{send_command, AgdaRead};
 
 /// Simple REPL state wrapper.
 pub struct ReplState {
     pub stdin: ChildStdin,
     pub agda: AgdaRead,
     pub file: String,
-    interaction_points: Vec<InteractionPoint>,
-    iotcm: IOTCM,
+    pub(super) interaction_points: Vec<InteractionPoint>,
+    pub(super) iotcm: IOTCM,
 }
 
 /// An Agda response that is either something good or some error.
@@ -24,22 +24,10 @@ pub type AgdaResult<T> = Result<T, String>;
 pub type NextResult<T> = io::Result<AgdaResult<T>>;
 
 pub fn preprint_agda_result<T>(t: AgdaResult<T>) -> Option<T> {
-    match t {
-        Ok(o) => Some(o),
-        Err(e) => {
-            eprintln!("Errors:");
-            eprintln!("{}", e);
-            None
-        }
-    }
+    t.map_err(|e| eprintln!("Errors:\n{}", e)).ok()
 }
 
 impl ReplState {
-    pub async fn start(agda_program: &str, file: String) -> io::Result<Self> {
-        let JustStdio(stdin, out) = start_agda(agda_program);
-        Self::from_io(stdin, BufReader::new(out), file).await
-    }
-
     /// Print all goals.
     pub fn print_goal_list(&self) {
         let ips = self.interaction_points();
@@ -53,22 +41,6 @@ impl ReplState {
             let interval = &range[0];
             println!("?{} at line {}", interaction_point.id, interval.start.line)
         }
-    }
-
-    pub async fn from_io(
-        mut stdin: ChildStdin,
-        stdout: BufReader<ChildStdout>,
-        file: String,
-    ) -> io::Result<Self> {
-        let iotcm = load_file(file.clone());
-        send_command(&mut stdin, &iotcm).await?;
-        Ok(Self {
-            file,
-            iotcm,
-            stdin,
-            interaction_points: vec![],
-            agda: AgdaRead::from(stdout),
-        })
     }
 
     pub async fn reload_file(&mut self) -> io::Result<()> {
@@ -87,11 +59,6 @@ impl ReplState {
 
     pub async fn shutdown(&mut self) -> io::Result<()> {
         self.stdin.shutdown().await
-    }
-
-    /// Await the next Agda response.
-    pub async fn response(&mut self) -> io::Result<Resp> {
-        self.agda.response().await
     }
 
     /// Skip information until the next display info.
