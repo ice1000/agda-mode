@@ -27,6 +27,7 @@ pub struct GoalType {
     #[serde(rename = "type")]
     pub the_type: String,
     pub entries: Vec<ResponseContextEntry>,
+    pub boundary: Vec<String>,
     pub output_forms: Vec<String>,
 }
 
