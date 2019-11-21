@@ -79,7 +79,15 @@ pub async fn ctx(agda: &mut Repl, i: InteractionId) -> Monad {
     agda.agda.command(command).await?;
     if let Some(ctx) = preprint_agda_result(agda.agda.next_context().await?) {
         let ctx: Context = ctx;
-        unimplemented!()
+        if ctx.context.is_empty() {
+            println!("Context is empty, oops.");
+        }
+        for entry in ctx.context {
+            if !entry.in_scope {
+                print!("(Not in scope) ")
+            }
+            println!("{} : {}", entry.original_name, entry.binding);
+        }
     }
     Ok(())
 }
