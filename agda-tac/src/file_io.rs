@@ -91,10 +91,6 @@ pub fn fix_agda_int(i: usize) -> usize {
     i - 1
 }
 
-pub fn fit_rope_line(i: usize) -> usize {
-    i - 2
-}
-
 pub struct Repl {
     pub agda: ReplState,
     pub file: File,
@@ -120,15 +116,16 @@ impl Repl {
     }
 
     pub fn remove_last_line_buffer(&mut self) {
-        let line_last = fit_rope_line(self.file_buf.len_lines());
+        let line_last = self.file_buf.len_lines() - 2;
         let line_start = self.file_buf.line_to_char(line_last);
         let doc_end = self.file_buf.len_chars();
         self.file_buf.remove(line_start..doc_end)
     }
 
     pub fn remove_line_buffer(&mut self, line_num: usize) {
-        let line_start = self.file_buf.line_to_char(line_num);
-        let line_end = self.file_buf.line_to_char(line_num + 1);
+        // Previous line
+        let line_start = self.file_buf.line_to_char(line_num - 1);
+        let line_end = self.file_buf.line_to_char(line_num);
         self.file_buf.remove(line_start..line_end)
     }
 
@@ -143,7 +140,8 @@ impl Repl {
     }
 
     pub fn insert_line_buffer(&mut self, line_num: usize, line: &str) {
-        let index = self.file_buf.line_to_char(line_num);
+        // Previous line
+        let index = self.file_buf.line_to_char(line_num - 1);
         self.file_buf.insert(index, line);
         self.file_buf.insert(index, "\n")
     }
