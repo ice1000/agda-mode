@@ -43,12 +43,11 @@ impl ReplState {
     }
 
     pub async fn from_io(
-        mut stdin: ChildStdin,
+        stdin: ChildStdin,
         stdout: BufReader<ChildStdout>,
         file: String,
     ) -> io::Result<Self> {
         let iotcm = load_file(file.clone());
-        send_command(&mut stdin, &iotcm).await?;
         Ok(Self {
             file,
             iotcm,
