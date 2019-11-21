@@ -65,6 +65,7 @@ pub async fn split(agda: &mut Repl, i: InteractionId, pat: &str) -> Monad {
             }
             MakeCaseVariant::ExtendedLambda => unimplemented!(),
         }
+        agda.sync_buffer()?;
     }
     Ok(())
 }

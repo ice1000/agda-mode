@@ -61,6 +61,7 @@ pub static HELP: &[&str] = &[
     "fill <goal> <code>: fill the `goal` with `code` (alias: give).",
     "infer <goal> <code>: infer the type of `code` under the context of `goal` (alias: deduce).",
     "norm <goal> <code>: normalize `code` in `goal` (alias: simpl).",
+    "split <goal> <var>: case-split the variable of name `var` in `goal`.",
     "type <goal>: show the type of the `goal`.",
     "exit: exit the REPL (alias: quit).",
 ];
