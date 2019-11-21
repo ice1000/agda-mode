@@ -10,8 +10,12 @@ use crate::debug::debug_command;
 pub use self::read::*;
 pub use self::repl::*;
 
+/// Agda message reading.
 mod read;
+/// Repl state wrapper.
 mod repl;
+/// Verify whether Agda is working.
+pub mod verify;
 
 pub const INTERACTION_COMMAND: &str = "--interaction-json";
 pub const START_FAIL: &str = "Failed to start Agda";

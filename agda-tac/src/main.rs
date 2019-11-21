@@ -51,7 +51,8 @@ async fn main() {
         }
         Some(f) => f.to_owned(),
     };
-    let repl_state = ReplState::start(agda_program, abs_path).await.expect(FAIL);
+    let mut repl_state = ReplState::start(agda_program, abs_path).await.expect(FAIL);
+    repl_state.validate_version_panicking().await;
     let mut repl_state = Repl::new(repl_state, f, path);
     repl_state.is_plain = args.plain;
     repl_state.append_buffer(&first_line);
