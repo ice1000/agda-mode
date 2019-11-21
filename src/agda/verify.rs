@@ -19,10 +19,8 @@ pub fn check_version(version: &str) -> io::Result<()> {
 impl ReplState {
     pub async fn validate_version_panicking(&mut self) {
         match self.validate_version().await {
-            Ok(()) => {},
-            Err(e) => {
-                panic!("{}", e.description())
-            },
+            Ok(()) => {}
+            Err(e) => panic!("{}", e.description()),
         }
     }
 

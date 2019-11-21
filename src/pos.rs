@@ -48,6 +48,13 @@ pub struct InteractionPoint {
     pub range: Vec<Interval>,
 }
 
+impl InteractionPoint {
+    pub fn the_interval(&self) -> &Interval {
+        debug_assert_eq!(self.range.len(), 1);
+        &self.range[0]
+    }
+}
+
 impl Display for InteractionPoint {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         write!(f, "{:?}", self.id)

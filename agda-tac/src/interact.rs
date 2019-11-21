@@ -30,6 +30,7 @@ pub async fn ion(mut agda: Repl) -> io::Result<()> {
     if agda.is_plain {
         let stdin = io::stdin();
         loop {
+            // Be nice. Avoid using unicode in plain repl.
             print!("> ");
             io::stdout().flush()?;
             let mut next = String::new();

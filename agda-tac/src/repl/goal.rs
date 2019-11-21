@@ -2,7 +2,7 @@ use agda_mode::agda::preprint_agda_result;
 use agda_mode::base::ComputeMode;
 use agda_mode::cmd::{Cmd, GoalInput};
 use agda_mode::pos::InteractionId;
-use agda_mode::resp::GoalInfo;
+use agda_mode::resp::{GoalInfo, MakeCase, MakeCaseVariant};
 
 use crate::file_io::{Monad, Repl};
 use either::Either;
@@ -54,7 +54,17 @@ pub async fn split(agda: &mut Repl, i: InteractionId, pat: &str) -> Monad {
     let command = Cmd::split(GoalInput::no_range(i, pat.to_owned()));
     agda.agda.command(command).await?;
     if let Some(mk) = preprint_agda_result(agda.agda.next_make_case().await?) {
-        unimplemented!()
+        let mk: MakeCase = mk;
+        match mk.variant {
+            MakeCaseVariant::Function => {
+                let start = mk.interaction_point.the_interval().start;
+                agda.remove_line_buffer(start.line);
+                for clause in mk.clauses.into_iter().rev() {
+                    agda.insert_line_buffer(start.line, &clause);
+                }
+            }
+            MakeCaseVariant::ExtendedLambda => unimplemented!(),
+        }
     }
     Ok(())
 }

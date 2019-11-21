@@ -71,6 +71,9 @@ pub fn find_default() -> Monad<String> {
 pub fn agda_to_rope_range(i: &Interval) -> Range<usize> {
     i.range_shift_left(1)
 }
+pub fn fix_agda_int(i: usize) -> usize {
+    i - 1
+}
 
 pub struct Repl {
     pub agda: ReplState,
@@ -103,16 +106,26 @@ impl Repl {
         self.file_buf.remove(line_start..doc_end)
     }
 
-    pub fn fill_goal_buffer(&mut self, mut i: InteractionPoint, text: &str) {
-        debug_assert_eq!(i.range.len(), 1);
-        let interval = i.range.remove(0);
-        self.file_buf.remove(agda_to_rope_range(&interval));
-        self.file_buf.insert(interval.start.pos - 1, text);
+    pub fn remove_line_buffer(&mut self, line_num: usize) {
+        let line_start = self.file_buf.line_to_char(line_num);
+        let line_end = self.file_buf.line_to_char(line_num + 1);
+        self.file_buf.remove(line_start..line_end)
+    }
+
+    pub fn line_of_offset(&mut self, offset: usize) -> usize {
+        self.file_buf.char_to_line(offset)
+    }
+
+    pub fn fill_goal_buffer(&mut self, i: InteractionPoint, text: &str) {
+        let interval = i.the_interval();
+        self.file_buf.remove(agda_to_rope_range(interval));
+        self.file_buf.insert(fix_agda_int(interval.start.pos), text);
     }
 
     pub fn insert_line_buffer(&mut self, line_num: usize, line: &str) {
         let index = self.file_buf.line_to_char(line_num);
-        self.file_buf.insert(index, line)
+        self.file_buf.insert(index, line);
+        self.file_buf.insert(index, "\n")
     }
 
     pub fn line_in_buffer(&mut self, line_num: usize) -> RopeSlice {
