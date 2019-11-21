@@ -12,15 +12,21 @@ const FAIL_CREATE_DEFAULT: &str = "Failed to create default working file";
 
 pub type Monad<T = ()> = io::Result<T>;
 
-pub fn init_module(mut file: String) -> Monad<(File, PathBuf, String)> {
+pub struct InitModule(pub File, pub PathBuf, pub Option<String>);
+
+pub fn init_module(mut file: String, allow_ex: bool) -> Monad<InitModule> {
     // Extracted as variable to make the borrow checker happy
     if !file.ends_with(".agda") {
         file.push_str(".agda")
     }
     let path = Path::new(&file);
     if path.exists() {
-        eprintln!("I don't want to work with existing files, sorry.");
-        std::process::exit(1);
+        if !allow_ex {
+            eprintln!("I don't want to work with existing files, sorry.");
+            std::process::exit(1);
+        } else {
+            return Ok(InitModule(f, path.to_path_buf().canonicalize()?, None));
+        }
     }
     let mut f = File::create(path)?;
     let extension = path.extension().and_then(|s| s.to_str()).unwrap_or("");
@@ -35,7 +41,11 @@ pub fn init_module(mut file: String) -> Monad<(File, PathBuf, String)> {
     let first_line = format!("module {} where\n", mod_name);
     f.write(first_line.as_bytes())?;
     f.flush()?;
-    Ok((f, path.to_path_buf().canonicalize()?, first_line))
+    Ok(InitModule(
+        f,
+        path.to_path_buf().canonicalize()?,
+        Some(first_line),
+    ))
 }
 
 pub fn find_default_unwrap() -> String {

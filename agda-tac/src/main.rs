@@ -3,7 +3,7 @@ use agda_mode::debug::{
     debug_command_via, debug_response_via, dont_debug_command, dont_debug_response,
 };
 
-use crate::file_io::{find_default_unwrap, Repl};
+use crate::file_io::{find_default_unwrap, InitModule, Repl};
 
 /// Clap cli argument things.
 mod args;
@@ -43,7 +43,8 @@ async fn main() {
         Some(file) => file,
         None => find_default_unwrap(),
     };
-    let (f, path, first_line) = file_io::init_module(file).expect(FAIL_WRITE);
+    let InitModule(f, path, first_line) =
+        file_io::init_module(file, args.allow_existing_file).expect(FAIL_WRITE);
     let abs_path = match path.to_str() {
         None => {
             eprintln!("The given file name has some problems.");
@@ -59,6 +60,6 @@ async fn main() {
     }
     let mut repl_state = Repl::new(repl_state, f, path);
     repl_state.is_plain = args.plain;
-    repl_state.append_buffer(&first_line);
+    first_line.as_ref().map(repl_state.append_buffer).is_some();
     interact::ion(repl_state).await.expect(FAIL_CMD);
 }

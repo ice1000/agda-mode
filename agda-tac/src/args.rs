@@ -25,6 +25,10 @@ pub struct CliOptions {
     #[structopt(alias = "check", long)]
     pub validate: bool,
 
+    /// Allow working with existing files.
+    #[structopt(alias = "allow-exist", long)]
+    pub allow_existing_file: bool,
+
     /// Disable completion/hints/colored output in interaction
     #[structopt(short = "p", long)]
     pub plain: bool,
