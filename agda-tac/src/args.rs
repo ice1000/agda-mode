@@ -21,6 +21,10 @@ pub struct CliOptions {
     #[structopt(alias = "dc", long)]
     pub debug_command: bool,
 
+    /// Check Agda version.
+    #[structopt(alias = "check", long)]
+    pub validate: bool,
+
     /// Disable completion/hints/colored output in interaction
     #[structopt(short = "p", long)]
     pub plain: bool,
