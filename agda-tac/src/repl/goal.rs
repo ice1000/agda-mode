@@ -2,7 +2,7 @@ use agda_mode::agda::preprint_agda_result;
 use agda_mode::base::ComputeMode;
 use agda_mode::cmd::{Cmd, GoalInput};
 use agda_mode::pos::InteractionId;
-use agda_mode::resp::{GoalInfo, MakeCase, MakeCaseVariant};
+use agda_mode::resp::{Context, GoalInfo, MakeCase, MakeCaseVariant};
 
 use crate::file_io::{Monad, Repl};
 use either::Either;
@@ -70,6 +70,16 @@ pub async fn split(agda: &mut Repl, i: InteractionId, pat: &str) -> Monad {
             MakeCaseVariant::ExtendedLambda => unimplemented!(),
         }
         agda.sync_buffer()?;
+    }
+    Ok(())
+}
+
+pub async fn ctx(agda: &mut Repl, i: InteractionId) -> Monad {
+    let command = Cmd::context(GoalInput::simple(i));
+    agda.agda.command(command).await?;
+    if let Some(ctx) = preprint_agda_result(agda.agda.next_context().await?) {
+        let ctx: Context = ctx;
+        unimplemented!()
     }
     Ok(())
 }

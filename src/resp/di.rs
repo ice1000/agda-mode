@@ -31,8 +31,8 @@ pub struct NormalForm {
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct Context {
-    interaction_point: InteractionPoint,
-    context: Vec<ResponseContextEntry>,
+    pub interaction_point: InteractionPoint,
+    pub context: Vec<ResponseContextEntry>,
 }
 
 #[serde(rename_all = "camelCase")]

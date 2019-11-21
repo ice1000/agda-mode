@@ -171,6 +171,10 @@ impl Cmd {
         Cmd::GoalType(From::from(input))
     }
 
+    pub fn context(input: GoalInput) -> Self {
+        Cmd::Context(From::from(input))
+    }
+
     pub fn split(input: GoalInput) -> Self {
         Cmd::MakeCase(input)
     }

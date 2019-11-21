@@ -1,5 +1,6 @@
 use serde::Deserialize;
 
+use crate::base::TokenBased;
 use crate::pos::InteractionPoint;
 
 pub use self::di::*;
@@ -7,7 +8,6 @@ pub use self::give::*;
 pub use self::goal::*;
 pub use self::hl::*;
 pub use self::oc::*;
-use crate::base::TokenBased;
 
 /// Display info.
 mod di;

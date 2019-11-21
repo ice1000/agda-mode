@@ -10,6 +10,7 @@ pub enum UserInput<'a> {
     Give(InteractionId, &'a str),
     Split(InteractionId, &'a str),
     Reload,
+    Context(InteractionId),
     ReadToEnd,
     Help,
     ListGoals,
@@ -30,6 +31,7 @@ static VALUES: &[&str] = &[
     "line-push",
     "line-pop",
     "line-show",
+    "context",
     "fill",
     "split",
     "give",
@@ -108,6 +110,8 @@ impl<'a> From<&'a str> for UserInput<'a> {
             UserInput::PushLine(line.trim_start_matches("line-push "))
         } else if line.starts_with("type") {
             Self::trim_and_parse_ip(line, "type", UserInput::Type)
+        } else if line.starts_with("context") {
+            Self::trim_and_parse_ip(line, "context", UserInput::Context)
         } else if line.starts_with("line-show") {
             Self::trim_and_parse_ip(line, "line-show", |i| UserInput::ShowLine(i as usize))
         } else if line.starts_with("fill") || line.starts_with("give") {

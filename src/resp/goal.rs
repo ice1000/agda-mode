@@ -8,7 +8,7 @@ pub struct ResponseContextEntry {
     pub original_name: String,
     pub reified_name: String,
     pub binding: String,
-    pub in_scope: String,
+    pub in_scope: bool,
 }
 
 #[serde(tag = "kind")]
