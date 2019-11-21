@@ -60,6 +60,8 @@ async fn main() {
     }
     let mut repl_state = Repl::new(repl_state, f, path);
     repl_state.is_plain = args.plain;
-    first_line.as_ref().map(repl_state.append_buffer).is_some();
+    if let Some(s) = first_line {
+        repl_state.append_buffer(&s);
+    }
     interact::ion(repl_state).await.expect(FAIL_CMD);
 }

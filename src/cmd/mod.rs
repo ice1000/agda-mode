@@ -172,7 +172,7 @@ impl Cmd {
     }
 
     pub fn split(input: GoalInput) -> Self {
-        Cmd::MakeCase(From::from(input))
+        Cmd::MakeCase(input)
     }
 
     pub fn search_module(search: String) -> Self {

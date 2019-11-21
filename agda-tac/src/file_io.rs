@@ -25,7 +25,11 @@ pub fn init_module(mut file: String, allow_ex: bool) -> Monad<InitModule> {
             eprintln!("I don't want to work with existing files, sorry.");
             std::process::exit(1);
         } else {
-            return Ok(InitModule(f, path.to_path_buf().canonicalize()?, None));
+            return Ok(InitModule(
+                File::create(path)?,
+                path.to_path_buf().canonicalize()?,
+                None,
+            ));
         }
     }
     let mut f = File::create(path)?;
