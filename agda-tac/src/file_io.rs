@@ -26,7 +26,7 @@ pub fn init_module(mut file: String, allow_ex: bool) -> Monad<InitModule> {
             std::process::exit(1);
         } else {
             return Ok(InitModule(
-                File::create(path)?,
+                File::open(path)?,
                 path.to_path_buf().canonicalize()?,
                 None,
             ));

@@ -4,7 +4,7 @@ use rustyline::error::ReadlineError;
 
 use crate::editor::CliEditor;
 use crate::file_io::{history_file, Repl};
-use crate::repl::line;
+use crate::repl::{line, poll_goals};
 
 const LAMBDA_LT: &str = "\u{03bb}> ";
 const RICH_HELP: &str =
@@ -26,7 +26,7 @@ pub fn help(plain: bool) -> &'static str {
 
 /// `interact::ion` stands for `interaction`.
 pub async fn ion(mut agda: Repl) -> io::Result<()> {
-    // poll_goals(&mut agda.agda).await?;
+    poll_goals(&mut agda.agda).await?;
     if agda.is_plain {
         let stdin = io::stdin();
         loop {
