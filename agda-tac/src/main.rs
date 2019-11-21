@@ -43,7 +43,7 @@ async fn main() {
         Some(file) => file,
         None => find_default_unwrap(),
     };
-    let InitModule(f, path, first_line) =
+    let InitModule(f, path, init) =
         file_io::init_module(file, args.allow_existing_file).expect(FAIL_WRITE);
     let abs_path = match path.to_str() {
         None => {
@@ -58,10 +58,7 @@ async fn main() {
         println!("It works!");
         std::process::exit(0);
     }
-    let mut repl_state = Repl::new(repl_state, f, path);
+    let mut repl_state = Repl::new(repl_state, f, path, init);
     repl_state.is_plain = args.plain;
-    if let Some(s) = first_line {
-        repl_state.append_buffer(&s);
-    }
     interact::ion(repl_state).await.expect(FAIL_CMD);
 }

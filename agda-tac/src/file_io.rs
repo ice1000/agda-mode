@@ -1,5 +1,5 @@
 use std::fs::{create_dir_all, remove_file, File};
-use std::io::{self, BufWriter, Seek, SeekFrom, Write};
+use std::io::{self, BufReader, BufWriter, Seek, SeekFrom, Write};
 use std::ops::Range;
 use std::path::{Path, PathBuf};
 
@@ -12,7 +12,7 @@ const FAIL_CREATE_DEFAULT: &str = "Failed to create default working file";
 
 pub type Monad<T = ()> = io::Result<T>;
 
-pub struct InitModule(pub File, pub PathBuf, pub Option<String>);
+pub struct InitModule(pub File, pub PathBuf, pub Rope);
 
 pub fn init_module(mut file: String, allow_ex: bool) -> Monad<InitModule> {
     // Extracted as variable to make the borrow checker happy
@@ -25,11 +25,9 @@ pub fn init_module(mut file: String, allow_ex: bool) -> Monad<InitModule> {
             eprintln!("I don't want to work with existing files, sorry.");
             std::process::exit(1);
         } else {
-            return Ok(InitModule(
-                File::open(path)?,
-                path.to_path_buf().canonicalize()?,
-                None,
-            ));
+            let file = File::open(path)?;
+            let rope = Rope::from_reader(BufReader::new(&file))?;
+            return Ok(InitModule(file, path.to_path_buf().canonicalize()?, rope));
         }
     }
     let mut f = File::create(path)?;
@@ -48,7 +46,7 @@ pub fn init_module(mut file: String, allow_ex: bool) -> Monad<InitModule> {
     Ok(InitModule(
         f,
         path.to_path_buf().canonicalize()?,
-        Some(first_line),
+        Rope::from(first_line),
     ))
 }
 
@@ -98,12 +96,12 @@ pub struct Repl {
 }
 
 impl Repl {
-    pub fn new(agda: ReplState, file: File, path: PathBuf) -> Self {
+    pub fn new(agda: ReplState, file: File, path: PathBuf, file_buf: Rope) -> Self {
         Self {
             agda,
             file,
             path,
-            file_buf: Rope::new(),
+            file_buf,
             is_plain: false,
         }
     }
