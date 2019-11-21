@@ -1,4 +1,4 @@
-use std::fs::{create_dir_all, remove_file, File};
+use std::fs::{create_dir_all, remove_file, File, OpenOptions};
 use std::io::{self, BufReader, BufWriter, Seek, SeekFrom, Write};
 use std::ops::Range;
 use std::path::{Path, PathBuf};
@@ -25,7 +25,10 @@ pub fn init_module(mut file: String, allow_ex: bool) -> Monad<InitModule> {
             eprintln!("I don't want to work with existing files, sorry.");
             std::process::exit(1);
         } else {
-            let file = File::open(path)?;
+            let file = OpenOptions::new().read(true).write(true).open(path)?;
+            let mut perms = file.metadata()?.permissions();
+            perms.set_readonly(false);
+            file.set_permissions(perms)?;
             let rope = Rope::from_reader(BufReader::new(&file))?;
             return Ok(InitModule(file, path.to_path_buf().canonicalize()?, rope));
         }
@@ -83,6 +86,7 @@ pub fn find_default() -> Monad<String> {
 pub fn agda_to_rope_range(i: &Interval) -> Range<usize> {
     i.range_shift_left(1)
 }
+
 pub fn fix_agda_int(i: usize) -> usize {
     i - 1
 }
