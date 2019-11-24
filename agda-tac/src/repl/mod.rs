@@ -30,6 +30,7 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         Infer(i, new) => infer(agda, i, new).await?,
         Simplify(i, new) => norm(agda, i, new, ComputeMode::DefaultCompute).await?,
         Normalize(i, new) => norm(agda, i, new, ComputeMode::UseShowInstance).await?,
+        IntroPattern(i, var) => intro_pattern(agda, i, var).await?,
         Type(i) => ty(agda, i).await?,
         Context(i) => ctx(agda, i).await?,
         Split(i, pat) => split(agda, i, pat).await?,

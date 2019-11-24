@@ -1,6 +1,10 @@
 use crate::file_io::{Monad, Repl};
 use agda_mode::agda::{preprint_agda_result, ReplState};
 
+pub async fn reload_unit(agda: &mut Repl) -> Monad {
+    reload(agda).await.map(|_| ())
+}
+
 pub async fn reload(agda: &mut Repl) -> Monad<bool> {
     let da = &mut agda.agda;
     da.reload_file().await?;

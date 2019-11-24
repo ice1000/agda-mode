@@ -14,6 +14,7 @@ pub enum UserInput<'a> {
     ReadToEnd,
     Help,
     ListGoals,
+    IntroPattern(InteractionId, &'a str),
     SearchModule(&'a str),
     Exit,
     Infer(InteractionId, &'a str),
@@ -122,6 +123,8 @@ impl<'a> From<&'a str> for UserInput<'a> {
             Self::trim_and_parse_to_ip_str(line, "infer", "deduce", UserInput::Infer)
         } else if line.starts_with("simpl") {
             Self::trim_and_parse_to_ip_str(line, "simpl", "", UserInput::Simplify)
+        } else if line.starts_with("intro-pattern") {
+            Self::trim_and_parse_to_ip_str(line, "intro-pattern", "", UserInput::IntroPattern)
         } else if line.starts_with("norm") {
             Self::trim_and_parse_to_ip_str(line, "norm", "", UserInput::Normalize)
         } else if line.starts_with("split") {
