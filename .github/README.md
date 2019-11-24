@@ -21,6 +21,8 @@
  [agda#4209]: https://github.com/agda/agda/issues/4209
  [agda-tac]: https://github.com/ice1000/agda-mode/tree/master/agda-tac
 
+### [Binary download](https://github.com/ice1000/agda-mode/releases/tag/v0.1.6)
+
 Accessing Agda's interaction mode via command line.
 This library is created for [agda-tac].
 It works with stable rust starting from 1.39.0.
