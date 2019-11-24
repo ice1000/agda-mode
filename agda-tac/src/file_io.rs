@@ -148,7 +148,7 @@ impl Repl {
 
     pub fn insert_line_buffer(&mut self, line_num: usize, line: &str) {
         // Previous line
-        let index = self.file_buf.line_to_char(line_num - 1);
+        let index = self.file_buf.line_to_char(line_num - 1) - 1;
         self.file_buf.insert(index, line);
         self.file_buf.insert(index, "\n")
     }
