@@ -1,3 +1,5 @@
+use either::Either;
+
 use agda_mode::agda::preprint_agda_result;
 use agda_mode::base::ComputeMode;
 use agda_mode::cmd::{Cmd, GoalInput};
@@ -5,7 +7,6 @@ use agda_mode::pos::InteractionId;
 use agda_mode::resp::{Context, GoalInfo, MakeCase, MakeCaseVariant};
 
 use crate::file_io::{Monad, Repl};
-use either::Either;
 
 pub async fn norm(agda: &mut Repl, i: InteractionId, new: &str, mode: ComputeMode) -> Monad {
     let command = Cmd::Compute {

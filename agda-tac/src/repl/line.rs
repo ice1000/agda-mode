@@ -13,22 +13,19 @@ pub fn show_line(agda: &mut Repl, i: usize) {
 
 pub async fn pop_line(agda: &mut Repl) -> Monad {
     agda.remove_last_line()?;
-    reload(agda).await?;
-    Ok(())
+    reload_unit(agda).await
 }
 
 pub async fn push_line(agda: &mut Repl, code: &str) -> Monad {
     agda.append(code)?;
     agda.append("\n")?;
-    reload(agda).await?;
-    Ok(())
+    reload_unit(agda).await
 }
 
 pub async fn define(agda: &mut Repl, function_name: &&str) -> Monad {
     agda.append(&format!("{} : ?\n", function_name))?;
     agda.append(&format!("{} = ?\n", function_name))?;
-    reload(agda).await?;
-    Ok(())
+    reload_unit(agda).await
 }
 
 pub async fn intro_pattern(agda: &mut Repl, i: InteractionId, new: &str) -> Monad {
