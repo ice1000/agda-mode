@@ -1,5 +1,5 @@
 use crate::file_io::{Monad, Repl};
-use crate::repl::{reload, reload_unit};
+use crate::repl::{reload_unit};
 use agda_mode::pos::InteractionId;
 
 pub fn show_line(agda: &mut Repl, i: usize) {
