@@ -87,10 +87,6 @@ pub fn agda_to_rope_range(i: &Interval) -> Range<usize> {
     i.range_shift_left(1)
 }
 
-pub fn fix_agda_int(i: usize) -> usize {
-    i - 1
-}
-
 pub struct Repl {
     pub agda: ReplState,
     pub file: File,
@@ -136,7 +132,18 @@ impl Repl {
     pub fn fill_goal_buffer(&mut self, i: InteractionPoint, text: &str) {
         let interval = i.the_interval();
         self.file_buf.remove(agda_to_rope_range(interval));
-        self.file_buf.insert(fix_agda_int(interval.start.pos), text);
+        self.file_buf.insert(interval.start.pos - 1, text);
+    }
+
+    pub fn intros_in_goal_buffer(&mut self, i: InteractionPoint, text: &str) -> Option<()> {
+        let interval = i.the_interval();
+        let line_num = interval.start.line - 1;
+        let line_start = self.file_buf.line_to_char(line_num);
+        let line = self.file_buf.line(line_num);
+        let (idx, _) = (line.chars().into_iter().enumerate()).find(|(_, c)| c == &'=')?;
+        self.file_buf.insert_char(line_start + idx - 1, ' ');
+        self.file_buf.insert(line_start + idx - 1, text);
+        Some(())
     }
 
     pub fn insert_line_buffer(&mut self, line_num: usize, line: &str) {
