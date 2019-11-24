@@ -6,6 +6,7 @@ pub enum UserInput<'a> {
     Define(&'a str),
     PushLine(&'a str),
     PopLine,
+    DumpProof,
     ShowLine(usize),
     Give(InteractionId, &'a str),
     Split(InteractionId, &'a str),
@@ -34,6 +35,7 @@ static VALUES: &[&str] = &[
     "line-show",
     "context",
     "fill",
+    "dump-proof",
     "split",
     "give",
     "reload",
@@ -60,6 +62,7 @@ pub static HELP: &[&str] = &[
     "line-show <line>: show the `line`-th line.",
     "list-goals: list the goals and their line number.",
     "reload: let agda reload the current file.",
+    "dump-proof: print the agda file.",
     "intro-pattern <goal> <var>: introduce a pattern of name `var` in `goal`.",
     "find-in-module: find a definition in the current module. (mysterious API)",
     "read-to-end: consume all available agda responses, for debugging agda-tac only.",
@@ -133,6 +136,8 @@ impl<'a> From<&'a str> for UserInput<'a> {
             UserInput::Reload
         } else if line == "list-goals" {
             UserInput::ListGoals
+        } else if line == "dump-proof" {
+            UserInput::DumpProof
         } else if line == "line-pop" {
             UserInput::PopLine
         } else if line.starts_with("find-in-module") {

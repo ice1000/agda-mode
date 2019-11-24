@@ -153,6 +153,10 @@ impl Repl {
         self.file_buf.insert(index, "\n")
     }
 
+    pub fn dump_proof(&mut self) -> Monad {
+        self.file_buf.write_to(BufWriter::new(io::stdout()))
+    }
+
     pub fn line_in_buffer(&mut self, line_num: usize) -> RopeSlice {
         self.file_buf.line(line_num)
     }
