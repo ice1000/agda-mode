@@ -1,7 +1,7 @@
 use std::io;
 
 use tokio::io::AsyncWriteExt;
-use tokio::net::process::ChildStdin;
+use tokio::process::ChildStdin;
 
 use crate::cmd::{Cmd, IOTCM};
 use crate::pos::InteractionPoint;

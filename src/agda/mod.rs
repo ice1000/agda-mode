@@ -2,7 +2,7 @@ use std::io;
 use std::process::Stdio;
 
 use tokio::io::{AsyncWriteExt, BufReader};
-use tokio::net::process::{Child, ChildStdin, ChildStdout, Command};
+use tokio::process::{Child, ChildStdin, ChildStdout, Command};
 
 use crate::cmd::{Cmd, IOTCM};
 use crate::debug::debug_command;

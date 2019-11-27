@@ -27,6 +27,5 @@ features = ["cli"]
 
 [dependencies.tokio]
 version = "0.2.0"
-default-features = false
 # Because these are also used in agda-mode
-features = ["io", "rt-full", "codec", "process"]
+features = ["io-util", "rt-core", "process"]

@@ -2,7 +2,7 @@ use std::io;
 
 use serde::Deserialize;
 use tokio::io::{AsyncBufReadExt, BufReader};
-use tokio::net::process::ChildStdout;
+use tokio::process::ChildStdout;
 
 use crate::agda::ReplState;
 use crate::debug::debug_response;

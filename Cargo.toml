@@ -18,8 +18,7 @@ either = "1.5"
 
 [dependencies.tokio]
 version = "0.2.0"
-default-features = false
-features = ["io", "rt-full", "codec", "process"]
+features = ["io-util", "rt-core", "process"]
 
 [workspace]
 members = ["agda-tac"]
