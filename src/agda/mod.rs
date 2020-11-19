@@ -30,8 +30,8 @@ pub fn init_agda_process(agda_program: &str) -> io::Result<ProcessStdio> {
         .stdout(Stdio::piped())
         .stdin(Stdio::piped())
         .spawn()?; // cannot spawn
-    let stdin = process.stdin().take().expect("Failed to pipe stdin");
-    let stdout = process.stdout().take().expect("Failed to pipe stdout");
+    let stdin = process.stdin.take().expect("Failed to pipe stdin");
+    let stdout = process.stdout.take().expect("Failed to pipe stdout");
     // The above two should not panic, because both stdio are piped
     Ok(ProcessStdio(process, JustStdio(stdin, stdout)))
 }
@@ -65,8 +65,8 @@ impl ReplState {
 pub fn start_agda(agda_program: &str) -> JustStdio {
     let ProcessStdio(process, stdio) = init_agda_process(agda_program).expect(START_FAIL);
     tokio::spawn(async {
-        let status = process.await.expect(START_FAIL);
-        println!("Agda exits with status {}.", status);
+        let status = process.wait_with_output().await.expect(START_FAIL);
+        println!("Agda exits with status {}.", status.status);
     });
     stdio
 }

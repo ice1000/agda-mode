@@ -1,4 +1,3 @@
-use std::error::Error as ErrorTrait;
 use std::io;
 use std::io::ErrorKind;
 
@@ -20,7 +19,7 @@ impl ReplState {
     pub async fn validate_version_panicking(&mut self) {
         match self.validate_version().await {
             Ok(()) => {}
-            Err(e) => panic!("{}", e.description()),
+            Err(e) => panic!("{}", e.to_string()),
         }
     }
 

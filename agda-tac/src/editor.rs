@@ -1,4 +1,4 @@
-use rustyline::completion::Completer;
+use rustyline::{completion::Completer, validate::Validator};
 use rustyline::highlight::Highlighter;
 use rustyline::hint::Hinter;
 use rustyline::{CompletionType, Config, Context, Editor, Helper};
@@ -43,6 +43,8 @@ impl Hinter for CliEditor {
 }
 
 impl Highlighter for CliEditor {}
+
+impl Validator for CliEditor {}
 
 impl Helper for CliEditor {}
 
