@@ -19,7 +19,7 @@ dirs = "3.0"
 rustyline = "6.3"
 ropey = "1.1"
 either = "1.5"
-agda-mode = "0.1.8"
+agda-mode = { path = ".." }
 
 [dependencies.minitt-util]
 version = "0.2.4"

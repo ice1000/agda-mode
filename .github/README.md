@@ -19,6 +19,7 @@
  [gt-svg]: https://badges.gitter.im/ice1000/agda-mode.svg
  [agda#4183]: https://github.com/agda/agda/issues/4183
  [agda#4209]: https://github.com/agda/agda/issues/4209
+ [agda#5052]: https://github.com/agda/agda/pull/5052
  [agda-tac]: https://github.com/ice1000/agda-mode/tree/master/agda-tac
 
 ### [Binary download](https://github.com/ice1000/agda-mode/releases/tag/v0.1.8)
@@ -28,4 +29,4 @@ This library is created for [agda-tac].
 It works with stable rust starting from 1.47.0.
 
 This crate works with Agda >=2.6.1.
-Tracking issues for the required features: [agda#4183] and [agda#4209].
+Tracking issues for the required features: [agda#4183], [agda#4209] and [agda#5052].
