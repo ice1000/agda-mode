@@ -21,11 +21,11 @@
  [agda#4209]: https://github.com/agda/agda/issues/4209
  [agda-tac]: https://github.com/ice1000/agda-mode/tree/master/agda-tac
 
-### [Binary download](https://github.com/ice1000/agda-mode/releases/tag/v0.1.6)
+### [Binary download](https://github.com/ice1000/agda-mode/releases/tag/v0.1.8)
 
 Accessing Agda's interaction mode via command line.
 This library is created for [agda-tac].
-It works with stable rust starting from 1.39.0.
+It works with stable rust starting from 1.47.0.
 
-This crate will work only with master-branch Agda until Agda 2.6.1 is released.
-Tracking issues for the feature are [agda#4183] and [agda#4209], both work for JSON now.
+This crate works with Agda >=2.6.1.
+Tracking issues for the required features: [agda#4183] and [agda#4209].
