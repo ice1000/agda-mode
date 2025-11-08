@@ -115,7 +115,7 @@ macro_rules! next_resp_of {
 
     ($f:ident, $p:ident, $t:ty, $d:literal) => {
         impl ReplState {
-            #[doc($d)]
+            #[doc = $d]
             pub async fn $f(&mut self) -> NextResult<$t> {
                 loop {
                     match self.response().await? {
@@ -146,7 +146,7 @@ macro_rules! next_disp_of {
 
     ($f:ident, $p:ident, $t:ty, $d:literal) => {
         impl ReplState {
-            #[doc($d)]
+            #[doc = $d]
             pub async fn $f(&mut self) -> NextResult<$t> {
                 loop {
                     match self.next_display_info().await? {
