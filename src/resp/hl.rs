@@ -5,8 +5,8 @@ use serde::Deserialize;
 
 /// A token highlighting information.
 /// The token is somehow called `Aspect` in Agda.
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct AspectHighlight {
     pub range: (IntPos, IntPos),
     pub atoms: Vec<String>,
@@ -16,23 +16,23 @@ pub struct AspectHighlight {
 }
 
 /// Jump to library definition information.
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct DefinitionSite {
     pub filepath: String,
     pub position: IntPos,
 }
 
 /// A list of token highlighting information.
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct Highlighting {
     pub remove: bool,
     pub payload: Vec<AspectHighlight>,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct HighlightingInfo {
     info: Option<Highlighting>,
     filepath: Option<String>,

@@ -20,8 +20,8 @@ mod hl;
 /// Output constraints (user goals & unsolved metas).
 mod oc;
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct MakeCase {
     pub variant: MakeCaseVariant,
     pub interaction_point: InteractionPoint,
@@ -29,8 +29,8 @@ pub struct MakeCase {
 }
 
 /// Status information.
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq, Hash)]
+#[serde(rename_all = "camelCase")]
 pub struct Status {
     /// Are implicit arguments displayed?
     pub show_implicit_arguments: bool,
@@ -44,16 +44,16 @@ pub enum MakeCaseVariant {
     ExtendedLambda,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct OneSolution {
     pub interaction_point: InteractionPoint,
     pub expression: String,
 }
 
 /// Agda response.
-#[serde(tag = "kind")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(tag = "kind")]
 pub enum Resp {
     HighlightingInfo(HighlightingInfo),
     Status {

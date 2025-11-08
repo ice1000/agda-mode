@@ -9,8 +9,8 @@ use serde::Deserialize;
 /// If 'GiveResult' is 'Give_String s', then the goal is replaced by 's',
 /// and otherwise the text inside the goal is retained (parenthesised
 /// if 'GiveResult' is 'Give_Paren').
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct GiveResult {
     str: Option<String>,
     paren: Option<bool>,
@@ -26,8 +26,8 @@ impl GiveResult {
     }
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct GiveAction {
     pub give_result: GiveResult,
     pub interaction_point: InteractionPoint,

@@ -5,16 +5,16 @@ use std::ops::Range;
 pub type IntPos = i32;
 
 /// A position in the file.
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Copy, Default, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct Pos {
     pub pos: usize,
     pub line: usize,
     pub col: usize,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct Interval {
     pub file: Option<String>,
     pub start: Pos,
@@ -41,8 +41,8 @@ pub type InteractionId = i32;
 /// Normally, it's also positive.
 pub type ProblemId = i32;
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct InteractionPoint {
     pub id: InteractionId,
     pub range: Vec<Interval>,

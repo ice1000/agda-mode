@@ -3,30 +3,30 @@ use crate::pos::{InteractionId, Interval, ProblemId};
 use serde::Deserialize;
 use std::fmt::{Display, Error, Formatter};
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct OutputForm {
     pub range: Vec<Interval>,
     pub problems: Vec<ProblemId>,
     pub constraint: OutputConstraint<String>,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct FindInstanceCandidate {
     #[serde(rename = "type")]
     pub of_type: String,
     pub value: String,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct JustSomething<Obj> {
     pub constraint_obj: Obj,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct PostponedCheckArgs<Obj> {
     pub constraint_obj: Obj,
     pub of_type: String,
@@ -35,15 +35,15 @@ pub struct PostponedCheckArgs<Obj> {
     pub arguments: Vec<String>,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct CmpSomething<Obj> {
     pub constraint_objs: (Obj, Obj),
     pub comparison: Comparison,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct FindInstanceOF<Obj> {
     pub constraint_obj: Obj,
     #[serde(rename = "type")]
@@ -51,8 +51,8 @@ pub struct FindInstanceOF<Obj> {
     pub candidates: Vec<FindInstanceCandidate>,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct TypedAssign<Obj> {
     pub constraint_obj: Obj,
     #[serde(rename = "type")]
@@ -60,16 +60,16 @@ pub struct TypedAssign<Obj> {
     pub value: String,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct OfType<Obj> {
     pub constraint_obj: Obj,
     #[serde(rename = "type")]
     pub of_type: String,
 }
 
-#[serde(tag = "kind")]
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(tag = "kind")]
 pub enum OutputConstraint<Obj> {
     OfType(OfType<Obj>),
     CmpInType {
