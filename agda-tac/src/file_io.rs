@@ -28,7 +28,7 @@ pub fn init_module(mut file: PathBuf, allow_ex: bool) -> Monad<InitModule> {
             perms.set_readonly(false);
             file.set_permissions(perms)?;
             let rope = Rope::from_reader(BufReader::new(&file))?;
-            return Ok(InitModule(file, path.to_path_buf().canonicalize()?, rope));
+            return Ok(InitModule(file, path.canonicalize()?, rope));
         }
     }
     let mod_name = path
@@ -41,11 +41,7 @@ pub fn init_module(mut file: PathBuf, allow_ex: bool) -> Monad<InitModule> {
     let mut f = File::create(path)?;
     f.write(first_line.as_bytes())?;
     f.flush()?;
-    Ok(InitModule(
-        f,
-        path.to_path_buf().canonicalize()?,
-        Rope::from(first_line),
-    ))
+    Ok(InitModule(f, path.canonicalize()?, Rope::from(first_line)))
 }
 
 pub fn find_default_unwrap() -> PathBuf {
