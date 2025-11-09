@@ -21,7 +21,7 @@ pub async fn poll_goals(agda: &mut ReplState) -> Monad<bool> {
         for goal in agw.visible_goals {
             // I believe `goal` will always be `OfType`.
             match goal.try_as_of_type() {
-                Ok(ok) => println!("?{} : {}", ok.constraint_obj, ok.of_type),
+                Ok(ok) => println!("?{} : {}", ok.constraint_obj, ok.r#type),
                 Err(bad) => eprintln!("[WARN]: unexpected goal: {:?}", bad),
             }
         }

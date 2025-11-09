@@ -98,7 +98,7 @@ pub async fn ty(agda: &mut Repl, i: InteractionId) -> Monad {
     agda.agda.command(command).await?;
     if let Some(gs) = preprint_agda_result(agda.agda.next_goal_specific().await?) {
         match gs.goal_info {
-            GoalInfo::CurrentGoal { the_type, .. } => println!("{}", the_type),
+            GoalInfo::CurrentGoal { r#type, .. } => println!("{}", r#type),
             _ => unreachable!(),
         }
     }

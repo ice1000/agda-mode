@@ -24,8 +24,7 @@ pub enum GoalTypeAux {
 pub struct GoalType {
     pub rewrite: Rewrite,
     pub type_aux: GoalTypeAux,
-    #[serde(rename = "type")]
-    pub the_type: String,
+    pub r#type: String,
     pub entries: Vec<ResponseContextEntry>,
     pub boundary: Vec<String>,
     pub output_forms: Vec<String>,
@@ -46,8 +45,7 @@ pub enum GoalInfo {
     GoalType(GoalType),
     CurrentGoal {
         rewrite: Rewrite,
-        #[serde(rename = "type")]
-        the_type: String,
+        r#type: String,
     },
     InferredType {
         expr: String,

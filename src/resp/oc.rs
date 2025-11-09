@@ -14,8 +14,7 @@ pub struct OutputForm {
 #[derive(Deserialize, Clone, Default, Debug, Eq, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct FindInstanceCandidate {
-    #[serde(rename = "type")]
-    pub of_type: String,
+    pub r#type: String,
     pub value: String,
 }
 
@@ -30,9 +29,8 @@ pub struct JustSomething<Obj> {
 pub struct PostponedCheckArgs<Obj> {
     pub constraint_obj: Obj,
     pub of_type: String,
-    #[serde(rename = "type")]
-    pub the_type: String,
     pub arguments: Vec<String>,
+    pub r#type: String,
 }
 
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
@@ -46,8 +44,7 @@ pub struct CmpSomething<Obj> {
 #[serde(rename_all = "camelCase")]
 pub struct FindInstanceOF<Obj> {
     pub constraint_obj: Obj,
-    #[serde(rename = "type")]
-    pub of_type: String,
+    pub r#type: String,
     pub candidates: Vec<FindInstanceCandidate>,
 }
 
@@ -55,8 +52,7 @@ pub struct FindInstanceOF<Obj> {
 #[serde(rename_all = "camelCase")]
 pub struct TypedAssign<Obj> {
     pub constraint_obj: Obj,
-    #[serde(rename = "type")]
-    pub of_type: String,
+    pub r#type: String,
     pub value: String,
 }
 
@@ -64,8 +60,7 @@ pub struct TypedAssign<Obj> {
 #[serde(rename_all = "camelCase")]
 pub struct OfType<Obj> {
     pub constraint_obj: Obj,
-    #[serde(rename = "type")]
-    pub of_type: String,
+    pub r#type: String,
 }
 
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
@@ -75,15 +70,13 @@ pub enum OutputConstraint<Obj> {
     CmpInType {
         #[serde(rename = "constraintObjs")]
         constraint_objs: (Obj, Obj),
-        #[serde(rename = "type")]
-        of_type: String,
+        r#type: String,
         comparison: Comparison,
     },
     CmpElim {
         #[serde(rename = "constraintObjs")]
         constraint_objs: (Vec<Obj>, Vec<Obj>),
-        #[serde(rename = "type")]
-        of_type: String,
+        r#type: String,
         polarities: Vec<Polarity>,
     },
     JustType(JustSomething<Obj>),
@@ -100,12 +93,10 @@ pub enum OutputConstraint<Obj> {
     TypedAssign(TypedAssign<Obj>),
     PostponedCheckArgs(PostponedCheckArgs<Obj>),
     IsEmptyType {
-        #[serde(rename = "type")]
-        the_type: String,
+        r#type: String,
     },
     SizeLtSat {
-        #[serde(rename = "type")]
-        the_type: String,
+        r#type: String,
     },
     FindInstanceOF(FindInstanceOF<Obj>),
     PTSInstance {
@@ -114,8 +105,7 @@ pub enum OutputConstraint<Obj> {
     },
     PostponedCheckFunDef {
         name: String,
-        #[serde(rename = "type")]
-        of_type: String,
+        r#type: String,
     },
 }
 
@@ -232,7 +222,7 @@ impl<Obj: Display> Display for CmpSomething<Obj> {
 
 impl<Obj: Display> Display for OfType<Obj> {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "{} : {}", self.constraint_obj, self.of_type)
+        write!(f, "{} : {}", self.constraint_obj, self.r#type)
     }
 }
 
@@ -241,7 +231,7 @@ impl<Obj: Display> Display for TypedAssign<Obj> {
         write!(
             f,
             "{} := {} :? {}",
-            self.constraint_obj, self.value, self.of_type
+            self.constraint_obj, self.value, self.r#type
         )
     }
 }
@@ -252,13 +242,13 @@ impl<Obj: Display> Display for PostponedCheckArgs<Obj> {
         for argument in &self.arguments {
             write!(f, " {}", argument)?;
         }
-        write!(f, ") ?: {}", self.the_type)
+        write!(f, ") ?: {}", self.r#type)
     }
 }
 
 impl Display for FindInstanceCandidate {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "{} : {}", self.value, self.of_type)
+        write!(f, "{} : {}", self.value, self.r#type)
     }
 }
 
@@ -267,7 +257,7 @@ impl<Obj: Display> Display for FindInstanceOF<Obj> {
         write!(
             f,
             "Resolve instance argument {} : {}, candidates: ",
-            self.constraint_obj, self.of_type
+            self.constraint_obj, self.r#type
         )?;
         for argument in &self.candidates {
             write!(f, "{}, ", argument)?;
@@ -283,15 +273,15 @@ impl<Obj: Display + std::fmt::Debug> Display for OutputConstraint<Obj> {
             OfType(o) => o.fmt(f),
             CmpInType {
                 constraint_objs: (a, b),
-                of_type,
+                r#type,
                 comparison,
-            } => write!(f, "{} {} {} of type {}", a, comparison, b, of_type),
+            } => write!(f, "{} {} {} of type {}", a, comparison, b, r#type),
             CmpElim {
                 constraint_objs: (xs, ys),
-                of_type,
+                r#type,
                 polarities,
                 // TODO: this can be improved, and the debug trait bound can be removed
-            } => write!(f, "{:?} {:?} {:?} of type {}", xs, polarities, ys, of_type),
+            } => write!(f, "{:?} {:?} {:?} of type {}", xs, polarities, ys, r#type),
             JustType(j) => j.fmt(f),
             JustSort(j) => j.fmt(f),
             CmpTypes(c) => c.fmt(f),
@@ -304,14 +294,14 @@ impl<Obj: Display + std::fmt::Debug> Display for OutputConstraint<Obj> {
             } => write!(f, "{} := {}", constraint_obj, value),
             TypedAssign(o) => o.fmt(f),
             PostponedCheckArgs(o) => o.fmt(f),
-            IsEmptyType { the_type } => write!(f, "Is empty: {}", the_type),
-            SizeLtSat { the_type } => write!(f, "Not empty type of sizes: {}", the_type),
+            IsEmptyType { r#type } => write!(f, "Is empty: {}", r#type),
+            SizeLtSat { r#type } => write!(f, "Not empty type of sizes: {}", r#type),
             FindInstanceOF(o) => o.fmt(f),
             PTSInstance {
                 constraint_objs: (a, b),
             } => write!(f, "PTS Instance for {}, {}", a, b),
-            PostponedCheckFunDef { name, of_type } => {
-                write!(f, "Check definition of {} : {}", name, of_type)
+            PostponedCheckFunDef { name, r#type } => {
+                write!(f, "Check definition of {} : {}", name, r#type)
             }
         }
     }
