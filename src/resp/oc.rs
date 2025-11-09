@@ -92,10 +92,6 @@ pub enum OutputConstraint<Obj> {
     CmpLevels(CmpSomething<Obj>),
     CmpTeles(CmpSomething<Obj>),
     CmpSorts(CmpSomething<Obj>),
-    Guard {
-        constraint: Box<OutputConstraint<Obj>>,
-        problem: ProblemId,
-    },
     Assign {
         #[serde(rename = "constraintObj")]
         constraint_obj: Obj,
@@ -209,7 +205,6 @@ impl<Obj> CollectObjs<Obj> for OutputConstraint<Obj> {
             CmpLevels(c) => c.collect_objs(collect),
             CmpTeles(c) => c.collect_objs(collect),
             CmpSorts(c) => c.collect_objs(collect),
-            Guard { constraint, .. } => constraint.collect_objs(collect),
             Assign { constraint_obj, .. } => collect(constraint_obj),
             TypedAssign(o) => o.collect_objs(collect),
             PostponedCheckArgs(o) => o.collect_objs(collect),
@@ -303,10 +298,6 @@ impl<Obj: Display + std::fmt::Debug> Display for OutputConstraint<Obj> {
             CmpLevels(c) => c.fmt(f),
             CmpTeles(c) => c.fmt(f),
             CmpSorts(c) => c.fmt(f),
-            Guard {
-                constraint,
-                problem,
-            } => write!(f, "{} (blocked by {})", constraint, problem),
             Assign {
                 constraint_obj,
                 value,
