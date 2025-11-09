@@ -76,6 +76,7 @@ pub fn agda_to_rope_range(i: &Interval) -> Range<usize> {
 pub struct Repl {
     pub agda: ReplState,
     pub file: File,
+    #[allow(dead_code)]
     pub path: PathBuf,
     file_buf: Rope,
     pub is_plain: bool,
