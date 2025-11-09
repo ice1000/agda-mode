@@ -92,3 +92,28 @@ pub enum Resp {
     /// A command sent when an abort command has completed successfully.
     DoneAborting,
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn deserialize_status() {
+        let json = r#"{
+            "kind":"Status",
+            "status": {
+                "checked":false,
+                "showImplicitArguments":false,
+                "showIrrelevantArguments":false
+            }
+        }"#;
+        let resp: Resp = serde_json::from_str(json).unwrap();
+        match resp {
+            Resp::Status { status } => {
+                assert!(!status.show_implicit_arguments);
+                assert!(!status.checked);
+            }
+            _ => panic!("Expected Status response"),
+        }
+    }
+}

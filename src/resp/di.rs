@@ -85,8 +85,8 @@ pub struct ModuleContents {
 pub struct AllGoalsWarnings {
     pub visible_goals: Vec<VisibleGoal>,
     pub invisible_goals: Vec<InvisibleGoal>,
-    pub warnings: String,
-    pub errors: String,
+    pub warnings: Vec<String>,
+    pub errors: Vec<String>,
 }
 
 /// Something that is displayed in the Emacs mode,
