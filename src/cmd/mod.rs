@@ -22,7 +22,7 @@ pub enum Cmd {
     /// the backend `backend`, using `flags` as the command-line options.
     Compile {
         backend: String,
-        path: String,
+        path: PathBuf,
         flags: Vec<String>,
     },
     Constraints,
@@ -83,7 +83,7 @@ pub enum Cmd {
     /// command uses the current include directories, whatever they happen
     /// to be.
     LoadHighlightingInfo {
-        path: String,
+        path: PathBuf,
     },
     /// Tells Agda to compute token-based highlighting information
     /// for the file.
@@ -98,7 +98,7 @@ pub enum Cmd {
     /// If the second argument is 'Remove', then the (presumably
     /// temporary) file is removed after it has been read.
     TokenHighlighting {
-        path: String,
+        path: PathBuf,
         remove: Remove,
     },
     /// Tells Agda to compute highlighting information for the expression just
@@ -204,12 +204,18 @@ impl Display for Cmd {
     fn fmt(&self, f: &mut Formatter) -> Result<(), FmtError> {
         use Cmd::*;
         match self {
-            Load { path, flags } => write!(f, "( Cmd_load {} {:?} )", path.display(), flags),
+            Load { path, flags } => write!(f, "( Cmd_load \"{}\" {:?} )", path.display(), flags),
             Compile {
                 backend,
                 path,
                 flags,
-            } => write!(f, "( Cmd_compile {:?} {:?} {:?} )", backend, path, flags),
+            } => write!(
+                f,
+                "( Cmd_compile {:?} \"{}\" {:?} )",
+                backend,
+                path.display(),
+                flags
+            ),
             Constraints => f.write_str("Cmd_constraints"),
             Metas => f.write_str("Cmd_metas"),
             ShowModuleContentsToplevel { rewrite, search } => write!(
@@ -232,9 +238,16 @@ impl Display for Cmd {
             ComputeToplevel { compute_mode, code } => {
                 write!(f, "( Cmd_compute_toplevel {:?} {:?} )", compute_mode, code)
             }
-            LoadHighlightingInfo { path } => write!(f, "( Cmd_load_highlighting_info {:?} )", path),
+            LoadHighlightingInfo { path } => {
+                write!(f, "( Cmd_load_highlighting_info \"{}\" )", path.display())
+            }
             TokenHighlighting { path, remove } => {
-                write!(f, "( Cmd_tokenHighlighting {:?} {:?} ", path, remove)
+                write!(
+                    f,
+                    "( Cmd_tokenHighlighting \"{}\" {:?} ",
+                    path.display(),
+                    remove
+                )
             }
             Highlight(input) => write!(f, "( Cmd_highlight {} )", input),
             ShowImplicitArgs(show) => {

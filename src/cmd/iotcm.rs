@@ -6,7 +6,7 @@ impl Display for IOTCM {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         write!(
             f,
-            "IOTCM {} {:?} {:?} {}",
+            "IOTCM \"{}\" {:?} {:?} {}",
             self.file.display(),
             self.level,
             self.method,
