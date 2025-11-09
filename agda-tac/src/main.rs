@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use agda_mode::agda::ReplState;
 use agda_mode::debug::{
     debug_command_via, debug_response_via, dont_debug_command, dont_debug_response,
@@ -38,19 +40,19 @@ async fn main() {
             dont_debug_response()
         }
     };
-    let agda_program = args.agda.as_ref().map_or("agda", |s| &*s);
+    let agda_program = args.agda.clone().unwrap_or_else(|| PathBuf::from("agda"));
     let file = args.file.unwrap_or_else(find_default_unwrap);
     let InitModule(f, path, init) =
         file_io::init_module(file, args.allow_existing_file).expect(FAIL_WRITE);
     // Resolve path to an absolute PathBuf (canonical if possible)
-    let abs_path = match std::fs::canonicalize(&path) {
+    let abs_path = match path.canonicalize() {
         Ok(p) => p,
         Err(e) => {
             eprintln!("Failed to canonicalize path ({}): {:?}", path.display(), e);
             std::process::exit(1);
         }
     };
-    let mut repl_state = ReplState::start(agda_program, abs_path).await.expect(FAIL);
+    let mut repl_state = ReplState::start(&agda_program, abs_path).await.expect(FAIL);
     if args.validate {
         repl_state.validate_version_panicking().await;
         println!("It works!");

@@ -17,7 +17,7 @@ pub struct CliOptions {
 
     /// Path to your agda executable
     #[structopt(long, name = "path")]
-    pub agda: Option<String>,
+    pub agda: Option<PathBuf>,
 
     /// Print all commands that `agda-tac` sends to `agda`
     #[structopt(alias = "dc", long)]

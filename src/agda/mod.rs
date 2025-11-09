@@ -1,5 +1,5 @@
 use std::io;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Stdio;
 
 use tokio::io::{AsyncWriteExt, BufReader};
@@ -25,7 +25,7 @@ pub struct ProcessStdio(pub Child, pub JustStdio);
 
 pub struct JustStdio(pub ChildStdin, pub ChildStdout);
 
-pub fn init_agda_process(agda_program: &str) -> io::Result<ProcessStdio> {
+pub fn init_agda_process(agda_program: &Path) -> io::Result<ProcessStdio> {
     let mut process = Command::new(agda_program)
         .arg(INTERACTION_COMMAND)
         .stdout(Stdio::piped())
@@ -38,7 +38,7 @@ pub fn init_agda_process(agda_program: &str) -> io::Result<ProcessStdio> {
 }
 
 impl ReplState {
-    pub async fn start(agda_program: &str, file: PathBuf) -> io::Result<Self> {
+    pub async fn start(agda_program: &Path, file: PathBuf) -> io::Result<Self> {
         let JustStdio(stdin, out) = start_agda(agda_program);
         Self::from_io(stdin, BufReader::new(out), file).await
     }
@@ -63,7 +63,7 @@ impl ReplState {
 /// Start the Agda process and return the stdio handles.
 ///
 /// Note that this function may panic.
-pub fn start_agda(agda_program: &str) -> JustStdio {
+pub fn start_agda(agda_program: &Path) -> JustStdio {
     let ProcessStdio(process, stdio) = init_agda_process(agda_program).expect(START_FAIL);
     tokio::spawn(async {
         let status = process.wait_with_output().await.expect(START_FAIL);
