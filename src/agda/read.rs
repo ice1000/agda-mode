@@ -14,6 +14,7 @@ pub fn deserialize_agda<'a, T: Deserialize<'a>>(buf: &'a str) -> serde_json::Res
     serde_json::from_str(buf)
 }
 
+#[derive(Debug)]
 pub struct AgdaRead {
     buf: String,
     agda: BufReader<ChildStdout>,

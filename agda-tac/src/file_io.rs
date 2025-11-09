@@ -12,6 +12,7 @@ const FAIL_CREATE_DEFAULT: &str = "Failed to create default working file";
 
 pub type Monad<T = ()> = io::Result<T>;
 
+#[derive(Debug)]
 pub struct InitModule(pub File, pub PathBuf, pub Rope);
 
 pub fn init_module(mut file: String, allow_ex: bool) -> Monad<InitModule> {
@@ -87,6 +88,7 @@ pub fn agda_to_rope_range(i: &Interval) -> Range<usize> {
     i.range_shift_left(1)
 }
 
+#[derive(Debug)]
 pub struct Repl {
     pub agda: ReplState,
     pub file: File,

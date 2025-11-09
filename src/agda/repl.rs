@@ -10,6 +10,7 @@ use crate::resp::{AgdaError, DisplayInfo, Resp};
 use super::{send_command, AgdaRead};
 
 /// Simple REPL state wrapper.
+#[derive(Debug)]
 pub struct ReplState {
     pub stdin: ChildStdin,
     pub agda: AgdaRead,
