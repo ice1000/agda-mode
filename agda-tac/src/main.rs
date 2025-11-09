@@ -39,10 +39,7 @@ async fn main() {
         }
     };
     let agda_program = args.agda.as_ref().map_or("agda", |s| &*s);
-    let file = match args.file {
-        Some(file) => file,
-        None => find_default_unwrap(),
-    };
+    let file = args.file.unwrap_or_else(find_default_unwrap);
     let InitModule(f, path, init) =
         file_io::init_module(file, args.allow_existing_file).expect(FAIL_WRITE);
     // Resolve path to an absolute PathBuf (canonical if possible)
