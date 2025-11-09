@@ -43,8 +43,8 @@ pub async fn ion(mut agda: Repl) -> io::Result<()> {
         let editor = CliEditor {};
         let mut r = editor.into_editor();
         let history_dir = history_file()?;
-        if let Err(err) = r.load_history(&history_dir) {
-            eprintln!("Failed to load REPL history: {:?}", err)
+        if r.load_history(&history_dir).is_err() {
+            println!("no previous history in {}.", history_dir.display())
         }
         loop {
             match r.readline(LAMBDA_LT) {
