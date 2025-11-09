@@ -27,19 +27,17 @@ const FAIL_CMD: &str = "Failed to evaluate Agda command";
 #[tokio::main]
 async fn main() {
     let args = args::pre();
-    unsafe {
-        if args.debug_command {
-            // Maybe we can do some fancy printing
-            debug_command_via(|s| print!("{}", s))
-        } else {
-            dont_debug_command()
-        }
-        if args.debug_response {
-            debug_response_via(|s| print!("{}", s))
-        } else {
-            dont_debug_response()
-        }
-    };
+    if args.debug_command {
+        // Maybe we can do some fancy printing
+        debug_command_via(|s| print!("{}", s))
+    } else {
+        dont_debug_command()
+    }
+    if args.debug_response {
+        debug_response_via(|s| print!("{}", s))
+    } else {
+        dont_debug_response()
+    }
     let agda_program = args.agda.clone().unwrap_or_else(|| PathBuf::from("agda"));
     let file = args.file.unwrap_or_else(find_default_unwrap);
     let InitModule(f, path, init) =

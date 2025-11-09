@@ -75,7 +75,7 @@ pub fn start_agda(agda_program: &Path) -> JustStdio {
 /// Send an [`IOTCM`](crate::cmd::IOTCM) command to Agda.
 pub async fn send_command(stdin: &mut ChildStdin, command: &IOTCM) -> io::Result<()> {
     let string = command.to_string();
-    unsafe { debug_command(format!("[CMD]: {}", string)) };
+    debug_command(format!("[CMD]: {}", string));
     stdin.write(string.as_bytes()).await?;
     stdin.flush().await
 }

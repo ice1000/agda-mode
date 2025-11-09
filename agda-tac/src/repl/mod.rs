@@ -25,7 +25,7 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
         Define(function_name) => define(agda, &function_name).await?,
         PushLine(code) => push_line(agda, code).await?,
         PopLine => pop_line(agda).await?,
-        DumpProof =>     agda.dump_proof()?,
+        DumpProof => agda.dump_proof()?,
         ShowLine(i) => show_line(agda, i),
         Give(i, new) => give(agda, i, new).await?,
         Infer(i, new) => infer(agda, i, new).await?,
@@ -55,8 +55,8 @@ async fn line_impl<'a>(agda: &mut Repl, line: UserInput<'a>) -> Monad<bool> {
                 println!("{}", line);
             }
         }
-        ToggleDebugCommand => unsafe { toggle_debug_command() },
-        ToggleDebugResponse => unsafe { toggle_debug_response() },
+        ToggleDebugCommand => toggle_debug_command(),
+        ToggleDebugResponse => toggle_debug_response(),
         Unknown(Some(err)) => println!("Wait, {}", err),
         Unknown(None) => println!("Sorry, I don't understand."),
         Exit => {

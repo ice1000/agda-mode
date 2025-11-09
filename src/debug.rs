@@ -7,37 +7,37 @@ lazy_static! {
     static ref DEBUG_RESPONSE: Mutex<Option<Box<dyn Fn(String) + Send>>> = Mutex::new(None);
 }
 
-pub unsafe fn debug_command_via(f: impl Fn(String) + Send + 'static) {
+pub fn debug_command_via(f: impl Fn(String) + Send + 'static) {
     let mut command = DEBUG_COMMAND.lock().unwrap();
     *command = Some(Box::new(f));
 }
 
-pub unsafe fn debug_response_via(f: impl Fn(String) + Send + 'static) {
+pub fn debug_response_via(f: impl Fn(String) + Send + 'static) {
     let mut response = DEBUG_RESPONSE.lock().unwrap();
     *response = Some(Box::new(f));
 }
 
-pub unsafe fn dont_debug_command() {
+pub fn dont_debug_command() {
     let mut command = DEBUG_COMMAND.lock().unwrap();
     *command = None;
 }
 
-pub unsafe fn dont_debug_response() {
+pub fn dont_debug_response() {
     let mut response = DEBUG_RESPONSE.lock().unwrap();
     *response = None;
 }
 
-pub(crate) unsafe fn debug_command(s: String) -> bool {
+pub(crate) fn debug_command(s: String) -> bool {
     let command = DEBUG_COMMAND.lock().unwrap();
     command.as_ref().map(|f| f(s)).is_some()
 }
 
-pub(crate) unsafe fn debug_response(s: String) -> bool {
+pub(crate) fn debug_response(s: String) -> bool {
     let response = DEBUG_RESPONSE.lock().unwrap();
     response.as_ref().map(|f| f(s)).is_some()
 }
 
-pub unsafe fn toggle_debug_command() {
+pub fn toggle_debug_command() {
     let mut command = DEBUG_COMMAND.lock().unwrap();
     match *command {
         None => {
@@ -51,7 +51,7 @@ pub unsafe fn toggle_debug_command() {
     }
 }
 
-pub unsafe fn toggle_debug_response() {
+pub fn toggle_debug_response() {
     match DEBUG_RESPONSE.lock().unwrap().as_ref() {
         None => {
             println!("Response debug mode is ON");

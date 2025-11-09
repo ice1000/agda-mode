@@ -39,7 +39,7 @@ impl AgdaRead {
     /// Take Agda's response from the next line.
     pub async fn response(&mut self) -> io::Result<Resp> {
         self.agda.read_line(&mut self.buf).await?;
-        unsafe { debug_response(format!("[RES]: {}\n", self.buf)) };
+        debug_response(format!("[RES]: {}\n", self.buf));
         let resp = deserialize_agda(&self.buf)?;
         self.buf.clear();
         Ok(resp)
