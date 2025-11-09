@@ -99,10 +99,9 @@ impl ReplState {
 
     /// Skip information until an error.
     pub async fn next_error(&mut self) -> io::Result<AgdaError> {
-        use crate::resp::DisplayInfo::Error as DisError;
         loop {
             match self.next_display_info().await? {
-                DisError(e) => break Ok(e),
+                DisplayInfo::Error { error } => break Ok(error),
                 _ => {}
             }
         }
@@ -122,8 +121,8 @@ macro_rules! next_resp_of {
                     match self.response().await? {
                         Resp::$p(ga) => break Ok(Ok(ga)),
                         Resp::DisplayInfo {
-                            info: Some(crate::resp::DisplayInfo::Error(e)),
-                        } => break Ok(e.into()),
+                            info: Some(crate::resp::DisplayInfo::Error { error }),
+                        } => break Ok(error.into()),
                         _ => {}
                     }
                 }
@@ -151,7 +150,7 @@ macro_rules! next_disp_of {
             pub async fn $f(&mut self) -> NextResult<$t> {
                 loop {
                     match self.next_display_info().await? {
-                        DisplayInfo::Error(e) => break Ok(e.into()),
+                        DisplayInfo::Error { error } => break Ok(error.into()),
                         DisplayInfo::$p(agw) => break Ok(Ok(agw)),
                         _ => {}
                     }

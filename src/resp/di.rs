@@ -36,7 +36,6 @@ pub struct Context {
 }
 
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
-#[serde(rename_all = "camelCase")]
 pub struct AgdaError {
     pub message: Option<String>,
 }
@@ -105,7 +104,9 @@ pub enum DisplayInfo {
     Time {
         time: String,
     },
-    Error(AgdaError),
+    Error {
+        error: AgdaError,
+    },
     IntroNotFound,
     IntroConstructorUnknown {
         /// Available constructors

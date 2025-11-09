@@ -186,4 +186,34 @@ mod test {
             _ => panic!("Expected Status response"),
         }
     }
+
+    #[test]
+    fn deserialize_error() {
+        let json = r#"{
+            "info":{
+                "error":{
+                    "message":"1,21-22\nGeneralizable variable SmallLib.b is not supported here\nwhen scope checking b"
+                },
+                "kind":"Error",
+                "warnings":[]
+            },
+            "kind":"DisplayInfo"
+        }"#;
+        let resp: Resp = serde_json::from_str(json).unwrap();
+        match resp {
+            Resp::DisplayInfo { info } => {
+                let info = info.unwrap();
+                match info {
+                    DisplayInfo::Error { error } => {
+                        assert_eq!(
+                            error.message.unwrap(),
+                            "1,21-22\nGeneralizable variable SmallLib.b is not supported here\nwhen scope checking b"
+                        );
+                    }
+                    _ => panic!("Expected AgdaError"),
+                }
+            }
+            _ => panic!("Expected Status response"),
+        }
+    }
 }
