@@ -116,4 +116,74 @@ mod test {
             _ => panic!("Expected Status response"),
         }
     }
+
+    #[test]
+    fn deserialize_displayinfo() {
+        let json = r#"{
+            "kind":"DisplayInfo",
+            "info":{
+                "errors":[],
+                "invisibleGoals":[
+                    {
+                        "kind":"JustSort",
+                        "constraintObj":{
+                            "name":"_0",
+                            "range":[
+                                {
+                                    "end":{ "col":11, "line":3, "pos":50 },
+                                    "start":{ "col":10, "line":3, "pos":49 }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "kind":"AllGoalsWarnings",
+                "visibleGoals":[
+                    {
+                        "kind":"OfType",
+                        "constraintObj":{
+                            "id":0,
+                            "range":[
+                                {
+                                    "end":{ "col":11, "line":3, "pos":50 },
+                                    "start":{ "col":10, "line":3, "pos":49 }
+                                }
+                            ]
+                        },
+                        "type":"_0"
+                    },
+                    {
+                        "kind":"OfType",
+                        "constraintObj":{
+                            "id":1,
+                            "range":[
+                                {
+                                    "end":{ "col":11, "line":4, "pos":61 },
+                                    "start":{ "col":10, "line":4, "pos":60 }
+                                }
+                            ]
+                        },
+                        "type":"?0"
+                    }
+                ],
+                "warnings":[]
+            }
+        }"#;
+        let resp: Resp = serde_json::from_str(json).unwrap();
+        match resp {
+            Resp::DisplayInfo { info } => {
+                let info = info.unwrap();
+                match info {
+                    DisplayInfo::AllGoalsWarnings(agw) => {
+                        assert_eq!(agw.visible_goals.len(), 2);
+                        assert_eq!(agw.invisible_goals.len(), 1);
+                        assert!(agw.warnings.is_empty());
+                        assert!(agw.errors.is_empty());
+                    }
+                    _ => panic!("Expected AllGoalsWarnings"),
+                }
+            }
+            _ => panic!("Expected Status response"),
+        }
+    }
 }

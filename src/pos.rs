@@ -89,3 +89,15 @@ impl Default for AgdaRange {
         AgdaRange::NoRange
     }
 }
+
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct NamedMeta {
+    pub name: String,
+    pub range: Vec<Interval>,
+}
+
+impl Display for NamedMeta {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.name)
+    }
+}

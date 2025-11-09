@@ -1,5 +1,5 @@
 use crate::base::{Comparison, Polarity};
-use crate::pos::{InteractionId, Interval, ProblemId};
+use crate::pos::{InteractionPoint, Interval, NamedMeta, ProblemId};
 use serde::Deserialize;
 use std::fmt::{Display, Error, Formatter};
 
@@ -123,8 +123,8 @@ pub enum OutputConstraint<Obj> {
     },
 }
 
-pub type VisibleGoal = OutputConstraint<InteractionId>;
-pub type InvisibleGoal = OutputConstraint<String>;
+pub type VisibleGoal = OutputConstraint<InteractionPoint>;
+pub type InvisibleGoal = OutputConstraint<NamedMeta>;
 
 impl<Obj> OutputConstraint<Obj> {
     pub fn try_into_of_type(self) -> Result<OfType<Obj>, Self> {
