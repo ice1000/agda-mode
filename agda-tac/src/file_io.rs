@@ -33,11 +33,9 @@ pub fn init_module(mut file: PathBuf, allow_ex: bool) -> Monad<InitModule> {
     }
     let mod_name = path
         .file_stem()
-        .and_then(|s| s.to_str())
-        .map(str::trim)
-        .expect("File does not have a name");
+        .expect(&format!("File does not have a name: {:?}", path));
     // TODO: check if it's a valid module name
-    let first_line = format!("module {} where\n", mod_name);
+    let first_line = format!("module {} where\n", mod_name.display());
     let mut f = File::create(path)?;
     f.write(first_line.as_bytes())?;
     f.flush()?;
