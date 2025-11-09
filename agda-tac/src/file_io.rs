@@ -1,7 +1,7 @@
 use std::fs::{create_dir_all, remove_file, File, OpenOptions};
 use std::io::{self, BufReader, BufWriter, Seek, SeekFrom, Write};
 use std::ops::Range;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use ropey::{Rope, RopeSlice};
 
@@ -15,12 +15,9 @@ pub type Monad<T = ()> = io::Result<T>;
 #[derive(Debug)]
 pub struct InitModule(pub File, pub PathBuf, pub Rope);
 
-pub fn init_module(mut file: String, allow_ex: bool) -> Monad<InitModule> {
-    // Extracted as variable to make the borrow checker happy
-    if !file.ends_with(".agda") {
-        file.push_str(".agda")
-    }
-    let path = Path::new(&file);
+pub fn init_module(mut file: PathBuf, allow_ex: bool) -> Monad<InitModule> {
+    file.set_extension("agda");
+    let path = &file;
     if path.exists() {
         if !allow_ex {
             eprintln!("I don't want to work with existing files, sorry.");
@@ -34,17 +31,14 @@ pub fn init_module(mut file: String, allow_ex: bool) -> Monad<InitModule> {
             return Ok(InitModule(file, path.to_path_buf().canonicalize()?, rope));
         }
     }
-    let mut f = File::create(path)?;
-    let extension = path.extension().and_then(|s| s.to_str()).unwrap_or("");
     let mod_name = path
-        .file_name()
+        .file_stem()
         .and_then(|s| s.to_str())
-        .map(|s| s.trim_end_matches(extension))
-        .map(|s| s.trim_end_matches("."))
-        .map(|s| s.trim())
+        .map(str::trim)
         .expect("File does not have a name");
     // TODO: check if it's a valid module name
     let first_line = format!("module {} where\n", mod_name);
+    let mut f = File::create(path)?;
     f.write(first_line.as_bytes())?;
     f.flush()?;
     Ok(InitModule(
@@ -54,7 +48,7 @@ pub fn init_module(mut file: String, allow_ex: bool) -> Monad<InitModule> {
     ))
 }
 
-pub fn find_default_unwrap() -> String {
+pub fn find_default_unwrap() -> PathBuf {
     find_default().expect(FAIL_CREATE_DEFAULT)
 }
 
@@ -70,15 +64,11 @@ pub fn history_file() -> Monad<PathBuf> {
     Ok(config_dir()?.join(".repl_history"))
 }
 
-pub fn find_default() -> Monad<String> {
+pub fn find_default() -> Monad<PathBuf> {
     println!("No input file specified, using default.");
-    let file_path = config_dir()?
-        .join("Nameless.agda")
-        .into_os_string()
-        .into_string()
-        .expect(FAIL_CREATE_DEFAULT);
-    println!("Default to {}", file_path);
-    if Path::new(&file_path).exists() {
+    let file_path = config_dir()?.join("Nameless.agda");
+    println!("Default to {}", file_path.display());
+    if file_path.exists() {
         remove_file(&file_path)?;
     }
     Ok(file_path)

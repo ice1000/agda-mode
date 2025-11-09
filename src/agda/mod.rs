@@ -1,4 +1,5 @@
 use std::io;
+use std::path::PathBuf;
 use std::process::Stdio;
 
 use tokio::io::{AsyncWriteExt, BufReader};
@@ -37,7 +38,7 @@ pub fn init_agda_process(agda_program: &str) -> io::Result<ProcessStdio> {
 }
 
 impl ReplState {
-    pub async fn start(agda_program: &str, file: String) -> io::Result<Self> {
+    pub async fn start(agda_program: &str, file: PathBuf) -> io::Result<Self> {
         let JustStdio(stdin, out) = start_agda(agda_program);
         Self::from_io(stdin, BufReader::new(out), file).await
     }
@@ -45,7 +46,7 @@ impl ReplState {
     pub async fn from_io(
         mut stdin: ChildStdin,
         stdout: BufReader<ChildStdout>,
-        file: String,
+        file: PathBuf,
     ) -> io::Result<Self> {
         let iotcm = load_file(file.clone());
         send_command(&mut stdin, &iotcm).await?;
@@ -80,7 +81,7 @@ pub async fn send_command(stdin: &mut ChildStdin, command: &IOTCM) -> io::Result
 }
 
 /// Common command: load file in Agda.
-pub fn load_file(path: String) -> IOTCM {
+pub fn load_file(path: PathBuf) -> IOTCM {
     let command = Cmd::load_simple(path.clone());
     IOTCM::simple(path, command)
 }

@@ -1,4 +1,5 @@
 use std::fmt::{Display, Error as FmtError, Formatter};
+use std::path::PathBuf;
 
 use crate::base::{ComputeMode, Remove, Rewrite, UseForce};
 use crate::hs::HaskellBool;
@@ -14,7 +15,7 @@ pub enum Cmd {
     /// Loads the module in file `path`, using
     /// `flags` as the command-line options.
     Load {
-        path: String,
+        path: PathBuf,
         flags: Vec<String>,
     },
     /// Compiles the module in file `path` using
@@ -159,7 +160,7 @@ pub enum Cmd {
 }
 
 impl Cmd {
-    pub fn load_simple(path: String) -> Self {
+    pub fn load_simple(path: PathBuf) -> Self {
         Cmd::Load {
             path,
             flags: vec![],
@@ -203,7 +204,7 @@ impl Display for Cmd {
     fn fmt(&self, f: &mut Formatter) -> Result<(), FmtError> {
         use Cmd::*;
         match self {
-            Load { path, flags } => write!(f, "( Cmd_load {:?} {:?} )", path, flags),
+            Load { path, flags } => write!(f, "( Cmd_load {} {:?} )", path.display(), flags),
             Compile {
                 backend,
                 path,

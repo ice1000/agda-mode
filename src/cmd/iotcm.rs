@@ -1,12 +1,16 @@
 use crate::cmd::Cmd;
 use std::fmt::{Display, Error, Formatter};
+use std::path::PathBuf;
 
 impl Display for IOTCM {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         write!(
             f,
-            "IOTCM {:?} {:?} {:?} {}",
-            self.file, self.level, self.method, self.command
+            "IOTCM {} {:?} {:?} {}",
+            self.file.display(),
+            self.level,
+            self.method,
+            self.command
         )
     }
 }
@@ -46,7 +50,7 @@ impl Default for HighlightingMethod {
 #[derive(Debug, Clone)]
 pub struct IOTCM {
     level: HighlightingLevel,
-    file: String,
+    file: PathBuf,
     method: HighlightingMethod,
     pub command: Cmd,
 }
@@ -54,7 +58,7 @@ pub struct IOTCM {
 impl IOTCM {
     pub fn new(
         level: HighlightingLevel,
-        file: String,
+        file: PathBuf,
         method: HighlightingMethod,
         command: Cmd,
     ) -> Self {
@@ -66,7 +70,7 @@ impl IOTCM {
         }
     }
 
-    pub fn simple(file: String, command: Cmd) -> Self {
+    pub fn simple(file: PathBuf, command: Cmd) -> Self {
         Self::new(Default::default(), file, Default::default(), command)
     }
 

@@ -45,12 +45,13 @@ async fn main() {
     };
     let InitModule(f, path, init) =
         file_io::init_module(file, args.allow_existing_file).expect(FAIL_WRITE);
-    let abs_path = match path.to_str() {
-        None => {
-            eprintln!("The given file name has some problems.");
+    // Resolve path to an absolute PathBuf (canonical if possible)
+    let abs_path = match std::fs::canonicalize(&path) {
+        Ok(p) => p,
+        Err(e) => {
+            eprintln!("Failed to canonicalize path ({}): {:?}", path.display(), e);
             std::process::exit(1);
         }
-        Some(f) => f.to_owned(),
     };
     let mut repl_state = ReplState::start(agda_program, abs_path).await.expect(FAIL);
     if args.validate {

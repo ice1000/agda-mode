@@ -1,4 +1,5 @@
 use std::io;
+use std::path::PathBuf;
 
 use tokio::io::AsyncWriteExt;
 use tokio::process::ChildStdin;
@@ -14,7 +15,7 @@ use super::{send_command, AgdaRead};
 pub struct ReplState {
     pub stdin: ChildStdin,
     pub agda: AgdaRead,
-    pub file: String,
+    pub file: PathBuf,
     pub(super) interaction_points: Vec<InteractionPoint>,
     pub(super) iotcm: IOTCM,
 }

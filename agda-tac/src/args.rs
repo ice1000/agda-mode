@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use clap::{App, AppSettings};
 use minitt_util::cli::{cli_completion_generation, GenShellSubCommand};
 use structopt::StructOpt;
@@ -11,7 +13,7 @@ use structopt::StructOpt;
 pub struct CliOptions {
     /// The input file to type-check (Notice: file should be UTF-8 encoded)
     #[structopt(name = "FILE")]
-    pub file: Option<String>,
+    pub file: Option<PathBuf>,
 
     /// Path to your agda executable
     #[structopt(long, name = "path")]
