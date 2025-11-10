@@ -216,4 +216,36 @@ mod test {
             _ => panic!("Expected Status response"),
         }
     }
+
+    #[test]
+    fn deserialize_displayinfo2() {
+        let json = r#"{
+            "info":{
+                "errors":[
+                    {
+                        "message":"/repo/agda-mode/agda-tac/Demo.agda:6.1-7: error: [MissingDefinitions]\nThe following names are declared but not accompanied by a\ndefinition: lemma2"
+                    }
+                ],
+                "invisibleGoals":[],
+                "kind":"AllGoalsWarnings",
+                "visibleGoals":[],
+                "warnings":[]
+            },
+            "kind":"DisplayInfo"
+        }"#;
+        let resp: Resp = serde_json::from_str(json).unwrap();
+        match resp {
+            Resp::DisplayInfo { info } => {
+                assert!(
+                    matches!(info.unwrap(), DisplayInfo::AllGoalsWarnings(AllGoalsWarnings {
+                    visible_goals,
+                    invisible_goals,
+                    warnings,
+                    errors,
+                }) if visible_goals.is_empty() && invisible_goals.is_empty() && warnings.is_empty() && errors.len() == 1)
+                );
+            }
+            _ => panic!("Expected DisplayInfo response"),
+        }
+    }
 }

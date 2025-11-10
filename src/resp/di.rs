@@ -80,12 +80,17 @@ pub struct ModuleContents {
 }
 
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+pub struct TCWarning {
+    pub message: String,
+}
+
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct AllGoalsWarnings {
     pub visible_goals: Vec<VisibleGoal>,
     pub invisible_goals: Vec<InvisibleGoal>,
-    pub warnings: Vec<String>,
-    pub errors: Vec<String>,
+    pub warnings: Vec<TCWarning>,
+    pub errors: Vec<TCWarning>,
 }
 
 /// Something that is displayed in the Emacs mode,
