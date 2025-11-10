@@ -99,6 +99,10 @@ impl Repl {
     }
 
     pub fn remove_last_line_buffer(&mut self) {
+        if self.file_buf.len_lines() < 2 {
+            eprintln!("Error: line buffer is empty");
+            return;
+        }
         let line_last = self.file_buf.len_lines() - 2;
         let line_start = self.file_buf.line_to_char(line_last);
         let doc_end = self.file_buf.len_chars();
