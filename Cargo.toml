@@ -9,7 +9,7 @@ repository = "https://github.com/ice1000/agda-mode"
 readme = ".github/README.md"
 
 [badges]
-maintenance = { status = "actively-developed" }
+maintenance = { status = "passively-maintained" }
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
@@ -18,7 +18,7 @@ either = "1.5"
 lazy_static = "1.5"
 
 [dependencies.tokio]
-version = "0.3.4"
+version = "1.28.0"
 features = ["io-util", "rt", "process"]
 
 [workspace]
