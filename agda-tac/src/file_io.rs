@@ -131,7 +131,7 @@ impl Repl {
         let line_num = interval.start.line - 1;
         let line_start = self.file_buf.line_to_char(line_num);
         let line = self.file_buf.line(line_num);
-        let (idx, _) = (line.chars().into_iter().enumerate()).find(|(_, c)| c == &'=')?;
+        let (idx, _) = line.chars().enumerate().find(|(_, c)| c == &'=')?;
         self.file_buf.insert_char(line_start + idx, ' ');
         self.file_buf.insert(line_start + idx, text);
         Some(())
